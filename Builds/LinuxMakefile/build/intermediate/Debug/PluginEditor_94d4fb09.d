@@ -490,4 +490,4 @@ build/intermediate/Debug/PluginEditor_94d4fb09.o: \
  ../../Source/../JuceLibraryCode/modules/juce_video/../../../../../dev/lib/JUCE/modules/juce_video/playback/juce_DirectShowComponent.h \
  ../../Source/../JuceLibraryCode/modules/juce_video/../../../../../dev/lib/JUCE/modules/juce_video/playback/juce_QuickTimeMovieComponent.h \
  ../../Source/../JuceLibraryCode/modules/juce_video/../../../../../dev/lib/JUCE/modules/juce_video/capture/juce_CameraDevice.h \
- ../../Source/PluginEditor.h
+ ../../Source/GrainSynth.h ../../Source/PluginEditor.h

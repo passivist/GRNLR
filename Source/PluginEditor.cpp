@@ -47,7 +47,6 @@ Grnlr_kleinAudioProcessorEditor::~Grnlr_kleinAudioProcessorEditor()
 void Grnlr_kleinAudioProcessorEditor::paint (Graphics& g)
 {
   g.fillAll (Colours::white);
-  
 }
 
 void Grnlr_kleinAudioProcessorEditor::resized()
