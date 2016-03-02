@@ -21,7 +21,7 @@
 */
 class Grnlr_kleinAudioProcessorEditor  : public  AudioProcessorEditor,
                                          private Slider::Listener,
-                                                 Button::Listener
+                                         Button::Listener
 {
 public:
     Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAudioProcessor&);
@@ -53,6 +53,5 @@ private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Grnlr_kleinAudioProcessorEditor)
 };
-
 
 #endif  // PLUGINEDITOR_H_INCLUDED
