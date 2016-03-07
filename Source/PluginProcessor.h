@@ -28,8 +28,13 @@ public:
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
 
+    void applyEnvelope (AudioSampleBuffer&);
+    void loadSamples (AudioSampleBuffer&, int startSample, int numSamples);
     void processBlock (AudioSampleBuffer&, MidiBuffer&) override;
 
+    //==============================================================================    
+    void updateValues();
+    
     //==============================================================================
     AudioProcessorEditor* createEditor() override;
     bool hasEditor() const override;
@@ -60,6 +65,9 @@ public:
 
     float lengthRatio;
     float positionOffset;
+
+    int lengthInSamples;
+    int positionOffsetInSamples;
 
 private:
     Random random;

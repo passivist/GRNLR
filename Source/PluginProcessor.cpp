@@ -14,6 +14,8 @@
     > allow for grains to be shorter than buffersize
     > allow for grains to start and stop inside a running buffer
     > grains have start / end
+    > an asynchronous massaging system between the process function and things
+      like grain prosition in envelope etc.
   ==============================================================================
 */
 
@@ -95,6 +97,7 @@ void Grnlr_kleinAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
 {
   position = 0;
   lengthRatio = 0;
+  updateValues();
 }
 
 void Grnlr_kleinAudioProcessor::releaseResources()
@@ -103,15 +106,27 @@ void Grnlr_kleinAudioProcessor::releaseResources()
   // spare memory, etc.
 }
 
-void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
-{ 
+void Grnlr_kleinAudioProcessor::applyEnvelope (AudioSampleBuffer& buffer)
+{
+  for (int channel=0; channel<buffer.getNumChannels(); ++channel)
+    {
+      buffer.applyGainRamp(channel, 0, buffer.getNumSamples()/2, 0, 1 );
+      buffer.applyGainRamp(channel, buffer.getNumSamples()/2, buffer.getNumSamples(), 1, 0);
+    }
+}
+
+void Grnlr_kleinAudioProcessor::updateValues ()
+{
+  lengthInSamples         = lengthRatio * fileBuffer.getNumSamples();
+  positionOffsetInSamples = positionOffset * fileBuffer.getNumSamples();
+}
+
+void Grnlr_kleinAudioProcessor::loadSamples (AudioSampleBuffer& buffer, int startSample, int numSamples)
+{
   int outputSamplesRemaining  = buffer.getNumSamples();
   int outputSamplesOffset     = 0;
   
-  int lengthInSamples         = lengthRatio * fileBuffer.getNumSamples();
-  int positionOffsetInSamples = positionOffset * fileBuffer.getNumSamples();
-  
-  if(position < lengthInSamples) {
+  if(position < numSamples) {
     int bufferSamplesRemaining = fileBuffer.getNumSamples() - position;
     int samplesThisBlock = jmin(outputSamplesRemaining, bufferSamplesRemaining);
     
@@ -120,7 +135,7 @@ void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuf
 		       outputSamplesOffset,
 		       fileBuffer,
 		       channel % fileBuffer.getNumChannels(),
-		       (position + positionOffsetInSamples) % fileBuffer.getNumSamples(),
+		       (position + startSample) % fileBuffer.getNumSamples(),
 		       samplesThisBlock );
     }
     
@@ -130,7 +145,13 @@ void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuf
   } else {
     outputSamplesRemaining = buffer.getNumSamples();
     position = 0;
+    updateValues();
   }
+}
+
+void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
+{ 
+  loadSamples(buffer, positionOffsetInSamples, lengthInSamples); // values are temporary
 }
 
 //==============================================================================
