@@ -151,7 +151,7 @@ void Grnlr_kleinAudioProcessor::loadSamples (AudioSampleBuffer& buffer, int star
 
 void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 { 
-  loadSamples(buffer, positionOffsetInSamples, lengthInSamples); // values are temporary
+  loadSamples(buffer, positionOffsetInSamples, lengthInSamples);
 }
 
 //==============================================================================

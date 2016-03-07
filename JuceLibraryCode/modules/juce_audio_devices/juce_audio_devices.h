@@ -1,4 +1,10 @@
 // This is an auto-generated file to redirect any included
 // module headers to the correct external folder.
 
-#include "../../../../../dev/lib/JUCE/modules/juce_audio_devices/juce_audio_devices.h"
+#if defined (JUCER_XCODE_MAC_F6D2F4CF)
+ #include "../../../../../lib/juce-grapefruit-osx/modules/juce_audio_devices/juce_audio_devices.h"
+#elif defined (JUCER_LINUX_MAKE_6D53C8B4)
+ #include "../../../../../dev/lib/JUCE/modules/juce_audio_devices/juce_audio_devices.h"
+#else
+ #error "This file is designed to be used in an Introjucer-generated project!"
+#endif
