@@ -95,7 +95,6 @@ void Grnlr_kleinAudioProcessor::changeProgramName (int index, const String& newN
 //==============================================================================
 void Grnlr_kleinAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    Grain grain;
     position = 0;
     lengthRatio = 0;
     updateValues();
@@ -123,8 +122,19 @@ void Grnlr_kleinAudioProcessor::updateValues ()
     positionOffsetInSamples = positionOffset * fileBuffer.getNumSamples();
 }
 
+void Grnlr_kleinAudioProcessor::checkTime()
+{
+    using namespace std::chrono;
+    steady_clock::time_point timeNow = steady_clock::now();
+    
+    time = duration_cast<duration<double>>(timeNow - startTime);
+    
+    // std::cout << "The time is: " << time.count() << std::endl;
+}
+
 void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
+    checkTime();
     grain.process(buffer, fileBuffer, positionOffsetInSamples, lengthInSamples);
     applyEnvelope(buffer);
     updateValues();

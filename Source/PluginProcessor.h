@@ -13,6 +13,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Grain.h"
+#include <vector>
 #include <chrono>
 
 
@@ -35,6 +36,7 @@ public:
 
     //==============================================================================    
     void updateValues();
+    void checkTime();
     
     //==============================================================================
     AudioProcessorEditor* createEditor() override;
@@ -63,8 +65,8 @@ public:
     AudioSampleBuffer fileBuffer;
     Grain grain;
     
-    std::chrono::steady_clock clock;
     std::chrono::steady_clock::time_point startTime;
+    std::chrono::duration<double> time;
     
     int position;
 
