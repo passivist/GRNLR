@@ -12,7 +12,9 @@
 #define PLUGINPROCESSOR_H_INCLUDED
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "GrainSynth.h"
+#include "Grain.h"
+#include <chrono>
+
 
 //==============================================================================
 /**
@@ -29,7 +31,6 @@ public:
     void releaseResources() override;
 
     void applyEnvelope (AudioSampleBuffer&);
-    void loadSamples (AudioSampleBuffer&, int startSample, int numSamples);
     void processBlock (AudioSampleBuffer&, MidiBuffer&) override;
 
     //==============================================================================    
@@ -60,7 +61,11 @@ public:
 
     //==============================================================================
     AudioSampleBuffer fileBuffer;
-
+    Grain grain;
+    
+    std::chrono::steady_clock clock;
+    std::chrono::steady_clock::time_point startTime;
+    
     int position;
 
     float lengthRatio;

@@ -103,5 +103,12 @@ void Grnlr_kleinAudioProcessorEditor::openButtonClicked()
       
 void Grnlr_kleinAudioProcessorEditor::clearButtonClicked()
 {
+    using namespace std::chrono;
+    steady_clock::time_point timeNow = steady_clock::now();
+    
+    duration<double> time_span = duration_cast<duration<double>>(timeNow - processor.startTime);
+    
+    std::cout << "It took me " << time_span.count() << " seconds.";
+    std::cout << std::endl;
 
 }
