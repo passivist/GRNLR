@@ -19,6 +19,9 @@ class Grain {
    int startPosition;
 public:
    int currentPosition;
+   /**
+    CONSTRUCTOR
+    */
    Grain()
    {
       startPosition = 0;
@@ -30,10 +33,14 @@ public:
       lengthInSamples = length;
    };
 
-   // load the appropriate number of samples into the current audio-block
+   /**
+    PROCESS FUNCTION:
+    render an audio-block of a single grain for adding together later
+    */
    void process(AudioSampleBuffer& buffer, AudioSampleBuffer& fileBuffer, int startSample, int numSamples)
    {
       int outputSamplesRemaining  = buffer.getNumSamples();
+      /* not shure if this assignment is necissary but we may need it later */
       int outputSamplesOffset     = 0;
 
       if(currentPosition < numSamples) {
@@ -58,7 +65,7 @@ public:
    }
 };
 
-// hier mal mit herumspielen in seperatem file
+/* maybe play around with this function in a seperate file first */
 class grainStack {
 public:
    std::vector <Grain> grains;

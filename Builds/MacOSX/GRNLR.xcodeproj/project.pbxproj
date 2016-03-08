@@ -490,7 +490,6 @@
 		73E94F328C2C72AD344B6E0E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		74442C67EF7A3BF4AD2E1044 /* juce_AnimatedAppComponent.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = juce_AnimatedAppComponent.cpp; path = "../../../../lib/juce-grapefruit-osx/modules/juce_gui_extra/misc/juce_AnimatedAppComponent.cpp"; sourceTree = SOURCE_ROOT; };
 		744E9FE0C0675B72FE5EB1AC /* juce_MenuBarModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = juce_MenuBarModel.h; path = "../../../../lib/juce-grapefruit-osx/modules/juce_gui_basics/menus/juce_MenuBarModel.h"; sourceTree = SOURCE_ROOT; };
-		746C6A977710816B70265C8E /* GrainSynth.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GrainSynth.h; path = ../../Source/GrainSynth.h; sourceTree = SOURCE_ROOT; };
 		74FB0B4EF74C9943164C21FC /* juce_ComponentBuilder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = juce_ComponentBuilder.cpp; path = "../../../../lib/juce-grapefruit-osx/modules/juce_gui_basics/layout/juce_ComponentBuilder.cpp"; sourceTree = SOURCE_ROOT; };
 		75523BFB6938D374E85466EB /* juce_linux_FileChooser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = juce_linux_FileChooser.cpp; path = "../../../../lib/juce-grapefruit-osx/modules/juce_gui_basics/native/juce_linux_FileChooser.cpp"; sourceTree = SOURCE_ROOT; };
 		759E58689A8516CC0512A81F /* juce_KnownPluginList.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = juce_KnownPluginList.cpp; path = "../../../../lib/juce-grapefruit-osx/modules/juce_audio_processors/scanning/juce_KnownPluginList.cpp"; sourceTree = SOURCE_ROOT; };
@@ -1092,7 +1091,6 @@
 		146D9F398B3DF79E7FF9C2CF /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				746C6A977710816B70265C8E /* GrainSynth.h */,
 				7017297B824300222DE77F5C /* Grain.h */,
 				B902BC718E29A9414C685045 /* PluginProcessor.cpp */,
 				6AC3A075272E8C784E6EE15E /* PluginProcessor.h */,

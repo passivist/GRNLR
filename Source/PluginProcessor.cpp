@@ -95,6 +95,7 @@ void Grnlr_kleinAudioProcessor::changeProgramName (int index, const String& newN
 //==============================================================================
 void Grnlr_kleinAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    // initialize some values, maybe some of this stuff belongs in the constructor (?)
     position = 0;
     lengthRatio = 0;
     updateValues();
@@ -109,6 +110,7 @@ void Grnlr_kleinAudioProcessor::releaseResources()
 
 void Grnlr_kleinAudioProcessor::applyEnvelope (AudioSampleBuffer& buffer)
 {
+    // simple envelope over one loopcycle, replace this with a more sofisticated approach later on
     for (int channel=0; channel<buffer.getNumChannels(); ++channel)
     {
         buffer.applyGainRamp(channel, 0, buffer.getNumSamples()/2, 0, 1 );
@@ -118,20 +120,27 @@ void Grnlr_kleinAudioProcessor::applyEnvelope (AudioSampleBuffer& buffer)
 
 void Grnlr_kleinAudioProcessor::updateValues ()
 {
+    // update some values asynchronously with the audio blocks
     lengthInSamples         = lengthRatio * fileBuffer.getNumSamples();
     positionOffsetInSamples = positionOffset * fileBuffer.getNumSamples();
 }
 
+// maybe change to a non-void function which returns a double with the current time?
 void Grnlr_kleinAudioProcessor::checkTime()
 {
+    // check the time every so often
+    // TODO: figure out if the time should be checked every audio block or at another interval
     using namespace std::chrono;
     steady_clock::time_point timeNow = steady_clock::now();
     
     time = duration_cast<duration<double>>(timeNow - startTime);
-    
-    // std::cout << "The time is: " << time.count() << std::endl;
 }
 
+/**
+ PROCESS FUNCTION
+ do everything that needs to happen every audio block,
+ render the grains and add all playing grains together
+ */
 void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
     checkTime();
