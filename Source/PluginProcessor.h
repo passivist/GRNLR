@@ -33,10 +33,11 @@ public:
 
     void applyEnvelope (AudioSampleBuffer&);
     void processBlock (AudioSampleBuffer&, MidiBuffer&) override;
-
+    
     //==============================================================================    
     void updateValues();
-    void checkTime();
+    void scheduleGrain(int startPosition, int length, int time);
+    double checkTime();
     
     //==============================================================================
     AudioProcessorEditor* createEditor() override;
@@ -64,6 +65,8 @@ public:
     //==============================================================================
     AudioSampleBuffer fileBuffer;
     Grain grain;
+    GrainStack waitingStack;
+    GrainStack playingStack;
     
     std::chrono::steady_clock::time_point startTime;
     std::chrono::duration<double> time;

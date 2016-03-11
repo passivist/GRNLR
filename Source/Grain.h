@@ -1,10 +1,19 @@
-#ifndef GRAIN_H_INCLUDED
-#define GRAIN_H_INCLUDED
-/*
+/**
    TODO:
       > working prototype
       > destroy Grain object when it ends
 */
+
+#ifndef GRAIN_H_INCLUDED
+#define GRAIN_H_INCLUDED
+
+#include <chrono>
+#include <iostream>
+#include <vector>
+#include <tuple>
+#include <thread>
+#include <math.h>
+
 
 class grainEnvelope {
    grainEnvelope(){}
@@ -15,10 +24,10 @@ class grainEnvelope {
 };
 
 class Grain {
-   int lengthInSamples;
-   int startPosition;
 public:
-   int currentPosition;
+  int lengthInSamples;
+  int startPosition; 
+  int currentPosition;
    /**
     CONSTRUCTOR
     */
@@ -66,23 +75,26 @@ public:
 };
 
 /* maybe play around with this function in a seperate file first */
-class grainStack {
+class GrainStack {
+  /** 
+   the stack should consist of a vector of tuples of Grain objects and times (of type double)
+   */
 public:
-   std::vector <Grain> grains;
-   std::vector <double> times;
+  std::vector<std::tuple<Grain, double> > stack;
+  void push(int startPosition, int length, double startTime)
+  {
+    stack.push_back(std::make_tuple(Grain(startPosition, length), startTime));
+  }
 
-   void push(double startTime, int startPosition,  int length)
-   {
-      Grain grain(startPosition, length);
-      grains.push_back(grain);
-      times.push_back(startTime);
-   }
+  void pop()
+  {
+    stack.pop_back();
+  }
 
-   void pop()
-   {
-      grains.pop_back();
-      times.pop_back();
-   } 
+  std::tuple<Grain, double> back()
+  {
+    return stack.back();
+  }
 };
 
 #endif /* Grain_h */

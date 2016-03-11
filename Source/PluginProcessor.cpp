@@ -8,7 +8,6 @@
  
  !! TODO !!
  STUCTURE:
-    > class for handling grain scheduling
     > a grainsynth class that handles rendering the block of a single grain
  ENGINE:
     > allow for grains to be shorter than buffersize
@@ -16,6 +15,17 @@
     > grains have start / end
     > an asynchronous massaging system between the process function and things
       like grain prosition in envelope etc.
+ SCHEDULER:
+    > should the scheduler run on a different thread than the process application?
+    > functionality should be something like SuperCollider's pattern system:
+      > scheduling is based on inter-onset times, there is only ever one event
+        scheduled at a time
+        for example:
+	the first event is scheduled 2 seconds into the future
+	at the time when this event is scheduled the scheduler is woken up
+	and schedules the next event into the future
+      > the scheduling is done via creating and destroying tuples of Grain-Objects
+        and times on the GrainStack
  ==============================================================================
  */
 
@@ -126,7 +136,7 @@ void Grnlr_kleinAudioProcessor::updateValues ()
 }
 
 // maybe change to a non-void function which returns a double with the current time?
-void Grnlr_kleinAudioProcessor::checkTime()
+double Grnlr_kleinAudioProcessor::checkTime()
 {
     // check the time every so often
     // TODO: figure out if the time should be checked every audio block or at another interval
@@ -134,19 +144,31 @@ void Grnlr_kleinAudioProcessor::checkTime()
     steady_clock::time_point timeNow = steady_clock::now();
     
     time = duration_cast<duration<double>>(timeNow - startTime);
+    return time.count();
 }
 
+
+void schedule(int startPosition, int length, int time)
+{
+  stack.push(startPosition, length, time);
+  std::this_thread::sleep_for(std::chrono::milliseconds(time));
+}
 /**
  PROCESS FUNCTION
  do everything that needs to happen every audio block,
- render the grains and add all playing grains together
+ check the stack for all grains that are playing or should start this block:
+   1. check the last grain on the waiting stack if it is playing in this audio block
+      if it is remove it from the waiting stack and move it to the playing stack
+   2. render all the grains on the playing stack and add them together
+   3. if a grain in the playing stack is ending this block remove it from the playing stack
+      after rendering (and destroy it?)
  */
 void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
-    checkTime();
-    grain.process(buffer, fileBuffer, positionOffsetInSamples, lengthInSamples);
-    applyEnvelope(buffer);
-    updateValues();
+  checkTime();
+  grain.process(buffer, fileBuffer, positionOffsetInSamples, lengthInSamples);
+  applyEnvelope(buffer);
+  updateValues();
 }
 
 //==============================================================================
