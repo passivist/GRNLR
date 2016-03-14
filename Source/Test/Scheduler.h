@@ -8,7 +8,7 @@
 
 int main();
 
-void schedule(double time);
+void schedule(int startTime, int length, int time);
 
 class Grain {
 public:
