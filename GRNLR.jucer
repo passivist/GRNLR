@@ -12,7 +12,6 @@
               jucerVersion="4.1.0">
   <MAINGROUP id="JE5ije" name="GRNLR">
     <GROUP id="{F064CC56-9A3E-7C56-89FF-2C66DB888718}" name="Source">
-      <FILE id="LBDfFo" name="GrainSynth.h" compile="0" resource="0" file="Source/GrainSynth.h"/>
       <FILE id="rk2ahj" name="Grain.h" compile="0" resource="0" file="Source/Grain.h"/>
       <FILE id="EMyYQw" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>

@@ -74,7 +74,6 @@ public:
    }
 };
 
-/* maybe play around with this function in a seperate file first */
 class GrainStack {
   /** 
    the stack should consist of a vector of tuples of Grain objects and times (of type double)

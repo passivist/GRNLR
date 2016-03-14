@@ -15,6 +15,7 @@
 #include "Grain.h"
 #include <vector>
 #include <chrono>
+#include <thread>
 
 
 //==============================================================================
@@ -36,7 +37,7 @@ public:
     
     //==============================================================================    
     void updateValues();
-    void scheduleGrain(int startPosition, int length, int time);
+    void schedule(int startPosition, int length, int time);
     double checkTime();
     
     //==============================================================================
@@ -80,9 +81,8 @@ public:
     int positionOffsetInSamples;
 
 private:
-    Random random;
-    //void process (AudioBuffer<float>& buffer, MidiBuffer& midiMessages, AudioBuffer<float>& delayBuffer);
-
+    Random random; // is this still needed?
+    
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Grnlr_kleinAudioProcessor)
 };

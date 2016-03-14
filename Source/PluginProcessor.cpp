@@ -103,6 +103,7 @@ void Grnlr_kleinAudioProcessor::changeProgramName (int index, const String& newN
 }
 
 //==============================================================================
+
 void Grnlr_kleinAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // initialize some values, maybe some of this stuff belongs in the constructor (?)
@@ -110,6 +111,7 @@ void Grnlr_kleinAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     lengthRatio = 0;
     updateValues();
     startTime = std::chrono::steady_clock::now();
+    
 }
 
 void Grnlr_kleinAudioProcessor::releaseResources()
@@ -135,7 +137,7 @@ void Grnlr_kleinAudioProcessor::updateValues ()
     positionOffsetInSamples = positionOffset * fileBuffer.getNumSamples();
 }
 
-// maybe change to a non-void function which returns a double with the current time?
+//==============================================================================
 double Grnlr_kleinAudioProcessor::checkTime()
 {
     // check the time every so often
@@ -147,12 +149,13 @@ double Grnlr_kleinAudioProcessor::checkTime()
     return time.count();
 }
 
-
-void schedule(int startPosition, int length, int time)
+void Grnlr_kleinAudioProcessor::schedule(int startPosition, int length, int time)
 {
-  stack.push(startPosition, length, time);
-  std::this_thread::sleep_for(std::chrono::milliseconds(time));
+    //waitingStack.push(startPosition, length, time);
+    std::this_thread::sleep_for(std::chrono::milliseconds(time));
 }
+
+
 /**
  PROCESS FUNCTION
  do everything that needs to happen every audio block,
@@ -165,7 +168,7 @@ void schedule(int startPosition, int length, int time)
  */
 void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
-  checkTime();
+  double time = checkTime();
   grain.process(buffer, fileBuffer, positionOffsetInSamples, lengthInSamples);
   applyEnvelope(buffer);
   updateValues();
