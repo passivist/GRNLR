@@ -26,6 +26,11 @@
 	and schedules the next event into the future
       > the scheduling is done via creating and destroying tuples of Grain-Objects
         and times on the GrainStack
+
+ !! ISSUES !!
+ Plugin should check if everything is initialized and a sample is loaded before
+ running the process functions
+
  ==============================================================================
  */
 
@@ -34,57 +39,59 @@
 
 
 //==============================================================================
-Grnlr_kleinAudioProcessor::Grnlr_kleinAudioProcessor()
+Grnlr_kleinAudioProcessor::Grnlr_kleinAudioProcessor() : Thread("BackgroundThread")
 {
+  startThread();
 }
 
 Grnlr_kleinAudioProcessor::~Grnlr_kleinAudioProcessor()
 {
+  stopThread(4000);
 }
 
 //==============================================================================
 const String Grnlr_kleinAudioProcessor::getName() const
 {
-    return JucePlugin_Name;
+  return JucePlugin_Name;
 }
 
 bool Grnlr_kleinAudioProcessor::acceptsMidi() const
 {
 #if JucePlugin_WantsMidiInput
-    return true;
+  return true;
 #else
-    return false;
+  return false;
 #endif
 }
 
 bool Grnlr_kleinAudioProcessor::producesMidi() const
 {
 #if JucePlugin_ProducesMidiOutput
-    return true;
+  return true;
 #else
-    return false;
+  return false;
 #endif
 }
 
 bool Grnlr_kleinAudioProcessor::silenceInProducesSilenceOut() const
 {
-    return false;
+  return false;
 }
 
 double Grnlr_kleinAudioProcessor::getTailLengthSeconds() const
 {
-    return 0.0;
+  return 0.0;
 }
 
 int Grnlr_kleinAudioProcessor::getNumPrograms()
 {
-    return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
-    // so this should be at least 1, even if you're not really implementing programs.
+  return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
+  // so this should be at least 1, even if you're not really implementing programs.
 }
 
 int Grnlr_kleinAudioProcessor::getCurrentProgram()
 {
-    return 0;
+  return 0;
 }
 
 void Grnlr_kleinAudioProcessor::setCurrentProgram (int index)
@@ -94,7 +101,7 @@ void Grnlr_kleinAudioProcessor::setCurrentProgram (int index)
 
 const String Grnlr_kleinAudioProcessor::getProgramName (int index)
 {
-    return String();
+  return String();
 }
 
 void Grnlr_kleinAudioProcessor::changeProgramName (int index, const String& newName)
@@ -104,104 +111,118 @@ void Grnlr_kleinAudioProcessor::changeProgramName (int index, const String& newN
 
 //==============================================================================
 
-void Grnlr_kleinAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void Grnlr_kleinAudioProcessor::prepareToPlay (double sRate, int samplesPerBlock)
 {
-    // initialize some values, maybe some of this stuff belongs in the constructor (?)
-    position = 0;
-    lengthRatio = 0;
-    updateValues();
-    startTime = std::chrono::steady_clock::now();
-    
+  // initialize some values, maybe some of this stuff belongs in the constructor (?)
+  position = 0;
+  lengthRatio = 0.3;
+  durationSeconds = 0.5;
+  sampleRate = sRate;
 }
 
 void Grnlr_kleinAudioProcessor::releaseResources()
 {
-    // When playback stops, you can use this as an opportunity to free up any
-    // spare memory, etc.
+  // When playback stops, you can use this as an opportunity to free up any
+  // spare memory, etc.
 }
 
-void Grnlr_kleinAudioProcessor::applyEnvelope (AudioSampleBuffer& buffer)
+
+//==============================================================================
+void Grnlr_kleinAudioProcessor::schedule(int startPosition, int length, int time)
 {
-    // simple envelope over one loopcycle, replace this with a more sofisticated approach later on
-    for (int channel=0; channel<buffer.getNumChannels(); ++channel)
+  
+  while(stack.size() > 1 && stack.front().hasEnded)
     {
-        buffer.applyGainRamp(channel, 0, buffer.getNumSamples()/2, 0, 1 );
-        buffer.applyGainRamp(channel, buffer.getNumSamples()/2, buffer.getNumSamples(), 1, 0);
+      stack.pop_front();
+    }
+  
+  stack.push_back(Grain(startPosition, length));
+  
+  std::cout << "NumGrains: " << stack.size() << std::endl;
+  wait(time);
+}
+
+void Grnlr_kleinAudioProcessor::run()
+{
+  while (! threadShouldExit())
+    {
+      // only schedule something when there is data in the buffer
+      if(fileBuffer.getNumSamples() > 0)
+	{
+	  schedule(positionOffset * fileBuffer.getNumSamples(), lengthRatio * (durationSeconds * sampleRate), durationSeconds * 1000);
+	}
     }
 }
 
-void Grnlr_kleinAudioProcessor::updateValues ()
-{
-    // update some values asynchronously with the audio blocks
-    lengthInSamples         = lengthRatio * fileBuffer.getNumSamples();
-    positionOffsetInSamples = positionOffset * fileBuffer.getNumSamples();
-}
-
 //==============================================================================
-double Grnlr_kleinAudioProcessor::checkTime()
+void Grnlr_kleinAudioProcessor::applyEnvelope (AudioSampleBuffer& buffer)
 {
-    // check the time every so often
-    // TODO: figure out if the time should be checked every audio block or at another interval
-    using namespace std::chrono;
-    steady_clock::time_point timeNow = steady_clock::now();
-    
-    time = duration_cast<duration<double>>(timeNow - startTime);
-    return time.count();
+  // simple envelope over one loopcycle, replace this with a more sofisticated approach later on
+  for (int channel=0; channel<buffer.getNumChannels(); ++channel)
+    {
+      buffer.applyGainRamp(channel, 0, buffer.getNumSamples()/2, 0, 1 );
+      buffer.applyGainRamp(channel, buffer.getNumSamples()/2, buffer.getNumSamples(), 1, 0);
+    }
 }
 
-void Grnlr_kleinAudioProcessor::schedule(int startPosition, int length, int time)
+void Grnlr_kleinAudioProcessor::addBuffers(AudioSampleBuffer& bufferA, AudioSampleBuffer& bufferB)
 {
-    //waitingStack.push(startPosition, length, time);
-    std::this_thread::sleep_for(std::chrono::milliseconds(time));
+  const int numSamples = bufferA.getNumSamples();
+  for (int channel = 0; channel < bufferA.getNumChannels(); ++channel)
+    {
+      float* const channelDataA = bufferA.getWritePointer (channel);
+      float* const channelDataB = bufferB.getWritePointer (channel);
+      
+      for (int i = 0; i < numSamples; ++i)
+        {
+	  channelDataA[i] += channelDataB[i];
+        }
+    }
 }
 
-
-/**
- PROCESS FUNCTION
- do everything that needs to happen every audio block,
- check the stack for all grains that are playing or should start this block:
-   1. check the last grain on the waiting stack if it is playing in this audio block
-      if it is remove it from the waiting stack and move it to the playing stack
-   2. render all the grains on the playing stack and add them together
-   3. if a grain in the playing stack is ending this block remove it from the playing stack
-      after rendering (and destroy it?)
- */
 void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
-  double time = checkTime();
-  grain.process(buffer, fileBuffer, positionOffsetInSamples, lengthInSamples);
-  applyEnvelope(buffer);
-  updateValues();
+  buffer.clear();
+  // test if the is actually data in the buffer
+  if(fileBuffer.getNumSamples() > 0 && stack.size() > 0 ) {
+    for(int i=0; i<stack.size(); ++i)
+      {
+	tempBuffer = buffer;
+	stack[i].process(buffer, fileBuffer);
+	addBuffers(tempBuffer, buffer);
+      }
+  }
+  // applyEnvelope(buffer);
 }
 
 //==============================================================================
 bool Grnlr_kleinAudioProcessor::hasEditor() const
 {
-    return true; // (change this to false if you choose to not supply an editor)
+  return true; // (change this to false if you choose to not supply an editor)
 }
 
 AudioProcessorEditor* Grnlr_kleinAudioProcessor::createEditor()
 {
-    return new Grnlr_kleinAudioProcessorEditor (*this);
+  return new Grnlr_kleinAudioProcessorEditor (*this);
 }
 
 //==============================================================================
 void Grnlr_kleinAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+  // You should use this method to store your parameters in the memory block.
+  // You could do that either as raw data, or use the XML or ValueTree classes
+  // as intermediaries to make it easy to save and load complex data.
 }
 
 void Grnlr_kleinAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+  // You should use this method to restore your parameters from this memory block,
+  // whose contents will have been created by the getStateInformation() call.
 }
 
 //==============================================================================
 // This creates new instances of the plugin..
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new Grnlr_kleinAudioProcessor();
+  return new Grnlr_kleinAudioProcessor();
 }

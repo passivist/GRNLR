@@ -25,12 +25,16 @@ Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAud
   clearButton.addListener(this);
   
   addAndMakeVisible(lengthSlider);
-  lengthSlider.setRange(0.0, 0.3);
+  lengthSlider.setRange(0.01, 16.0);
   lengthSlider.addListener(this);
   
   addAndMakeVisible(positionSlider);
   positionSlider.setRange(0.0, 1.0);
   positionSlider.addListener(this);
+
+  addAndMakeVisible(durationSlider);
+  durationSlider.setRange(0.01, 1.0);
+  durationSlider.addListener(this);
   
   formatManager.registerBasicFormats();
   
@@ -55,8 +59,9 @@ void Grnlr_kleinAudioProcessorEditor::resized()
   openButton.setBounds(10, 10, width, 20);
   clearButton.setBounds(10, 40, width, 20);
 
-  lengthSlider.setBounds(10, 90, width, 40);
-  positionSlider.setBounds(10, 150, width, 40);
+  positionSlider.setBounds(10, 90, width, 40);
+  lengthSlider.setBounds(10, 150, width, 40);
+  durationSlider.setBounds(10, 210, width, 40);
 }
 
 void Grnlr_kleinAudioProcessorEditor::buttonClicked (Button* button)
@@ -71,6 +76,8 @@ void Grnlr_kleinAudioProcessorEditor::sliderValueChanged(Slider* slider)
     processor.lengthRatio = (float) lengthSlider.getValue();
   if(slider == &positionSlider)
     processor.positionOffset = (float) positionSlider.getValue();
+  if(slider == &durationSlider)
+    processor.durationSeconds = (float) durationSlider.getValue();
 }
 
 void Grnlr_kleinAudioProcessorEditor::openButtonClicked()
@@ -86,7 +93,7 @@ void Grnlr_kleinAudioProcessorEditor::openButtonClicked()
     if (reader != nullptr) {
       const double duration = reader->lengthInSamples / reader->sampleRate;
       
-      if(duration < 5){
+      if(duration < 10){
       processor.fileBuffer.setSize(reader->numChannels, reader->lengthInSamples);
       reader->read(&processor.fileBuffer, 0, reader->lengthInSamples, 0, true, true);
       

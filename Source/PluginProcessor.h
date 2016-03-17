@@ -13,15 +13,15 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Grain.h"
-#include <vector>
+#include <deque>
 #include <chrono>
-#include <thread>
 
 
 //==============================================================================
 /**
 */
-class Grnlr_kleinAudioProcessor  : public AudioProcessor
+class Grnlr_kleinAudioProcessor  : public AudioProcessor,
+                                   public Thread
 {
 public:
     //==============================================================================
@@ -34,6 +34,9 @@ public:
 
     void applyEnvelope (AudioSampleBuffer&);
     void processBlock (AudioSampleBuffer&, MidiBuffer&) override;
+    void addBuffers (AudioSampleBuffer&, AudioSampleBuffer&);
+
+    void run () override;
     
     //==============================================================================    
     void updateValues();
@@ -64,22 +67,23 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
     //==============================================================================
-    AudioSampleBuffer fileBuffer;
-    Grain grain;
-    GrainStack waitingStack;
-    GrainStack playingStack;
     
-    std::chrono::steady_clock::time_point startTime;
-    std::chrono::duration<double> time;
+    AudioSampleBuffer fileBuffer;
+    AudioSampleBuffer tempBuffer;
+    Grain grain;
+    std::deque<Grain> stack;
     
     int position;
 
     float lengthRatio;
     float positionOffset;
+    float durationSeconds;
 
     int lengthInSamples;
     int positionOffsetInSamples;
+    int durationMillis;
 
+    int sampleRate;
 private:
     Random random; // is this still needed?
     

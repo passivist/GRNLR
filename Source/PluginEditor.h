@@ -48,6 +48,7 @@ private:
 
     Slider lengthSlider;
     Slider positionSlider;
+    Slider durationSlider;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Grnlr_kleinAudioProcessorEditor)
 };
