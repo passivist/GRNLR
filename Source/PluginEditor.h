@@ -39,12 +39,10 @@ private:
     Grnlr_kleinAudioProcessor& processor;
 
     void openButtonClicked();
-    void clearButtonClicked();
 
     AudioFormatManager formatManager;
 
     TextButton openButton;
-    TextButton clearButton;
 
     Slider lengthSlider;
     Slider positionSlider;

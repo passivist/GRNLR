@@ -70,7 +70,6 @@ public:
     
     AudioSampleBuffer fileBuffer;
     AudioSampleBuffer tempBuffer;
-    Grain grain;
     std::deque<Grain> stack;
     
     int position;

@@ -7,20 +7,7 @@
 #ifndef GRAIN_H_INCLUDED
 #define GRAIN_H_INCLUDED
 
-#include <iostream>
-#include <vector>
-#include <tuple>
-#include <thread>
 #include <math.h>
-
-
-class grainEnvelope {
-  grainEnvelope(){}
-  ~grainEnvelope(){}
-
-  int length;
-  int currentPosition;
-};
 
 class Grain {
  public:
@@ -93,28 +80,6 @@ class Grain {
       hasEnded = true;
       //   currentPosition = 0;
     }
-  }
-};
-
-class GrainStack {
-  /** 
-      the stack should consist of a vector of tuples of Grain objects and times (of type double)
-  */
- public:
-  std::vector<std::tuple<Grain, double> > stack;
-  void push(int startPosition, int length, double startTime)
-  {
-    stack.push_back(std::make_tuple(Grain(startPosition, length), startTime));
-  }
-
-  void pop()
-  {
-    stack.pop_back();
-  }
-
-  std::tuple<Grain, double> back()
-  {
-    return stack.back();
   }
 };
 

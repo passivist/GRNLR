@@ -20,10 +20,6 @@ Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAud
   openButton.setButtonText("Open...");
   openButton.addListener(this);
   
-  addAndMakeVisible(clearButton);
-  clearButton.setButtonText("clear");
-  clearButton.addListener(this);
-  
   addAndMakeVisible(lengthSlider);
   lengthSlider.setRange(0.01, 16.0);
   lengthSlider.addListener(this);
@@ -57,7 +53,6 @@ void Grnlr_kleinAudioProcessorEditor::resized()
 {
   int width = getWidth() - 20;
   openButton.setBounds(10, 10, width, 20);
-  clearButton.setBounds(10, 40, width, 20);
 
   positionSlider.setBounds(10, 90, width, 40);
   lengthSlider.setBounds(10, 150, width, 40);
@@ -67,7 +62,6 @@ void Grnlr_kleinAudioProcessorEditor::resized()
 void Grnlr_kleinAudioProcessorEditor::buttonClicked (Button* button)
 {
   if(button == &openButton) openButtonClicked();
-  if(button == &clearButton) clearButtonClicked();
 }
 
 void Grnlr_kleinAudioProcessorEditor::sliderValueChanged(Slider* slider)
@@ -106,8 +100,4 @@ void Grnlr_kleinAudioProcessorEditor::openButtonClicked()
       }
     } else { std::cout << "something went wrong while loading :( " << std::endl; }
   }
-}
-      
-void Grnlr_kleinAudioProcessorEditor::clearButtonClicked()
-{
 }

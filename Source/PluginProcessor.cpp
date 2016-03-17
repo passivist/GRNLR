@@ -155,16 +155,6 @@ void Grnlr_kleinAudioProcessor::run()
 }
 
 //==============================================================================
-void Grnlr_kleinAudioProcessor::applyEnvelope (AudioSampleBuffer& buffer)
-{
-  // simple envelope over one loopcycle, replace this with a more sofisticated approach later on
-  for (int channel=0; channel<buffer.getNumChannels(); ++channel)
-    {
-      buffer.applyGainRamp(channel, 0, buffer.getNumSamples()/2, 0, 1 );
-      buffer.applyGainRamp(channel, buffer.getNumSamples()/2, buffer.getNumSamples(), 1, 0);
-    }
-}
-
 void Grnlr_kleinAudioProcessor::addBuffers(AudioSampleBuffer& bufferA, AudioSampleBuffer& bufferB)
 {
   const int numSamples = bufferA.getNumSamples();
@@ -192,7 +182,6 @@ void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuf
 	addBuffers(tempBuffer, buffer);
       }
   }
-  // applyEnvelope(buffer);
 }
 
 //==============================================================================
