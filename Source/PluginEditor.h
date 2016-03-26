@@ -17,9 +17,11 @@
 //==============================================================================
 /**
 */
-class Grnlr_kleinAudioProcessorEditor  : public  AudioProcessorEditor,
-                                         private Slider::Listener,
-                                         Button::Listener
+class Grnlr_kleinAudioProcessorEditor
+: public  AudioProcessorEditor,
+  public Thread,
+  private Slider::Listener,
+  Button::Listener
 {
 public:
     Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAudioProcessor&);
@@ -39,11 +41,17 @@ private:
     Grnlr_kleinAudioProcessor& processor;
 
     void openButtonClicked();
+    void checkForBuffersToFree();
+    void checkForPathToOpen();
+
+    void run() override;
+    ReferenceCountedArray<ReferenceCountedBuffer> buffers;
 
     AudioFormatManager formatManager;
 
     TextButton openButton;
-
+    String chosenPath;
+    
     Slider lengthSlider;
     Slider positionSlider;
     Slider durationSlider;

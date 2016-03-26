@@ -20,6 +20,43 @@
 //==============================================================================
 /**
 */
+class ReferenceCountedBuffer : public ReferenceCountedObject
+{
+ public:
+  typedef ReferenceCountedObjectPtr<ReferenceCountedBuffer> Ptr;
+      
+  ReferenceCountedBuffer (const String& nameToUse,
+			  int numChannels,
+			  int numSamples)
+    : position (0),
+    name (nameToUse),
+    buffer (numChannels, numSamples)
+      {
+	DBG (
+	     String ("Buffer named '") + name +
+	     "' constructed. numChannels = " + String (numChannels) +
+	     ", numSamples = " + String (numSamples) );
+      }
+      
+  ~ReferenceCountedBuffer()
+    {
+      DBG (String ("Buffer named '") + name + "' destroyed");
+    }
+      
+  AudioSampleBuffer* getAudioSampleBuffer()
+  {
+    return &buffer;
+  }
+      
+  int position;
+      
+ private:
+  String name;
+  AudioSampleBuffer buffer;
+	
+  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ReferenceCountedBuffer)
+};
+
 class Grnlr_kleinAudioProcessor  : public AudioProcessor,
                                    public Thread
 {
@@ -67,16 +104,18 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
     //==============================================================================
-    
-    AudioSampleBuffer fileBuffer;
     AudioSampleBuffer tempBuffer;
     std::deque<Grain> stack;
+
+    ReferenceCountedBuffer::Ptr currentBuffer;
     
     int position;
 
     float lengthRatio;
     float positionOffset;
     float durationSeconds;
+
+    bool sampleIsLoaded = false;
 
     int lengthInSamples;
     int positionOffsetInSamples;

@@ -14,7 +14,7 @@
 
 //==============================================================================
 Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAudioProcessor& p)
-  : AudioProcessorEditor (&p), processor (p)
+  : AudioProcessorEditor (&p), processor (p), Thread("loading Thread")
 {
   addAndMakeVisible(openButton);
   openButton.setButtonText("Open...");
@@ -33,6 +33,7 @@ Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAud
   durationSlider.addListener(this);
   
   formatManager.registerBasicFormats();
+  startThread();
   
   // Make sure that before the constructor has finished, you've set the
   // editor's size to whatever you need it to be.
@@ -41,6 +42,7 @@ Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAud
 
 Grnlr_kleinAudioProcessorEditor::~Grnlr_kleinAudioProcessorEditor()
 {
+  stopThread(4000);
 }
 
 //==============================================================================
@@ -74,30 +76,75 @@ void Grnlr_kleinAudioProcessorEditor::sliderValueChanged(Slider* slider)
     processor.durationSeconds = (float) durationSlider.getValue();
 }
 
+void Grnlr_kleinAudioProcessorEditor::run()
+{
+  while (! threadShouldExit())
+    {
+      checkForPathToOpen();
+      checkForBuffersToFree();
+      wait (500);
+    }
+}
+
+void Grnlr_kleinAudioProcessorEditor::checkForBuffersToFree()
+{
+  for (int i = buffers.size(); --i >= 0;)
+    {
+      ReferenceCountedBuffer::Ptr buffer (buffers.getUnchecked (i));
+
+      if (buffer->getReferenceCount() == 2)
+	buffers.remove (i);
+    }
+}
+
+void Grnlr_kleinAudioProcessorEditor::checkForPathToOpen()
+{
+  String pathToOpen;
+  swapVariables (pathToOpen, chosenPath);
+
+  if (pathToOpen.isNotEmpty())
+    {
+      std::cout << "path is not empty!" << std::endl;
+      const File file (pathToOpen);
+      ScopedPointer<AudioFormatReader> reader (formatManager.createReaderFor (file));
+
+      if (reader != nullptr)
+	{
+	  const double duration = reader->lengthInSamples / reader->sampleRate;
+
+	  if (duration < 15)
+	    {
+	      ReferenceCountedBuffer::Ptr newBuffer = new ReferenceCountedBuffer (file.getFileName(),
+										  reader->numChannels,
+										  reader->lengthInSamples);
+
+	      reader->read (newBuffer->getAudioSampleBuffer(), 0, reader->lengthInSamples, 0, true, true);
+	      processor.currentBuffer = newBuffer;
+	      buffers.add (newBuffer);
+	      processor.sampleIsLoaded  = true;
+	      processor.lengthInSamples = reader->lengthInSamples;
+	    }
+	  else
+	    {
+	      // handle the error that the file is 15 seconds or longer..
+	    }
+	}
+    }
+}
+
 void Grnlr_kleinAudioProcessorEditor::openButtonClicked()
-{  
-  FileChooser chooser ("Select a Wave file...",
+{
+  FileChooser chooser ("Select a Wave file shorter than 15 seconds to play...",
 		       File::nonexistent,
 		       "*.wav");
-  if (chooser.browseForFileToOpen() ) {
-    const File file (chooser.getResult());
-    
-    ScopedPointer<AudioFormatReader> reader(formatManager.createReaderFor(file));
-    
-    if (reader != nullptr) {
-      const double duration = reader->lengthInSamples / reader->sampleRate;
-      
-      if(duration < 10){
-      processor.fileBuffer.setSize(reader->numChannels, reader->lengthInSamples);
-      reader->read(&processor.fileBuffer, 0, reader->lengthInSamples, 0, true, true);
-      
-      processor.position = 0;
-      //setAudioChannels(0, reader->numChannels); 
-      
-      // Show some info when loading was succesful
-      std::cout << "name: " << file.getFileName()
-		<< " duraiton: " << duration << std::endl;
-      }
-    } else { std::cout << "something went wrong while loading :( " << std::endl; }
-  }
+
+  if (chooser.browseForFileToOpen())
+    {
+      const File file (chooser.getResult());
+      String path (file.getFullPathName());
+      std::cout << path << std::endl;
+      swapVariables (chosenPath, path);
+      notify();
+    }
 }
+

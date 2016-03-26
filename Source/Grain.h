@@ -1,9 +1,3 @@
-/**
-   TODO:
-      > working prototype
-      > destroy Grain object when it ends
-*/
-
 #ifndef GRAIN_H_INCLUDED
 #define GRAIN_H_INCLUDED
 
@@ -61,6 +55,7 @@ class Grain {
 	float angle = 0;
 
 	// this seems inefficient
+	// why doesn't the envelope work
 	for(int i=0; i<samplesThisBlock; ++i)
 	  {
 	    angle = (float)(i+currentPosition)/lengthInSamples;
