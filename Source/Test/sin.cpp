@@ -21,8 +21,8 @@ void sinSlice (int lengthInSamples, int samplesThisBlock, int position)
   for(int i=0; i<samplesThisBlock; ++i)
     {
       angle = (float)(i+position)/lengthInSamples;
-      gain = sin(angle * float_Pi/180);
-      cout << gain << " "; 
+      gain = sin(angle * float_Pi);
+      cout << gain << " ";
     }
   cout << endl;
 }

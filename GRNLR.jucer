@@ -12,6 +12,7 @@
               jucerVersion="4.1.0">
   <MAINGROUP id="JE5ije" name="GRNLR">
     <GROUP id="{F064CC56-9A3E-7C56-89FF-2C66DB888718}" name="Source">
+      <FILE id="O0wwEQ" name="WaveformView.h" compile="0" resource="0" file="Source/WaveformView.h"/>
       <FILE id="rk2ahj" name="Grain.h" compile="0" resource="0" file="Source/Grain.h"/>
       <FILE id="EMyYQw" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
@@ -46,6 +47,7 @@
         <MODULEPATH id="juce_audio_formats" path="../../lib/juce-grapefruit-osx/modules"/>
         <MODULEPATH id="juce_audio_processors" path="../../lib/juce-grapefruit-osx/modules"/>
         <MODULEPATH id="juce_audio_plugin_client" path="../../lib/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../dev/lib/JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile" vstFolder="">
@@ -70,6 +72,7 @@
         <MODULEPATH id="juce_audio_formats" path="../../dev/lib/JUCE/modules"/>
         <MODULEPATH id="juce_audio_processors" path="../../dev/lib/JUCE/modules"/>
         <MODULEPATH id="juce_audio_plugin_client" path="../../dev/lib/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../dev/lib/JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
   </EXPORTFORMATS>
@@ -79,6 +82,7 @@
     <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0"/>
     <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"/>
     <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0"/>
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="0"/>
     <MODULE id="juce_cryptography" showAllCode="1" useLocalCopy="0"/>
     <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0"/>

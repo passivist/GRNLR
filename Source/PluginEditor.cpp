@@ -19,25 +19,36 @@ Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAud
   addAndMakeVisible(openButton);
   openButton.setButtonText("Open...");
   openButton.addListener(this);
-  
-  addAndMakeVisible(lengthSlider);
-  lengthSlider.setRange(0.01, 16.0);
-  lengthSlider.addListener(this);
-  
+ 
   addAndMakeVisible(positionSlider);
   positionSlider.setRange(0.0, 1.0);
   positionSlider.addListener(this);
 
+  // Fill Factor
+  addAndMakeVisible(fillLabel);
+  fillLabel.setText("Fill Factor", dontSendNotification);
+  
+  addAndMakeVisible(fillSlider);
+  fillSlider.setRange(0.01, 16.0);
+  fillSlider.addListener(this);
+
+  // Duration
+  addAndMakeVisible(durationLabel);
+  durationLabel.setText("Duration", dontSendNotification);
+  
   addAndMakeVisible(durationSlider);
-  durationSlider.setRange(0.01, 1.0);
+  durationSlider.setRange(0.005, 1.0);
   durationSlider.addListener(this);
+
+  addAndMakeVisible(waveform = new WaveformView (formatManager, p));
+  waveform->addChangeListener (this);
   
   formatManager.registerBasicFormats();
   startThread();
   
   // Make sure that before the constructor has finished, you've set the
   // editor's size to whatever you need it to be.
-  setSize (400, 300);
+  setSize (880, 440);
 }
 
 Grnlr_kleinAudioProcessorEditor::~Grnlr_kleinAudioProcessorEditor()
@@ -54,11 +65,20 @@ void Grnlr_kleinAudioProcessorEditor::paint (Graphics& g)
 void Grnlr_kleinAudioProcessorEditor::resized()
 {
   int width = getWidth() - 20;
-  openButton.setBounds(10, 10, width, 20);
+  Rectangle<int> r (getLocalBounds().reduced (4));
 
-  positionSlider.setBounds(10, 90, width, 40);
-  lengthSlider.setBounds(10, 150, width, 40);
-  durationSlider.setBounds(10, 210, width, 40);
+ openButton.setBounds(10, 10, width, 20);
+
+  positionSlider.setBounds(10, 90, width, 30);
+  // Fill Factor
+  fillLabel.setBounds(10, 135, width, 20);
+  fillSlider.setBounds(10, 150, width, 30);
+  // Duration
+  durationLabel.setBounds(10, 195, width, 20);
+  durationSlider.setBounds(10, 210, width, 30);
+
+  // Waveform
+  waveform->setBounds (r.removeFromBottom (140));
 }
 
 void Grnlr_kleinAudioProcessorEditor::buttonClicked (Button* button)
@@ -68,8 +88,8 @@ void Grnlr_kleinAudioProcessorEditor::buttonClicked (Button* button)
 
 void Grnlr_kleinAudioProcessorEditor::sliderValueChanged(Slider* slider)
 {
-  if(slider == &lengthSlider)
-    processor.lengthRatio = (float) lengthSlider.getValue();
+  if(slider == &fillSlider)
+    processor.lengthRatio = (float) fillSlider.getValue();
   if(slider == &positionSlider)
     processor.positionOffset = (float) positionSlider.getValue();
   if(slider == &durationSlider)
@@ -112,7 +132,7 @@ void Grnlr_kleinAudioProcessorEditor::checkForPathToOpen()
 	{
 	  const double duration = reader->lengthInSamples / reader->sampleRate;
 
-	  if (duration < 15)
+	  if (duration < 60)
 	    {
 	      ReferenceCountedBuffer::Ptr newBuffer = new ReferenceCountedBuffer (file.getFileName(),
 										  reader->numChannels,
@@ -126,7 +146,7 @@ void Grnlr_kleinAudioProcessorEditor::checkForPathToOpen()
 	    }
 	  else
 	    {
-	      // handle the error that the file is 15 seconds or longer..
+	      // handle the error that the file is 60 seconds or longer..
 	    }
 	}
     }
@@ -134,7 +154,7 @@ void Grnlr_kleinAudioProcessorEditor::checkForPathToOpen()
 
 void Grnlr_kleinAudioProcessorEditor::openButtonClicked()
 {
-  FileChooser chooser ("Select a Wave file shorter than 15 seconds to play...",
+  FileChooser chooser ("Select a Wave file shorter than 60 seconds to play...",
 		       File::nonexistent,
 		       "*.wav");
 
@@ -142,9 +162,14 @@ void Grnlr_kleinAudioProcessorEditor::openButtonClicked()
     {
       const File file (chooser.getResult());
       String path (file.getFullPathName());
-      std::cout << path << std::endl;
       swapVariables (chosenPath, path);
       notify();
     }
 }
 
+void Grnlr_kleinAudioProcessorEditor::changeListenerCallback (ChangeBroadcaster* source)
+{
+  if (source == waveform)
+    0;
+    //showFile (waveform->getLastDroppedFile());
+}

@@ -98,7 +98,7 @@ void Grnlr_kleinAudioProcessor::changeProgramName (int index, const String& newN
 void Grnlr_kleinAudioProcessor::prepareToPlay (double sRate, int samplesPerBlock)
 {
   // initialize some values, maybe some of this stuff belongs in the constructor (?)
-  // maybe this should even be solved so the editor sends reasonable values on startup
+  // maybe this should even be solved so the editor always sends and displays reasonable values on startup
   position = 0;
   lengthRatio = 0.3;
   durationSeconds = 0.5;
@@ -114,6 +114,12 @@ void Grnlr_kleinAudioProcessor::releaseResources()
 //==============================================================================
 void Grnlr_kleinAudioProcessor::schedule(int startPosition, int length, int time)
 {
+  // this still  doesn't look right
+  // if the grain at the front of the stack hangs, no other grains will be
+  // deleted and the stack grows bigger and bigger
+  // also long grains at the front of the stack block the destruction
+  // of shorter grains not at the front!
+  // probably should be implemented via a callback from the grain object itself
   while(stack.size() > 1 && stack.front().hasEnded)
     {
       stack.pop_front();
@@ -135,7 +141,7 @@ void Grnlr_kleinAudioProcessor::run()
 	}
       else
 	{
-	wait(500);
+	  wait(500);
 	}
     }
 }

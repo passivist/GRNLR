@@ -419,6 +419,21 @@ build/intermediate/Debug/PluginEditor_94d4fb09.o: \
  ../../Source/../JuceLibraryCode/modules/juce_audio_plugin_client/../../../../../dev/lib/JUCE/modules/juce_audio_plugin_client/utility/juce_PluginHostType.h \
  ../../Source/../JuceLibraryCode/modules/juce_audio_processors/juce_audio_processors.h \
  ../../Source/../JuceLibraryCode/modules/juce_audio_processors/../../../../../dev/lib/JUCE/modules/juce_audio_processors/juce_audio_processors.h \
+ ../../Source/../JuceLibraryCode/modules/juce_audio_utils/juce_audio_utils.h \
+ ../../Source/../JuceLibraryCode/modules/juce_audio_utils/../../../../../dev/lib/JUCE/modules/juce_audio_utils/juce_audio_utils.h \
+ ../../Source/../JuceLibraryCode/modules/juce_audio_utils/../../../../../dev/lib/JUCE/modules/juce_audio_utils/../juce_gui_basics/juce_gui_basics.h \
+ ../../Source/../JuceLibraryCode/modules/juce_audio_utils/../../../../../dev/lib/JUCE/modules/juce_audio_utils/../juce_audio_devices/juce_audio_devices.h \
+ ../../Source/../JuceLibraryCode/modules/juce_audio_utils/../../../../../dev/lib/JUCE/modules/juce_audio_utils/../juce_audio_formats/juce_audio_formats.h \
+ ../../Source/../JuceLibraryCode/modules/juce_audio_utils/../../../../../dev/lib/JUCE/modules/juce_audio_utils/../juce_audio_processors/juce_audio_processors.h \
+ ../../Source/../JuceLibraryCode/modules/juce_audio_utils/../../../../../dev/lib/JUCE/modules/juce_audio_utils/gui/juce_AudioDeviceSelectorComponent.h \
+ ../../Source/../JuceLibraryCode/modules/juce_audio_utils/../../../../../dev/lib/JUCE/modules/juce_audio_utils/gui/juce_AudioThumbnailBase.h \
+ ../../Source/../JuceLibraryCode/modules/juce_audio_utils/../../../../../dev/lib/JUCE/modules/juce_audio_utils/gui/juce_AudioThumbnail.h \
+ ../../Source/../JuceLibraryCode/modules/juce_audio_utils/../../../../../dev/lib/JUCE/modules/juce_audio_utils/gui/juce_AudioThumbnailCache.h \
+ ../../Source/../JuceLibraryCode/modules/juce_audio_utils/../../../../../dev/lib/JUCE/modules/juce_audio_utils/gui/juce_AudioVisualiserComponent.h \
+ ../../Source/../JuceLibraryCode/modules/juce_audio_utils/../../../../../dev/lib/JUCE/modules/juce_audio_utils/gui/juce_MidiKeyboardComponent.h \
+ ../../Source/../JuceLibraryCode/modules/juce_audio_utils/../../../../../dev/lib/JUCE/modules/juce_audio_utils/gui/juce_AudioAppComponent.h \
+ ../../Source/../JuceLibraryCode/modules/juce_audio_utils/../../../../../dev/lib/JUCE/modules/juce_audio_utils/gui/juce_BluetoothMidiDevicePairingDialogue.h \
+ ../../Source/../JuceLibraryCode/modules/juce_audio_utils/../../../../../dev/lib/JUCE/modules/juce_audio_utils/players/juce_AudioProcessorPlayer.h \
  ../../Source/../JuceLibraryCode/modules/juce_core/juce_core.h \
  ../../Source/../JuceLibraryCode/modules/juce_core/../../../../../dev/lib/JUCE/modules/juce_core/juce_core.h \
  ../../Source/../JuceLibraryCode/modules/juce_cryptography/juce_cryptography.h \
@@ -490,4 +505,5 @@ build/intermediate/Debug/PluginEditor_94d4fb09.o: \
  ../../Source/../JuceLibraryCode/modules/juce_video/../../../../../dev/lib/JUCE/modules/juce_video/playback/juce_DirectShowComponent.h \
  ../../Source/../JuceLibraryCode/modules/juce_video/../../../../../dev/lib/JUCE/modules/juce_video/playback/juce_QuickTimeMovieComponent.h \
  ../../Source/../JuceLibraryCode/modules/juce_video/../../../../../dev/lib/JUCE/modules/juce_video/capture/juce_CameraDevice.h \
- ../../Source/Grain.h ../../Source/PluginEditor.h
+ ../../Source/Grain.h ../../Source/PluginEditor.h \
+ ../../Source/WaveformView.h

@@ -35,7 +35,7 @@ class Grain {
     /* not shure if this assignment is necessary but we may need it later */
     int outputSamplesOffset     = 0;
     int position = currentPosition + startPosition;
-    float gain = 1;
+    float gain = 0;
 
     //std::cout << "processing!" << std::endl;
     if(currentPosition < lengthInSamples) {
@@ -59,7 +59,7 @@ class Grain {
 	for(int i=0; i<samplesThisBlock; ++i)
 	  {
 	    angle = (float)(i+currentPosition)/lengthInSamples;
-	    gain = sin(angle * float_Pi/180);
+	    gain = sin(angle * float_Pi);
 	  }
       }
       
