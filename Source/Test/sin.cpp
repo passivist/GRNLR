@@ -20,7 +20,7 @@ void sinSlice (int lengthInSamples, int samplesThisBlock, int position)
   const float float_Pi = 3.14159265;
   for(int i=0; i<samplesThisBlock; ++i)
     {
-      angle = (float)(i+position)/lengthInSamples;
+      angle = (float) ((i+position)%lengthInSamples)/lengthInSamples;
       gain = sin(angle * float_Pi);
       cout << gain << " ";
     }

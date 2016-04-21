@@ -13,9 +13,9 @@
 
 
 //==============================================================================
-Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAudioProcessor& p) : AudioProcessorEditor (&p),
-												  processor (p),
-												  Thread("loading Thread")
+Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAudioProcessor& p) :   AudioProcessorEditor (&p),
+                                                                                                    Thread("loading Thread"),
+                                                                                                    processor (p)
 {
   addAndMakeVisible(openButton);
   openButton.setButtonText("Open...");
@@ -137,8 +137,8 @@ void Grnlr_kleinAudioProcessorEditor::checkForPathToOpen()
 	  if (duration < 60)
 	    {
 	      ReferenceCountedBuffer::Ptr newBuffer = new ReferenceCountedBuffer (file.getFileName(),
-										  reader->numChannels,
-										  reader->lengthInSamples);
+                                                                              reader->numChannels,
+                                                                              reader->lengthInSamples);
 
 	      reader->read (newBuffer->getAudioSampleBuffer(), 0, reader->lengthInSamples, 0, true, true);
 	      processor.currentBuffer = newBuffer;
@@ -157,7 +157,7 @@ void Grnlr_kleinAudioProcessorEditor::checkForPathToOpen()
 void Grnlr_kleinAudioProcessorEditor::openButtonClicked()
 {
   FileChooser chooser ("Select a Wave file shorter than 60 seconds to play...",
-		       File::nonexistent,
+                       File::nonexistent,
 		       "*.wav");
 
   if (chooser.browseForFileToOpen())
