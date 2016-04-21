@@ -13,8 +13,9 @@
 
 
 //==============================================================================
-Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAudioProcessor& p)
-  : AudioProcessorEditor (&p), processor (p), Thread("loading Thread")
+Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAudioProcessor& p) : AudioProcessorEditor (&p),
+												  processor (p),
+												  Thread("loading Thread")
 {
   addAndMakeVisible(openButton);
   openButton.setButtonText("Open...");
@@ -67,18 +68,19 @@ void Grnlr_kleinAudioProcessorEditor::resized()
   int width = getWidth() - 20;
   Rectangle<int> r (getLocalBounds().reduced (4));
 
- openButton.setBounds(10, 10, width, 20);
-
-  positionSlider.setBounds(10, 90, width, 30);
-  // Fill Factor
-  fillLabel.setBounds(10, 135, width, 20);
-  fillSlider.setBounds(10, 150, width, 30);
-  // Duration
-  durationLabel.setBounds(10, 195, width, 20);
-  durationSlider.setBounds(10, 210, width, 30);
-
+ 
   // Waveform
-  waveform->setBounds (r.removeFromBottom (140));
+  waveform->setBounds(r.removeFromTop (140));
+  openButton.setBounds(10, 150, 120, 20);
+
+  positionSlider.setBounds(10, 190, width, 30);
+  // Fill Factor
+  fillLabel.setBounds(10, 225, width, 20);
+  fillSlider.setBounds(10, 250, width, 30);
+  // Duration
+  durationLabel.setBounds(10, 305, width, 20);
+  durationSlider.setBounds(10, 320, width, 30);
+
 }
 
 void Grnlr_kleinAudioProcessorEditor::buttonClicked (Button* button)
@@ -163,6 +165,7 @@ void Grnlr_kleinAudioProcessorEditor::openButtonClicked()
       const File file (chooser.getResult());
       String path (file.getFullPathName());
       swapVariables (chosenPath, path);
+      waveform->setFile(file);
       notify();
     }
 }
@@ -170,6 +173,5 @@ void Grnlr_kleinAudioProcessorEditor::openButtonClicked()
 void Grnlr_kleinAudioProcessorEditor::changeListenerCallback (ChangeBroadcaster* source)
 {
   if (source == waveform)
-    0;
-    //showFile (waveform->getLastDroppedFile());
+    waveform->setFile (waveform->getLastDroppedFile());
 }

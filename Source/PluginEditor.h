@@ -21,7 +21,8 @@
 class Grnlr_kleinAudioProcessorEditor : public  AudioProcessorEditor,
 					public Thread,
 					private Slider::Listener,
-					        Button::Listener
+					Button::Listener,
+					ChangeListener
 {
 public:
   Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAudioProcessor&);
