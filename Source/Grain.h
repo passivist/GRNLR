@@ -68,11 +68,12 @@ public:
                 {
                     angle = (float)((i+position)%lengthInSamples)/lengthInSamples;
                     gain = sin(angle * float_Pi);
-                    std::cout << angle << "; ";
+                    if(i==0) std::cout << gain << ", ";
                     channelData[i] *= gain;
                 }
             }
-            std::cout << "\n \n \n"  << std::endl;
+            std::cout << "\n \n"  << std::endl;
+            
             currentPosition         += outputSamplesRemaining;
             outputSamplesRemaining  -= samplesThisBlock;
             outputSamplesOffset     += samplesThisBlock;
@@ -88,7 +89,6 @@ public:
             
             //std::cout << "+++ grain has ended +++" << std::endl;
             hasEnded = true;
-            currentPosition = 0;
         }
     }
 };

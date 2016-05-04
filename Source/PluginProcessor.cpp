@@ -138,7 +138,7 @@ void Grnlr_kleinAudioProcessor::schedule(int startPosition, int length, int time
     
     stack.push_back(Grain(startPosition, length));
     
-    std::cout << "NumGrains: " << stack.size() << std::endl;
+    std::cout << "NumGrains: " << stack.size() << "\n" << std::endl;
     wait(time);
 }
 

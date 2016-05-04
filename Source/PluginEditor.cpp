@@ -30,7 +30,7 @@ processor (p)
     fillLabel.setText("Fill Factor", dontSendNotification);
     
     addAndMakeVisible(fillSlider);
-    fillSlider.setRange(0.01, 16.0);
+    fillSlider.setRange(0.001, 16.0);
     fillSlider.addListener(this);
     
     // Duration
