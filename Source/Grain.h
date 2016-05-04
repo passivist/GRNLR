@@ -29,12 +29,16 @@ public:
      PROCESS FUNCTION:
      render an audio-block of a single grain for adding together later
      */
+    // work on precision: grain values are only updated every audioblock, so some errors occur
+    // we should implement offsets
     void process(AudioSampleBuffer& buffer, AudioSampleBuffer& fileBuffer)
     {
         int outputSamplesRemaining  = buffer.getNumSamples();
         /* not shure if this assignment is necessary but we may need it later */
         int outputSamplesOffset     = 0;
         int position = currentPosition + startPosition;
+        float lengthInSamplesRecip = 1.f / (float)lengthInSamples;
+        //std::cout << lengthInSamplesRecip << "recip!" << std::endl;
         
         if(currentPosition < lengthInSamples) {
             int bufferSamplesRemaining = fileBuffer.getNumSamples() - (currentPosition + startPosition);
@@ -61,18 +65,15 @@ public:
                  << std::endl;
                  */
                 
-                // ISSUE: this is still wrong. Changes in the position and the length affect the
-                // envelope in wrong ways.
-                
                 for(int i=0; i < outputSamplesRemaining; ++i)
                 {
-                    angle = (float)((i+position)%lengthInSamples)/lengthInSamples;
+                    angle = (float)(i+currentPosition)*lengthInSamplesRecip;
                     gain = sin(angle * float_Pi);
-                    if(i==0) std::cout << gain << ", ";
+                    //if(channel==0) std::cout << gain << ", ";
                     channelData[i] *= gain;
                 }
             }
-            std::cout << "\n \n"  << std::endl;
+            //std::cout << "\n \n"  << std::endl;
             
             currentPosition         += outputSamplesRemaining;
             outputSamplesRemaining  -= samplesThisBlock;

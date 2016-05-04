@@ -112,13 +112,14 @@ void Grnlr_kleinAudioProcessor::releaseResources()
 }
 
 //==============================================================================
-void Grnlr_kleinAudioProcessor::schedule(int startPosition, int length, int time)
+void Grnlr_kleinAudioProcessor::schedule(int startPosition, int length, int dur)
 {
     // probably should be implemented via a callback from the grain object itself
     // and not by iterating over the full stack every time
     
     if(stack.size() > 0 )
     {
+        // never modify a collection you are iterating over!!!
         for(int i=0; i<stack.size(); ++i)
         {
             
@@ -139,7 +140,7 @@ void Grnlr_kleinAudioProcessor::schedule(int startPosition, int length, int time
     stack.push_back(Grain(startPosition, length));
     
     std::cout << "NumGrains: " << stack.size() << "\n" << std::endl;
-    wait(time);
+    wait(dur);
 }
 
 void Grnlr_kleinAudioProcessor::run()

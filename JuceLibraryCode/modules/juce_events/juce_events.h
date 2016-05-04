@@ -2,7 +2,7 @@
 // module headers to the correct external folder.
 
 #if defined (JUCER_XCODE_MAC_F6D2F4CF)
- #include "../../../../../../lib/JUCE_OSX/modules/juce_events/juce_events.h"
+ #include "../../../../../lib/juce-grapefruit-osx/modules/juce_events/juce_events.h"
 #elif defined (JUCER_LINUX_MAKE_6D53C8B4)
  #include "../../../../../dev/lib/JUCE/modules/juce_events/juce_events.h"
 #else
