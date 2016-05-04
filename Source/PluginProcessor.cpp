@@ -114,15 +114,26 @@ void Grnlr_kleinAudioProcessor::releaseResources()
 //==============================================================================
 void Grnlr_kleinAudioProcessor::schedule(int startPosition, int length, int time)
 {
-    // this still  doesn't look right
-    // if the grain at the front of the stack hangs, no other grains will be
-    // deleted and the stack grows bigger and bigger
-    // also long grains at the front of the stack block the destruction
-    // of shorter grains not at the front!
     // probably should be implemented via a callback from the grain object itself
-    while(stack.size() > 1 && stack.front().hasEnded)
+    // and not by iterating over the full stack every time
+    
+    if(stack.size() > 0 )
     {
-        stack.pop_front();
+        for(int i=0; i<stack.size(); ++i)
+        {
+            
+            // show some information about the grains on the stack
+            std::cout   << "STACK: Ended: " << stack[i].hasEnded
+                        << " Startposition: " << stack[i].startPosition
+                        << " current position: " << stack[i].currentPosition
+                        << " length: " << stack[i].lengthInSamples
+                        << std::endl;
+             
+            
+            if (stack[i].hasEnded) {
+                stack.erase(stack.begin() + i);
+            }
+        }
     }
     
     stack.push_back(Grain(startPosition, length));
@@ -138,6 +149,12 @@ void Grnlr_kleinAudioProcessor::run()
         if (sampleIsLoaded)
         {
             schedule(positionOffset * lengthInSamples, lengthRatio * (durationSeconds * sampleRate), durationSeconds * 1000);
+            // show some information about the grains on the stack
+            std::cout   << "SCHEDULER:"
+                        << "Startposition: " << (positionOffset * lengthInSamples)
+                        << " length: " << (lengthRatio * (durationSeconds * sampleRate))
+                        << " dt: " << (durationSeconds * 1000)
+                        << std::endl;
         }
         else
         {
@@ -153,13 +170,8 @@ void Grnlr_kleinAudioProcessor::addBuffers(AudioSampleBuffer& bufferA, AudioSamp
     
     for (int channel = 0; channel < bufferA.getNumChannels(); ++channel)
     {
-        float* const channelDataA = bufferA.getWritePointer (channel);
-        float* const channelDataB = bufferB.getWritePointer (channel);
-        
-        for (int i = 0; i < numSamples; ++i)
-        {
-	        channelDataA[i] += channelDataB[i];
-        }
+        bufferB.addFrom(channel, 0, bufferA, channel, 0, numSamples);
+        bufferB.applyGain(channel, 0, numSamples, 0.5);
     }
 }
 

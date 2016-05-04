@@ -13,7 +13,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Grain.h"
-#include <deque>
+#include <vector>
 
 
 
@@ -104,7 +104,7 @@ public:
     
     //==============================================================================
     AudioSampleBuffer tempBuffer;
-    std::deque<Grain> stack;
+    std::vector<Grain> stack;
     
     ReferenceCountedBuffer::Ptr currentBuffer;
     

@@ -36,9 +36,8 @@ public:
         int outputSamplesOffset     = 0;
         int position = currentPosition + startPosition;
         
-        //std::cout << "processing!" << std::endl;
         if(currentPosition < lengthInSamples) {
-            int bufferSamplesRemaining = lengthInSamples - (currentPosition + startPosition);
+            int bufferSamplesRemaining = fileBuffer.getNumSamples() - (currentPosition + startPosition);
             int samplesThisBlock = jmin(outputSamplesRemaining, bufferSamplesRemaining);
             
             for (int channel=0; channel < buffer.getNumChannels(); ++channel) {
@@ -54,47 +53,42 @@ public:
                 float angle = 0;
                 
                 float* const channelData = buffer.getWritePointer(channel);
-		// der übergang zwischen blocks scheint zu funktionieren, aber wenn das grain endet auf zu hoher amplitude
-		// ~0.8
-		// angle endet  0.581692; ???
-		// hat es etwas mit der logik zutun wie das programm entscheidet ob das grain den block spielt oder nicht
-		// kann eigentlich nicht sein: jmin entscheidet ob der ganze block oder der rest des samples gespielt
-		// wird.
-		// trotzdem ist samplesThis block immer 2048?? wieso?
-		// samplesThis block ist in mindestes in einem Fall zu lang!!
-		// scheint gelöst, oben wurde die länge des Blocks nicht auf die länge des Grains sondern auf die länge des
-		// samples bezogen.
-
-		/*
-		std::cout << "block: " << samplesThisBlock
-			  << " position: " << position
-			  << " length: " << lengthInSamples
-			  << std::endl;
-		*/
-                for(int i=0; i<samplesThisBlock; ++i)
+                
+                /*
+                 std::cout << "block: " << samplesThisBlock
+                 << " position: " << position
+                 << " length: " << lengthInSamples
+                 << std::endl;
+                 */
+                
+                // ISSUE: this is still wrong. Changes in the position and the length affect the
+                // envelope in wrong ways.
+                
+                for(int i=0; i < outputSamplesRemaining; ++i)
                 {
                     angle = (float)((i+position)%lengthInSamples)/lengthInSamples;
                     gain = sin(angle * float_Pi);
-                    //std::cout << angle << "; ";
+                    std::cout << angle << "; ";
                     channelData[i] *= gain;
                 }
             }
-	    // std::cout << "\n \n \n"  << std::endl;
+            std::cout << "\n \n \n"  << std::endl;
+            currentPosition         += outputSamplesRemaining;
             outputSamplesRemaining  -= samplesThisBlock;
             outputSamplesOffset     += samplesThisBlock;
-            currentPosition         += samplesThisBlock;
-
-	    
+            
+            
+            
         } else {
-	  /** 
-	      here we should delete the grain
-	      or at least have some kind of callback or change in some property to signal
-	      that the grain has ended
-	  */
-
-	  //std::cout << "+++ grain has ended +++" << std::endl;
-	  hasEnded = true;
-	  currentPosition = 0;
+            /**
+             here we should delete the grain
+             or at least have some kind of callback or change in some property to signal
+             that the grain has ended
+             */
+            
+            //std::cout << "+++ grain has ended +++" << std::endl;
+            hasEnded = true;
+            currentPosition = 0;
         }
     }
 };
