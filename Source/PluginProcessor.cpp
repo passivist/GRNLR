@@ -8,15 +8,20 @@
  
  !! TODO !!
  STUCTURE:
- > a grainsynth class that handles rendering the block of a single grain
  ENGINE:
  > allow for grains to be shorter than buffersize
- > allow for grains to start and stop inside a running buffer
+ > allow for grains to start and stop inside a running buffer with offsets
+   > for this we need to schedule into the future instead of right away
+ > rewrite scheduling so we schedule with [time, Grain] into the future
+   the audio process should then check if and where in the block the grain
+   starts and adjust things accordingly, for this we also need outputSampleOffset  
  > an asynchronous massaging system between the process function and things
+ > reverse grains
+ > transpose grains
  like grain prosition in envelope etc.
  
  !! ISSUES !!
- Klicks between Grains, either something to do with grain handling or envelopes
+ 
  ==============================================================================
  */
 
@@ -194,7 +199,7 @@ void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuf
         {
             tempBuffer = buffer;
             stack[i].process(buffer, *currentAudioSampleBuffer);
-            addBuffers(tempBuffer, buffer);
+            addBuffers(tempBuffer, buffer); // do we really need this or does the addToBuffer method in the processing function suffice
         }
     }
 }
