@@ -85,9 +85,8 @@ public:
                 }
             }
             //std::cout << "\n \n"  << std::endl;
-            
+            // update grain position
             currentPosition         += samplesThisBlock;
-            blockSize               -= samplesThisBlock;
         } else {
             // set the hasEnded property of the grain to true so it
             // will be deleted on the next block.
