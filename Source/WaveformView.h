@@ -16,7 +16,7 @@ class  WaveformView : public Component,
 {
 public:
     WaveformView ( AudioFormatManager& formatManager,
-                  Grnlr_kleinAudioProcessor& p ) : thumbnailCache (5),
+                   Grnlr_kleinAudioProcessor& p ) : thumbnailCache (5),
     thumbnail (512, formatManager, thumbnailCache),
     processor(p)
     {

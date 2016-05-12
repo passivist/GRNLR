@@ -13,9 +13,9 @@
 
 
 //==============================================================================
-Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAudioProcessor& p) :   AudioProcessorEditor (&p),
-Thread("loading Thread"),
-processor (p)
+Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAudioProcessor& p) : AudioProcessorEditor (&p),
+                                                                                                  Thread("loading Thread"),
+                                                                                                  processor (p)
 {
     addAndMakeVisible(openButton);
     openButton.setButtonText("Open...");
@@ -31,6 +31,7 @@ processor (p)
     
     addAndMakeVisible(fillSlider);
     fillSlider.setRange(0.001, 16.0);
+    fillSlider.setSkewFactorFromMidPoint(3);
     fillSlider.addListener(this);
     
     // Duration
@@ -38,7 +39,8 @@ processor (p)
     durationLabel.setText("Duration", dontSendNotification);
     
     addAndMakeVisible(durationSlider);
-    durationSlider.setRange(0.005, 1.0);
+    durationSlider.setRange(0.005, 8.0);
+    durationSlider.setSkewFactorFromMidPoint(1.5);
     durationSlider.addListener(this);
     
     addAndMakeVisible(waveform = new WaveformView (formatManager, p));
@@ -66,8 +68,7 @@ void Grnlr_kleinAudioProcessorEditor::paint (Graphics& g)
 void Grnlr_kleinAudioProcessorEditor::resized()
 {
     int width = getWidth() - 20;
-    Rectangle<int> r (getLocalBounds().reduced (4));
-    
+    Rectangle<int> r (getLocalBounds().reduced (4));    
     
     // Waveform
     waveform->setBounds(r.removeFromTop (140));
@@ -126,7 +127,7 @@ void Grnlr_kleinAudioProcessorEditor::checkForPathToOpen()
     
     if (pathToOpen.isNotEmpty())
     {
-        std::cout << "path is not empty!" << std::endl;
+        std::cout << "We have a file!" << std::endl;
         const File file (pathToOpen);
         ScopedPointer<AudioFormatReader> reader (formatManager.createReaderFor (file));
         

@@ -76,7 +76,7 @@ public:
     
     //==============================================================================
     void updateValues();
-    void schedule(int startPosition, int length, int time);
+    void schedule(int startPosition, int length, float durSecs);
     double checkTime();
     
     //==============================================================================
@@ -108,8 +108,6 @@ public:
     
     ReferenceCountedBuffer::Ptr currentBuffer;
     
-    int position;
-    
     float lengthRatio;
     float positionOffset;
     float durationSeconds;
@@ -119,6 +117,13 @@ public:
     int lengthInSamples;
     int positionOffsetInSamples;
     int durationMillis;
+
+    long long int time; // maybe I'll have to find a better way to
+                        // represent time than by samples... Leaving
+                        // this program running for more than 1 Day
+                        // treads into 64 bit territory. Although this
+                        // still runs on 32bit machines I feel there
+                        // has to be a better way...
     
     int sampleRate;
     
