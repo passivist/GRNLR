@@ -70,10 +70,8 @@ public:
     
     void applyEnvelope (AudioSampleBuffer&);
     void processBlock (AudioSampleBuffer&, MidiBuffer&) override;
-    void addBuffers (AudioSampleBuffer&, AudioSampleBuffer&);
     
     void run () override;
-    
     //==============================================================================
     void updateValues();
     void schedule(int startPosition, int length, float durSecs);

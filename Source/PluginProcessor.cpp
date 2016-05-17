@@ -25,10 +25,8 @@
    SCHEDULER:Startposition: 57768.3 length: 66991.6 dt: 500
  > resulting in a grain that doesn't end due to bad values:
    STACK: Ended: 0 Startposition: -2147483648 current position: -2147039007 length: 66991
-
- > Offset is sometimes negative! Crashing the program
-
- > strange new noises since implementing offsets
+ 
+ > There is a Click every block
 
  
  ==============================================================================
@@ -181,17 +179,6 @@ void Grnlr_kleinAudioProcessor::run()
 }
 
 //==============================================================================
-void Grnlr_kleinAudioProcessor::addBuffers(AudioSampleBuffer& bufferA, AudioSampleBuffer& bufferB)
-{
-    const int numSamples = jmin(bufferA.getNumSamples(), bufferB.getNumSamples() );
-    
-    for (int channel = 0; channel < bufferA.getNumChannels(); ++channel)
-    {
-        bufferB.addFrom(channel, 0, bufferA, channel, 0, numSamples);
-        bufferB.applyGain(channel, 0, numSamples, 0.5);
-    }
-}
-
 void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
 
@@ -232,7 +219,6 @@ void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuf
                 }
                 stack[i].process(buffer, *currentAudioSampleBuffer, offset);
             }
-            addBuffers(tempBuffer, buffer);
         }
     }
     

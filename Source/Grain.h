@@ -19,7 +19,7 @@ public:
         startPosition = 0;
         grainLength = 2048;
         currentPosition = 0;
-        grainLengthRecip = 1.f / (float)grainLength;
+        grainLengthRecip = 1.f / (float) grainLength;
         startTime = 0;
     };
     
@@ -28,7 +28,7 @@ public:
         grainLength = length;
         startTime = time;
         currentPosition = 0;
-        grainLengthRecip = 1.f / (float)grainLength;
+        grainLengthRecip = 1.f / (float) grainLength;
     };
     
     /**
@@ -36,8 +36,6 @@ public:
      render an audio-block of a single grain for and add them to the
      current block
      */
-    // work on precision: grain values are only updated every audioblock, so some errors occur
-    // we should implement offsets via outputSamplesOffset
     void process(AudioSampleBuffer& currentBlock, AudioSampleBuffer& fileBuffer, int offset)
     {
         int blockSize  = currentBlock.getNumSamples();
@@ -58,29 +56,34 @@ public:
                 const float* fileData = fileBuffer.getReadPointer(channel);
 
                 // the guts:
-                for(int i=0; i < samplesThisBlock; ++i)
+                for(int i=0; i <= samplesThisBlock; ++i)
                 {       
                     angle = (float)(i + currentPosition) * grainLengthRecip;
                     gain = sin(angle * float_Pi);
-                    // We copy the data from the file into the right
-                    // place in the buffer:
-                    channelData[i+offset] = fileData[ (i+filePosition) % fileBuffer.getNumSamples() ] * gain;
+                    if(gain < 0.00001) gain = 0;
+                    
+                    // We copy the data from the file into the right place in the buffer and add it to the previous data:
+                    channelData[i+offset] += fileData[ (i+filePosition) % fileBuffer.getNumSamples() ] * gain;
+                    //std::cout << channelData[i+offset] << ", ";
                 }
             }
-            
+
+            /*
             std::cout << "block: " << samplesThisBlock
                       << " grainPosition " << currentPosition
                       << " filePosition: " << filePosition
                       << " length: " << grainLength
                       << " Offset: "  <<  offset
                       << std::endl;
+            */
+            
+            //std::cout << std::endl;
             
             // update grain position
             currentPosition += samplesThisBlock;
         } else {
             // set the hasEnded property of the grain to true so it
             // will be deleted on the next block.
-            std::cout << "\n" << std::endl;
             hasEnded = true;
         }
     }
