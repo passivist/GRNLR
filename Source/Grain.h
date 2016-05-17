@@ -41,55 +41,46 @@ public:
     void process(AudioSampleBuffer& currentBlock, AudioSampleBuffer& fileBuffer, int offset)
     {
         int blockSize  = currentBlock.getNumSamples();
-        int filePosition = currentPosition + startPosition; // filePosition
-        //std::cout << "reciprocal of length:" << grainLengthRecip << std::endl;
-
-        //std::cout << "Offset: "  << offset << std::endl;
-        offset = 0;
+        int filePosition = currentPosition + startPosition;
         
         if(currentPosition < grainLength) {
-            int bufferSamplesRemaining = fileBuffer.getNumSamples() - (currentPosition + startPosition);
-            int samplesThisBlock = jmin(blockSize, bufferSamplesRemaining);
-            samplesThisBlock -= offset;
+            int grainSamplesRemaining = grainLength - currentPosition;
+            int samplesThisBlock = jmin(blockSize, grainSamplesRemaining);
+            
+            if(samplesThisBlock < 0) samplesThisBlock = 0;
 
-            // maybe this should be implemented like the envelope
-            // e.g. not with .addFrom but with read and write pointers...
             for (int channel=0; channel < currentBlock.getNumChannels(); ++channel)
             {
-                currentBlock.addFrom( channel,
-                                      offset,
-                                      fileBuffer,
-                                      channel % fileBuffer.getNumChannels(),
-                                      filePosition % fileBuffer.getNumSamples(),
-                                      samplesThisBlock );
-                
                 float gain = 0;
                 float angle = 0;
                 
-                float* const channelData = currentBlock.getWritePointer(channel);
-                
-                /*
-                 std::cout << "block: " << samplesThisBlock
-                 << " filePosition: " << filePosition
-                 << " length: " << grainLength
-                 << std::endl;
-                 */
-                
-                for(int i=0; i < blockSize; ++i)
-                {
-                    if(i > offset){   
-                        angle = (float)((i - offset) + currentPosition) * grainLengthRecip;
-                        gain = sin(angle * float_Pi);
-                        channelData[i] *= gain;
-                    }
+                float* channelData = currentBlock.getWritePointer(channel);
+                const float* fileData = fileBuffer.getReadPointer(channel);
+
+                // the guts:
+                for(int i=0; i < samplesThisBlock; ++i)
+                {       
+                    angle = (float)(i + currentPosition) * grainLengthRecip;
+                    gain = sin(angle * float_Pi);
+                    // We copy the data from the file into the right
+                    // place in the buffer:
+                    channelData[i+offset] = fileData[ (i+filePosition) % fileBuffer.getNumSamples() ] * gain;
                 }
             }
-            //std::cout << "\n \n"  << std::endl;
+            
+            std::cout << "block: " << samplesThisBlock
+                      << " grainPosition " << currentPosition
+                      << " filePosition: " << filePosition
+                      << " length: " << grainLength
+                      << " Offset: "  <<  offset
+                      << std::endl;
+            
             // update grain position
-            currentPosition         += samplesThisBlock;
+            currentPosition += samplesThisBlock;
         } else {
             // set the hasEnded property of the grain to true so it
             // will be deleted on the next block.
+            std::cout << "\n" << std::endl;
             hasEnded = true;
         }
     }
