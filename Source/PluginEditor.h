@@ -33,7 +33,7 @@ public:
   void resized() override;
   void buttonClicked(Button* button) override;
   void sliderValueChanged(Slider* slider) override;
-  void changeListenerCallback (ChangeBroadcaster* source);
+  void changeListenerCallback (ChangeBroadcaster* source) override;
   
 private:
   // This reference is provided as a quick way for your editor to

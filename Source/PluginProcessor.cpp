@@ -27,6 +27,8 @@
    STACK: Ended: 0 Startposition: -2147483648 current position: -2147039007 length: 66991
  
  > There is a Click every block
+ 
+ > program crashes on sample loading
 
  
  ==============================================================================
@@ -196,7 +198,7 @@ void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuf
     
     AudioSampleBuffer* currentAudioSampleBuffer (retainedCurrentBuffer->getAudioSampleBuffer());
     
-    if(stack.size() > 0 )
+    if(stack.size() > 0)
     {
         for(int i=0; i<stack.size(); ++i)
         {

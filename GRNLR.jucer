@@ -33,21 +33,21 @@
                        isDebug="0" optimisation="3" targetName="GRNLR"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_core" path="../../../LIB/juce/modules"/>
-        <MODULEPATH id="juce_events" path="../../../LIB/juce/modules"/>
-        <MODULEPATH id="juce_graphics" path="../../../LIB/juce/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../../../LIB/juce/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../../../LIB/juce/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../../../LIB/juce/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../../../LIB/juce/modules"/>
-        <MODULEPATH id="juce_video" path="../../../LIB/juce/modules"/>
-        <MODULEPATH id="juce_opengl" path="../../../LIB/juce/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../../../LIB/juce/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../../../LIB/juce/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../../../LIB/juce/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../../../LIB/juce/modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="../../../LIB/juce/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../../../LIB/juce/modules"/>
+        <MODULEPATH id="juce_core" path="../../lib/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_events" path="../../lib/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../lib/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../lib/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../lib/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../lib/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../../lib/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_video" path="../../lib/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_opengl" path="../../lib/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../lib/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../lib/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../lib/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../lib/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../lib/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../lib/juce-grapefruit-osx/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile" vstFolder="">

@@ -40,6 +40,7 @@ public:
     {
         int blockSize  = currentBlock.getNumSamples();
         int filePosition = currentPosition + startPosition;
+        int fileNumChannels = fileBuffer.getNumChannels();
         
         if(currentPosition < grainLength) {
             int grainSamplesRemaining = grainLength - currentPosition;
@@ -51,21 +52,20 @@ public:
             {
                 float gain = 0;
                 float angle = 0;
-                
-                float* channelData = currentBlock.getWritePointer(channel);
-                const float* fileData = fileBuffer.getReadPointer(channel);
 
                 // the guts:
                 for(int i=0; i <= samplesThisBlock; ++i)
-                {       
+                {
+                    float* channelData = currentBlock.getWritePointer(channel % fileNumChannels);
+                    const float* fileData = fileBuffer.getReadPointer(channel % fileNumChannels);
+                    
                     angle = (float)(i + currentPosition) * grainLengthRecip;
                     gain = sin(angle * float_Pi);
                     if(gain < 0.00001) gain = 0;
                     
                     // We copy the data from the file into the right place in the buffer and add it to the previous data:
                     channelData[i+offset] += fileData[ (i+filePosition) % fileBuffer.getNumSamples() ] * gain;
-                    //std::cout << channelData[i+offset] << ", ";
-                }
+                                    }
             }
 
             /*
@@ -76,8 +76,6 @@ public:
                       << " Offset: "  <<  offset
                       << std::endl;
             */
-            
-            //std::cout << std::endl;
             
             // update grain position
             currentPosition += samplesThisBlock;

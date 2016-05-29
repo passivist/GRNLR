@@ -68,7 +68,6 @@ public:
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
     
-    void applyEnvelope (AudioSampleBuffer&);
     void processBlock (AudioSampleBuffer&, MidiBuffer&) override;
     
     void run () override;
