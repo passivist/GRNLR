@@ -10,6 +10,11 @@ public:
     int currentPosition;
     int startTime;
     float grainLengthRecip;
+    
+    float envCenter;
+    float envSustain;
+    float envCurve;
+    
     bool hasEnded = false;
     /**
      CONSTRUCTOR
@@ -21,15 +26,32 @@ public:
         currentPosition = 0;
         grainLengthRecip = 1.f / (float) grainLength;
         startTime = 0;
+        envCenter = 0.5;
+        envSustain = 0;
+        envCurve = 1;
     };
     
-    Grain(int start, int length, int time){
+    Grain(int start, int length, int time, float center, float sustain, float curve){
         startPosition = start;
         grainLength = length;
         startTime = time;
         currentPosition = 0;
         grainLengthRecip = 1.f / (float) grainLength;
+        envCenter = center;
+        envSustain = sustain;
+        envCurve = curve;
     };
+    
+    float envelopeNext (int position)
+    {
+        float gain;
+        float angle;
+        angle = (float)(position + currentPosition) * grainLengthRecip;
+        gain = sin(angle * float_Pi);
+        if(gain < 0.00001) gain = 0;
+        
+        return gain;
+    }
     
     /**
      PROCESS FUNCTION:
@@ -47,35 +69,23 @@ public:
             int samplesThisBlock = jmin(blockSize, grainSamplesRemaining);
             
             if(samplesThisBlock < 0) samplesThisBlock = 0;
-
+            
             for (int channel=0; channel < currentBlock.getNumChannels(); ++channel)
             {
                 float gain = 0;
-                float angle = 0;
-
+                
                 // the guts:
                 for(int i=0; i <= samplesThisBlock; ++i)
                 {
                     float* channelData = currentBlock.getWritePointer(channel % fileNumChannels);
                     const float* fileData = fileBuffer.getReadPointer(channel % fileNumChannels);
                     
-                    angle = (float)(i + currentPosition) * grainLengthRecip;
-                    gain = sin(angle * float_Pi);
-                    if(gain < 0.00001) gain = 0;
+                    gain = envelopeNext(i);
                     
                     // We copy the data from the file into the right place in the buffer and add it to the previous data:
                     channelData[i+offset] += fileData[ (i+filePosition) % fileBuffer.getNumSamples() ] * gain;
-                                    }
+                }
             }
-
-            /*
-            std::cout << "block: " << samplesThisBlock
-                      << " grainPosition " << currentPosition
-                      << " filePosition: " << filePosition
-                      << " length: " << grainLength
-                      << " Offset: "  <<  offset
-                      << std::endl;
-            */
             
             // update grain position
             currentPosition += samplesThisBlock;

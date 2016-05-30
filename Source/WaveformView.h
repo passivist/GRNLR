@@ -108,7 +108,7 @@ public:
     
     void mouseDrag (const MouseEvent& e) override
     {
-        // set the grain startPosition here
+        // set the grain startPosition from here
     }
     
     void mouseUp (const MouseEvent&) override

@@ -9,14 +9,13 @@
  !! TODO !!
  STUCTURE:
  ENGINE:
- > allow for grains to start and stop inside a running buffer with offsets
-   > for this we need to schedule into the future instead of right away
- > rewrite scheduling so we schedule with [time, Grain] into the future
-   the audio process should then check if and where in the block the grain
-   starts and adjust things accordingly, for this we also need outputSampleOffset  
+ > A variable Envelope
+ > high Level randomisation of grain Events
+    > radomisation but also algorithmic creation of grain streams
  > an asynchronous massaging system between the process function and things
  > reverse grains
  > transpose grains
+ > Host automation
  
  !! ISSUES !!
  > Scheduler sometimes sends bad values for first grain:
@@ -26,9 +25,9 @@
  > resulting in a grain that doesn't end due to bad values:
    STACK: Ended: 0 Startposition: -2147483648 current position: -2147039007 length: 66991
  
- > There is a Click every block
+ > There are Clicks sometimes
  
- > program crashes on sample loading
+ > program crashes on sample loading sometimes
 
  
  ==============================================================================
@@ -127,7 +126,7 @@ void Grnlr_kleinAudioProcessor::releaseResources()
 }
 
 //==============================================================================
-void Grnlr_kleinAudioProcessor::schedule(int startPosition, int length, float dur)
+void Grnlr_kleinAudioProcessor::schedule(int startPosition, int length, float dur, float center, float sustain, float curve)
 { 
   if(stack.size() > 0 )
     {
@@ -135,16 +134,6 @@ void Grnlr_kleinAudioProcessor::schedule(int startPosition, int length, float du
         // find safer way to do this!
         for(int i=0; i<stack.size(); ++i)
         {
-            // show some information about the grains on the stack
-            // std::cout   << "STACK: Ended: " << stack[i].hasEnded
-            //             << " Startposition: " << stack[i].startPosition
-            //             << " current position: " << stack[i].currentPosition
-            //             << " length: " << stack[i].grainLength
-            //             << " Start time: " << stack[i].startTime
-            //             << " time now: " << time
-            //             << std::endl;
-             
-            
             if (stack[i].hasEnded) {
                 stack.erase(stack.begin() + i);
             }
@@ -152,9 +141,8 @@ void Grnlr_kleinAudioProcessor::schedule(int startPosition, int length, float du
     }
   float startTime = (dur*sampleRate) + time;
   
-  stack.push_back(Grain(startPosition, length, startTime));
+  stack.push_back(Grain(startPosition, length, startTime, center, sustain, curve));
     
-  // std::cout << "NumGrains: " << stack.size() << "\n" << std::endl;
   wait(dur*1000);
 }
 
@@ -164,14 +152,12 @@ void Grnlr_kleinAudioProcessor::run()
     {
         if (sampleIsLoaded)
         {
-            schedule(positionOffset * lengthInSamples, lengthRatio * (durationSeconds * sampleRate), durationSeconds);
-                // show some information about the grains on the stack
-                // std::cout   << "SCHEDULER:"
-                //            << "Startposition: " << (positionOffset * lengthInSamples)
-                //            << " length: " << (lengthRatio * (durationSeconds * sampleRate))
-                //            << " dt: " << (durationSeconds * 1000)
-                //            << std::endl;
-            
+            schedule( positionOffset * lengthInSamples,                 // startPosition
+                     lengthRatio * (durationSeconds * sampleRate),      // length
+                     durationSeconds,                                   // duration
+                     0.5,                                               // center
+                     0.1,                                               // sustain
+                     1 );                                               // curve
         }
         else
         {
@@ -184,7 +170,6 @@ void Grnlr_kleinAudioProcessor::run()
 void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
 
-    //std::cout << "time: " << time << std::endl;
     int blockSize = buffer.getNumSamples();
     int offset;
     
@@ -203,17 +188,16 @@ void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuf
         for(int i=0; i<stack.size(); ++i)
         {
             tempBuffer = buffer;
-            // check if startTime is not too far (more than one block)
-            // in the future. Maybe think about edge cases some more
-            // here
+            // check if startTime is not too far (more than one block) in the future.
+            // Maybe think about edge cases some more here
             // implement all 4 cases (at least the first two: grain is
             // starting and grain is playing)
             if(stack[i].startTime < (time + blockSize)){
+                
                 // only calculate an offset when the grain is starting
                 if(stack[i].currentPosition == 0){
                     offset = stack[i].startTime - time;
-                    // offset seems to be negative sometimes, we need
-                    // to find the underlying issue here this is just
+                    // offset seems to be negative sometimes, we need to find the underlying issue here this is just
                     // a safeguard
                     if(offset < 0) offset = 0;
                 } else {
