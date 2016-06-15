@@ -20,10 +20,12 @@ Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAud
     addAndMakeVisible(openButton);
     openButton.setButtonText("Open...");
     openButton.addListener(this);
-    
+
     addAndMakeVisible(positionSlider);
     positionSlider.setRange(0.0, 1.0);
     positionSlider.addListener(this);
+    positionSlider.setValue(0.2);
+    processor.positionOffset = (float) positionSlider.getValue();  
     
     // Fill Factor
     addAndMakeVisible(fillLabel);
@@ -33,19 +35,26 @@ Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAud
     fillSlider.setRange(0.001, 16.0);
     fillSlider.setSkewFactorFromMidPoint(3);
     fillSlider.addListener(this);
+    fillSlider.setValue(1);
+    processor.lengthRatio = (float) fillSlider.getValue();
     
     // Duration
     addAndMakeVisible(durationLabel);
     durationLabel.setText("Duration", dontSendNotification);
     
     addAndMakeVisible(durationSlider);
-    durationSlider.setRange(0.005, 8.0);
+    durationSlider.setRange(0.01, 8.0);
     durationSlider.setSkewFactorFromMidPoint(1.5);
     durationSlider.addListener(this);
+    durationSlider.setValue(0.01);
+    processor.durationSeconds = (float) durationSlider.getValue();
     
+    // Waveform
     addAndMakeVisible(waveform = new WaveformView (formatManager, p));
     waveform->addChangeListener (this);
     
+    
+    // Sample handling
     formatManager.registerBasicFormats();
     startThread();
     
@@ -68,7 +77,7 @@ void Grnlr_kleinAudioProcessorEditor::paint (Graphics& g)
 void Grnlr_kleinAudioProcessorEditor::resized()
 {
     int width = getWidth() - 20;
-    Rectangle<int> r (getLocalBounds().reduced (4));    
+    Rectangle<int> r (getLocalBounds().reduced(4));    
     
     // Waveform
     waveform->setBounds(r.removeFromTop (140));
@@ -135,7 +144,7 @@ void Grnlr_kleinAudioProcessorEditor::checkForPathToOpen()
         {
             const double duration = reader->lengthInSamples / reader->sampleRate;
             
-            if (duration < 60)
+            if (duration < 120)
             {
                 ReferenceCountedBuffer::Ptr newBuffer = new ReferenceCountedBuffer (file.getFileName(),
                                                                                     reader->numChannels,
@@ -149,7 +158,7 @@ void Grnlr_kleinAudioProcessorEditor::checkForPathToOpen()
             }
             else
             {
-                // handle the error that the file is 60 seconds or longer..
+                // handle the error that the file is 120 seconds or longer..
             }
         }
     }

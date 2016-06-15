@@ -10,7 +10,7 @@
  STUCTURE:
  ENGINE:
  > A variable Envelope
- > high Level randomisation of grain Events
+ > high level randomisation of grain Events
     > radomisation but also algorithmic creation of grain streams
  > an asynchronous massaging system between the process function and things
  > reverse grains
@@ -25,9 +25,16 @@
  > resulting in a grain that doesn't end due to bad values:
    STACK: Ended: 0 Startposition: -2147483648 current position: -2147039007 length: 66991
  
+ > Envelope behaves strange due to bad offsetting
+    > investigate further
+ 
+ > offsets are negative for small duration values
+ 
+ 
  > There are Clicks sometimes
  
  > program crashes on sample loading sometimes
+
 
  
  ==============================================================================
@@ -110,12 +117,7 @@ void Grnlr_kleinAudioProcessor::changeProgramName (int index, const String& newN
 //==============================================================================
 void Grnlr_kleinAudioProcessor::prepareToPlay (double sRate, int samplesPerBlock)
 {
-    // initialize some values, maybe some of this stuff belongs in the constructor (?)
-    // maybe this should even be solved so the editor always sends and
-    // displays reasonable values on startup
     time = 0;
-    lengthRatio = 0.3;
-    durationSeconds = 0.5;
     sampleRate = sRate;
 }
 
@@ -173,11 +175,13 @@ void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuf
     int blockSize = buffer.getNumSamples();
     int offset;
     
+    // before we do anything we clear the current buffer to avoid noise:
+    buffer.clear();
+    
     // check if a valid buffer exists
     ReferenceCountedBuffer::Ptr retainedCurrentBuffer (currentBuffer);
     if (retainedCurrentBuffer == nullptr)
     {
-        buffer.clear();
         return;
     }
     
@@ -197,9 +201,7 @@ void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuf
                 // only calculate an offset when the grain is starting
                 if(stack[i].currentPosition == 0){
                     offset = stack[i].startTime - time;
-                    // offset seems to be negative sometimes, we need to find the underlying issue here this is just
-                    // a safeguard
-                    if(offset < 0) offset = 0;
+                    std::cout << "Offset" << offset << std::endl;
                 } else {
                     offset = 0;
                 }

@@ -96,7 +96,6 @@ public:
     
     void filesDropped (const StringArray& files, int /*x*/, int /*y*/) override
     {
-        std::cout << "in the right function at least" << std::endl;
         droppedFile = File (files[0]);
         sendChangeMessage();
     }

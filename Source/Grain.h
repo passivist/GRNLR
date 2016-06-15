@@ -42,17 +42,6 @@ public:
         envCurve = curve;
     };
     
-    float envelopeNext (int position)
-    {
-        float gain;
-        float angle;
-        angle = (float)(position + currentPosition) * grainLengthRecip;
-        gain = sin(angle * float_Pi);
-        if(gain < 0.00001) gain = 0;
-        
-        return gain;
-    }
-    
     /**
      PROCESS FUNCTION:
      render an audio-block of a single grain for and add them to the
@@ -61,29 +50,38 @@ public:
     void process(AudioSampleBuffer& currentBlock, AudioSampleBuffer& fileBuffer, int offset)
     {
         int blockSize  = currentBlock.getNumSamples();
-        int filePosition = currentPosition + startPosition;
+        
         int fileNumChannels = fileBuffer.getNumChannels();
+        int filePosition = currentPosition + startPosition;
         
         if(currentPosition < grainLength) {
             int grainSamplesRemaining = grainLength - currentPosition;
             int samplesThisBlock = jmin(blockSize, grainSamplesRemaining);
+            samplesThisBlock -= offset;
             
             if(samplesThisBlock < 0) samplesThisBlock = 0;
             
+            std::cout << samplesThisBlock << std::endl;
+            
+            float gain [samplesThisBlock];
+            
+            // ENVELOPE
+            for (int i=0; i<samplesThisBlock; ++i)
+            {
+                gain[i] = (i + currentPosition) * grainLengthRecip;
+            }
+            
             for (int channel=0; channel < currentBlock.getNumChannels(); ++channel)
             {
-                float gain = 0;
+                float* channelData = currentBlock.getWritePointer(channel);
+                const float* fileData = fileBuffer.getReadPointer(channel % fileNumChannels);
                 
                 // the guts:
-                for(int i=0; i <= samplesThisBlock; ++i)
+                for(int i=0; i < samplesThisBlock; i++)
                 {
-                    float* channelData = currentBlock.getWritePointer(channel % fileNumChannels);
-                    const float* fileData = fileBuffer.getReadPointer(channel % fileNumChannels);
-                    
-                    gain = envelopeNext(i);
-                    
                     // We copy the data from the file into the right place in the buffer and add it to the previous data:
-                    channelData[i+offset] += fileData[ (i+filePosition) % fileBuffer.getNumSamples() ] * gain;
+                    channelData[i+offset] += fileData[ (i+filePosition) % fileBuffer.getNumSamples() ] * gain[i];
+                    //channelData[i] += gain[i];
                 }
             }
             
