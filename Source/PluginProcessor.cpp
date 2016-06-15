@@ -11,7 +11,7 @@
  ENGINE:
  > A variable Envelope
  > high level randomisation of grain Events
-    > radomisation but also algorithmic creation of grain streams
+ > radomisation but also algorithmic creation of grain streams
  > an asynchronous massaging system between the process function and things
  > reverse grains
  > transpose grains
@@ -19,14 +19,14 @@
  
  !! ISSUES !!
  > Scheduler sometimes sends bad values for first grain:
-   JUCE Assertion failure in juce_AudioSampleBuffer.h:641
-   JUCE Assertion failure in juce_AudioSampleBuffer.h:641
-   SCHEDULER:Startposition: 57768.3 length: 66991.6 dt: 500
+ JUCE Assertion failure in juce_AudioSampleBuffer.h:641
+ JUCE Assertion failure in juce_AudioSampleBuffer.h:641
+ SCHEDULER:Startposition: 57768.3 length: 66991.6 dt: 500
  > resulting in a grain that doesn't end due to bad values:
-   STACK: Ended: 0 Startposition: -2147483648 current position: -2147039007 length: 66991
+ STACK: Ended: 0 Startposition: -2147483648 current position: -2147039007 length: 66991
  
  > Envelope behaves strange due to bad offsetting
-    > investigate further
+ > investigate further
  
  > offsets are negative for small duration values
  
@@ -34,8 +34,8 @@
  > There are Clicks sometimes
  
  > program crashes on sample loading sometimes
-
-
+ 
+ 
  
  ==============================================================================
  */
@@ -129,23 +129,13 @@ void Grnlr_kleinAudioProcessor::releaseResources()
 
 //==============================================================================
 void Grnlr_kleinAudioProcessor::schedule(int startPosition, int length, float dur, float center, float sustain, float curve)
-{ 
-  if(stack.size() > 0 )
-    {
-        // never modify a collection you are iterating over!!!
-        // find safer way to do this!
-        for(int i=0; i<stack.size(); ++i)
-        {
-            if (stack[i].hasEnded) {
-                stack.erase(stack.begin() + i);
-            }
-        }
-    }
-  float startTime = (dur*sampleRate) + time;
-  
-  stack.push_back(Grain(startPosition, length, startTime, center, sustain, curve));
+{
+    int onset = (dur*sampleRate) + time;
     
-  wait(dur*1000);
+    stack.push_back(Grain(startPosition, length, onset, center, sustain, curve));
+    std::cout << "NumGrains: " << stack.size() << std::endl;
+    
+    wait(dur*1000);
 }
 
 void Grnlr_kleinAudioProcessor::run()
@@ -171,9 +161,9 @@ void Grnlr_kleinAudioProcessor::run()
 //==============================================================================
 void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
-
+    
     int blockSize = buffer.getNumSamples();
-    int offset;
+    
     
     // before we do anything we clear the current buffer to avoid noise:
     buffer.clear();
@@ -186,32 +176,25 @@ void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuf
     }
     
     AudioSampleBuffer* currentAudioSampleBuffer (retainedCurrentBuffer->getAudioSampleBuffer());
+    int numChannels = currentAudioSampleBuffer->getNumChannels();
     
-    if(stack.size() > 0)
-    {
-        for(int i=0; i<stack.size(); ++i)
+    for (int i=0; i < blockSize; ++i) {
+        if(stack.size() > 0)
         {
-            tempBuffer = buffer;
-            // check if startTime is not too far (more than one block) in the future.
-            // Maybe think about edge cases some more here
-            // implement all 4 cases (at least the first two: grain is
-            // starting and grain is playing)
-            if(stack[i].startTime < (time + blockSize)){
-                
-                // only calculate an offset when the grain is starting
-                if(stack[i].currentPosition == 0){
-                    offset = stack[i].startTime - time;
-                    std::cout << "Offset" << offset << std::endl;
-                } else {
-                    offset = 0;
+            for(int i=0; i<stack.size(); ++i)
+            {
+                if(time - stack[i].onset > 0){
+                    stack[i].process(buffer, *currentAudioSampleBuffer, time, numChannels, blockSize);
                 }
-                stack[i].process(buffer, *currentAudioSampleBuffer, offset);
+                if(time > stack[i].onset + stack[i].grainLength)
+                {
+                    stack.erase(stack.begin() + i);
+                }
             }
+            
+            time += 1;
         }
     }
-    
-    // Update time by the number of samples in this Audio-Block:
-    time += blockSize;
 }
 
 //==============================================================================
