@@ -15,7 +15,7 @@
  > an asynchronous massaging system between the process function and things
  > reverse grains
  > transpose grains
- > Host automation
+ > host automation
  
  !! ISSUES !!
  > Scheduler sometimes sends bad values for first grain:
@@ -133,7 +133,6 @@ void Grnlr_kleinAudioProcessor::schedule(int startPosition, int length, float du
     int onset = (dur*sampleRate) + time;
     
     stack.push_back(Grain(startPosition, length, onset, center, sustain, curve));
-    std::cout << "NumGrains: " << stack.size() << std::endl;
     
     wait(dur*1000);
 }
@@ -144,8 +143,10 @@ void Grnlr_kleinAudioProcessor::run()
     {
         if (sampleIsLoaded)
         {
+            int grainLength = lengthRatio * (durationSeconds * sampleRate);
+            if (grainLength < 1) grainLength = 1;   // for safety if by some combination of parameters the length is 0
             schedule( positionOffset * lengthInSamples,                 // startPosition
-                     lengthRatio * (durationSeconds * sampleRate),      // length
+                     grainLength,                                       // length
                      durationSeconds,                                   // duration
                      0.5,                                               // center
                      0.1,                                               // sustain
@@ -179,21 +180,26 @@ void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuf
     int numChannels = currentAudioSampleBuffer->getNumChannels();
     
     for (int i=0; i < blockSize; ++i) {
-        if(stack.size() > 0)
+        for(int i=0; i<stack.size(); ++i)
         {
-            for(int i=0; i<stack.size(); ++i)
+            std::cout   << "Onset: " << stack[i].onset
+            << " Length: " << stack[i].grainLength
+            << " on + len: " << stack[i].onset + stack[i].grainLength
+            << " Time: " << time
+            << " Size: " << stack.size()
+            << std::endl;
+            
+            if(time > stack[i].onset + stack[i].grainLength)
             {
-                if(time - stack[i].onset > 0){
-                    stack[i].process(buffer, *currentAudioSampleBuffer, time, numChannels, blockSize);
-                }
-                if(time > stack[i].onset + stack[i].grainLength)
-                {
-                    stack.erase(stack.begin() + i);
-                }
+                stack.erase(stack.begin() + i);
+            }
+            if(time - stack[i].onset > 0){
+                stack[i].process(buffer, *currentAudioSampleBuffer, time, numChannels, blockSize);
             }
             
-            time += 1;
         }
+        
+        time += 1;
     }
 }
 

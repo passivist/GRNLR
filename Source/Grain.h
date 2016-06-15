@@ -51,9 +51,8 @@ public:
         float gain;
         
         // ENVELOPE
-        gain = (time % grainLength) * grainLengthRecip;
-        
-        
+        gain = (time - onset) * grainLengthRecip;
+
         for (int channel=0; channel < currentBlock.getNumChannels(); ++channel)
         {
             float* channelData = currentBlock.getWritePointer(channel);
@@ -61,7 +60,7 @@ public:
             
             // We copy the data from the file into the right place in the buffer and add it to the previous data:
             channelData[ time % blockSize ] += fileData[ (filePosition) % fileBuffer.getNumSamples() ] * gain;
-            //channelData[i] += gain[i];
+            //channelData[time % blockSize] += gain;
         }
     }
 };
