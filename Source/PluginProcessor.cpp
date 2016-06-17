@@ -47,6 +47,7 @@
 Grnlr_kleinAudioProcessor::Grnlr_kleinAudioProcessor() : Thread("BackgroundThread")
 {
     startThread();
+    schedulerLatency = 882;
 }
 
 Grnlr_kleinAudioProcessor::~Grnlr_kleinAudioProcessor()
@@ -130,7 +131,9 @@ void Grnlr_kleinAudioProcessor::releaseResources()
 //==============================================================================
 void Grnlr_kleinAudioProcessor::schedule(int startPosition, int length, float dur, float center, float sustain, float curve)
 {
-    int onset = (dur*sampleRate) + time;
+    int onset = (dur*sampleRate) + time + schedulerLatency;
+
+    std::cout << "NumGrains: " << stack.size() << std::endl;
     
     stack.push_back(Grain(startPosition, length, onset, center, sustain, curve));
     
@@ -182,21 +185,14 @@ void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuf
     for (int i=0; i < blockSize; ++i) {
         for(int i=0; i<stack.size(); ++i)
         {
-            std::cout   << "Onset: " << stack[i].onset
-            << " Length: " << stack[i].grainLength
-            << " on + len: " << stack[i].onset + stack[i].grainLength
-            << " Time: " << time
-            << " Size: " << stack.size()
-            << std::endl;
-            
             if(time > stack[i].onset + stack[i].grainLength)
             {
                 stack.erase(stack.begin() + i);
             }
+            
             if(time - stack[i].onset > 0){
                 stack[i].process(buffer, *currentAudioSampleBuffer, time, numChannels, blockSize);
             }
-            
         }
         
         time += 1;

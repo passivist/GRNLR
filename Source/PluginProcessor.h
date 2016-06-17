@@ -112,6 +112,8 @@ public:
     int lengthInSamples;
     int positionOffsetInSamples;
     int durationMillis;
+    
+    int schedulerLatency;
 
     long long int time; // maybe I'll have to find a better way to
                         // represent time than by samples... Leaving
