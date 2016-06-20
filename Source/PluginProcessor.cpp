@@ -10,11 +10,17 @@
  STUCTURE:
  ENGINE:
  > A variable Envelope
+   > Env Curve
  > high level randomisation of grain Events
+ 
  > radomisation but also algorithmic creation of grain streams
+ 
  > an asynchronous massaging system between the process function and things
+ 
  > reverse grains
+ 
  > transpose grains
+ 
  > host automation
  
  !! ISSUES !!
