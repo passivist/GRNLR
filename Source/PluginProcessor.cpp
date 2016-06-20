@@ -151,8 +151,8 @@ void Grnlr_kleinAudioProcessor::run()
             schedule( positionOffset * lengthInSamples,                 // startPosition
                      grainLength,                                       // length
                      durationSeconds,                                   // duration
-                     0.5,                                               // center
-                     0.1,                                               // sustain
+                     envCenter,                                         // center
+                     envSustain,                                        // sustain
                      1 );                                               // curve
         }
         else

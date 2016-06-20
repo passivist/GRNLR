@@ -23,6 +23,8 @@ Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAud
 
     addAndMakeVisible(positionSlider);
     positionSlider.setRange(0.0, 1.0);
+    positionSlider.setSliderStyle(Slider::LinearBar);
+    positionSlider.setTextBoxStyle(Slider::NoTextBox, false, 80, 80);
     positionSlider.addListener(this);
     positionSlider.setValue(0.2);
     processor.positionOffset = (float) positionSlider.getValue();  
@@ -34,6 +36,8 @@ Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAud
     addAndMakeVisible(fillSlider);
     fillSlider.setRange(0.001, 16.0);
     fillSlider.setSkewFactorFromMidPoint(3);
+    fillSlider.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    fillSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
     fillSlider.addListener(this);
     fillSlider.setValue(1);
     processor.lengthRatio = (float) fillSlider.getValue();
@@ -45,9 +49,34 @@ Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAud
     addAndMakeVisible(durationSlider);
     durationSlider.setRange(0.01, 8.0);
     durationSlider.setSkewFactorFromMidPoint(1.5);
+    durationSlider.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    durationSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
     durationSlider.addListener(this);
     durationSlider.setValue(0.01);
     processor.durationSeconds = (float) durationSlider.getValue();
+    
+    // Envelope
+    addAndMakeVisible(envCenterLabel);
+    envCenterLabel.setText("Env Center", dontSendNotification);
+    
+    addAndMakeVisible(envCenterSlider);
+    envCenterSlider.setRange(0.0, 1.0);
+    envCenterSlider.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    envCenterSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
+    envCenterSlider.addListener(this);
+    envCenterSlider.setValue(0.5);
+    processor.envCenter = (float) envCenterSlider.getValue();
+    
+    addAndMakeVisible(envSustainLabel);
+    envSustainLabel.setText("Env Sustain", dontSendNotification);
+    
+    addAndMakeVisible(envSustainSlider);
+    envSustainSlider.setRange(0.0, 1.0);
+    envSustainSlider.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    envSustainSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
+    envSustainSlider.addListener(this);
+    envSustainSlider.setValue(0.1);
+    processor.envSustain = (float) envSustainSlider.getValue();
     
     // Waveform
     addAndMakeVisible(waveform = new WaveformView (formatManager, p));
@@ -81,15 +110,24 @@ void Grnlr_kleinAudioProcessorEditor::resized()
     
     // Waveform
     waveform->setBounds(r.removeFromTop (140));
-    openButton.setBounds(10, 150, 120, 20);
+    openButton.setBounds(10, 170, 120, 20);
     
-    positionSlider.setBounds(10, 190, width, 30);
+    // Position
+    positionSlider.setBounds(10, 150, width, 15);
+    
     // Fill Factor
-    fillLabel.setBounds(10, 225, width, 20);
-    fillSlider.setBounds(10, 250, width, 30);
+    fillLabel.setBounds(10, 200, 60, 20);
+    fillSlider.setBounds(10, 220, 50, 65);
+    
     // Duration
-    durationLabel.setBounds(10, 305, width, 20);
-    durationSlider.setBounds(10, 320, width, 30);
+    durationLabel.setBounds(70, 200, 50, 20);
+    durationSlider.setBounds(70, 220, 50, 65);
+    
+    // Envelope
+    envCenterLabel.setBounds(740, 200, 70, 20);
+    envCenterSlider.setBounds(740, 220, 50, 65);
+    envSustainLabel.setBounds(810, 200, 70, 20);
+    envSustainSlider.setBounds(810, 220, 50, 65);
     
 }
 
@@ -106,6 +144,10 @@ void Grnlr_kleinAudioProcessorEditor::sliderValueChanged(Slider* slider)
         processor.positionOffset = (float) positionSlider.getValue();
     if(slider == &durationSlider)
         processor.durationSeconds = (float) durationSlider.getValue();
+    if(slider == &envCenterSlider)
+        processor.envCenter = (float) envCenterSlider.getValue();
+    if(slider == &envSustainSlider)
+        processor.envSustain = (float) envSustainSlider.getValue();
 }
 
 void Grnlr_kleinAudioProcessorEditor::run()

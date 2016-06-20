@@ -103,9 +103,15 @@ public:
     
     ReferenceCountedBuffer::Ptr currentBuffer;
     
+    // CONTROLS
+    // Main Grain Controls:
     float lengthRatio;
     float positionOffset;
     float durationSeconds;
+    
+    // Envelope:
+    float envCenter;
+    float envSustain;
     
     bool sampleIsLoaded = false;
     

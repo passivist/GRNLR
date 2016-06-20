@@ -45,6 +45,7 @@ private:
     void checkForPathToOpen();
     
     void run() override;
+    
     ReferenceCountedArray<ReferenceCountedBuffer> buffers;
     
     AudioFormatManager formatManager;
