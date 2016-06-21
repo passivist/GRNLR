@@ -36,7 +36,6 @@
  
  > offsets are negative for small duration values
  
- 
  > There are Clicks sometimes
  
  > program crashes on sample loading sometimes
@@ -50,10 +49,23 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-Grnlr_kleinAudioProcessor::Grnlr_kleinAudioProcessor() : Thread("BackgroundThread")
+Grnlr_kleinAudioProcessor::Grnlr_kleinAudioProcessor()
+    :   Thread("BackgroundThread"),
+        positionParam(nullptr),
+        fillFactorParam(nullptr),
+        durationParam(nullptr),
+        envCenterParam(nullptr),
+        envSustainParam(nullptr)
+
 {
     startThread();
     schedulerLatency = 882;
+    
+    addParameter(positionParam = new AudioParameterFloat("pos", "Position", 0.0f, 1.0f, 0.5f));
+    addParameter(fillFactorParam = new AudioParameterFloat("fill", "Fill Factor", 0.01f, 32.0f, 4.0f));
+    addParameter(durationParam = new AudioParameterFloat("dur", "Duration", 0.001f, 4.0f, 0.3f));
+    addParameter(envCenterParam = new AudioParameterFloat("envCenter", "Envelope Center", 0.0f, 1.0f, 0.5f));
+    addParameter(envSustainParam = new AudioParameterFloat("envSustain", "Envelope Sustain", 0.0f, 1.0f, 0.5f));
 }
 
 Grnlr_kleinAudioProcessor::~Grnlr_kleinAudioProcessor()
@@ -152,11 +164,17 @@ void Grnlr_kleinAudioProcessor::run()
     {
         if (sampleIsLoaded)
         {
-            int grainLength = lengthRatio * (durationSeconds * sampleRate);
+            const float position = *positionParam;
+            const float duration = *durationParam;
+            const float fillFactor = *fillFactorParam;
+            const float envCenter = *envCenterParam;
+            const float envSustain = *envSustainParam;
+            
+            int grainLength = fillFactor * (duration * sampleRate);
             if (grainLength < 1) grainLength = 1;   // for safety if by some combination of parameters the length is 0
-            schedule( positionOffset * lengthInSamples,                 // startPosition
+            schedule( position * lengthInSamples,                 // startPosition
                      grainLength,                                       // length
-                     durationSeconds,                                   // duration
+                     duration,                                          // duration
                      envCenter,                                         // center
                      envSustain,                                        // sustain
                      1 );                                               // curve
@@ -220,14 +238,39 @@ AudioProcessorEditor* Grnlr_kleinAudioProcessor::createEditor()
 void Grnlr_kleinAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
     // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    // Here's an example of how you can use XML to make it easy and more robust:
+    
+    // Create an outer XML element..
+    XmlElement xml ("GRNLRPLUGINSETTINGS");
+    
+    // Store the values of all our parameters, using their param ID as the XML attribute
+    for (int i = 0; i < getNumParameters(); ++i)
+        if (AudioProcessorParameterWithID* p = dynamic_cast<AudioProcessorParameterWithID*> (getParameters().getUnchecked(i)))
+            xml.setAttribute (p->paramID, p->getValue());
+    
+    // then use this helper function to stuff it into the binary blob and return it..
+    copyXmlToBinary (xml, destData);
 }
 
 void Grnlr_kleinAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+    
+    // This getXmlFromBinary() helper function retrieves our XML from the binary blob..
+    ScopedPointer<XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
+    
+    if (xmlState != nullptr)
+    {
+        // make sure that it's actually our type of XML object..
+        if (xmlState->hasTagName ("MYPLUGINSETTINGS"))
+        {
+            // Now reload our parameters..
+            for (int i = 0; i < getNumParameters(); ++i)
+                if (AudioProcessorParameterWithID* p = dynamic_cast<AudioProcessorParameterWithID*> (getParameters().getUnchecked(i)))
+                    p->setValueNotifyingHost ((float) xmlState->getDoubleAttribute (p->paramID, p->getValue()));
+        }
+    }
 }
 
 //==============================================================================

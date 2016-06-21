@@ -105,13 +105,13 @@ public:
     
     // CONTROLS
     // Main Grain Controls:
-    float lengthRatio;
-    float positionOffset;
-    float durationSeconds;
+    AudioParameterFloat* positionParam;
+    AudioParameterFloat* fillFactorParam;
+    AudioParameterFloat* durationParam;
     
     // Envelope:
-    float envCenter;
-    float envSustain;
+    AudioParameterFloat* envCenterParam;
+    AudioParameterFloat* envSustainParam;
     
     bool sampleIsLoaded = false;
     

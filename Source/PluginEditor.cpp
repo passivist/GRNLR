@@ -11,6 +11,44 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+//==============================================================================
+class Grnlr_kleinAudioProcessorEditor::ParameterSlider   : public Slider,
+private Timer
+{
+public:
+    ParameterSlider (AudioProcessorParameter& p)
+    : Slider (p.getName (256)), param (p)
+    {
+        setRange (0.0, 1.0, 0.0);
+        startTimerHz (30);
+        updateSliderPos();
+    }
+    
+    void valueChanged() override
+    {
+        param.setValue ((float) Slider::getValue());
+    }
+    
+    void timerCallback() override       { updateSliderPos(); }
+    
+    void startedDragging() override     { param.beginChangeGesture(); }
+    void stoppedDragging() override     { param.endChangeGesture();   }
+    
+    double getValueFromText (const String& text) override   { return param.getValueForText (text); }
+    String getTextFromValue (double value) override         { return param.getText ((float) value, 1024); }
+    
+    void updateSliderPos()
+    {
+        const float newValue = param.getValue();
+        
+        if (newValue != (float) Slider::getValue())
+            Slider::setValue (newValue);
+    }
+    
+    AudioProcessorParameter& param;
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ParameterSlider)
+};
 
 //==============================================================================
 Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAudioProcessor& p) : AudioProcessorEditor (&p),
@@ -20,64 +58,44 @@ Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAud
     addAndMakeVisible(openButton);
     openButton.setButtonText("Open...");
     openButton.addListener(this);
-
-    addAndMakeVisible(positionSlider);
-    positionSlider.setRange(0.0, 1.0);
-    positionSlider.setSliderStyle(Slider::LinearBar);
-    positionSlider.setTextBoxStyle(Slider::NoTextBox, false, 80, 80);
-    positionSlider.addListener(this);
-    positionSlider.setValue(0.2);
-    processor.positionOffset = (float) positionSlider.getValue();  
+    
+    addAndMakeVisible(positionSlider = new ParameterSlider (*p.positionParam));
+    positionSlider->setSliderStyle(Slider::LinearBar);
+    positionSlider->setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
     
     // Fill Factor
     addAndMakeVisible(fillLabel);
     fillLabel.setText("Fill Factor", dontSendNotification);
     
-    addAndMakeVisible(fillSlider);
-    fillSlider.setRange(0.001, 16.0);
-    fillSlider.setSkewFactorFromMidPoint(3);
-    fillSlider.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    fillSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
-    fillSlider.addListener(this);
-    fillSlider.setValue(1);
-    processor.lengthRatio = (float) fillSlider.getValue();
+    addAndMakeVisible(fillSlider = new ParameterSlider (*p.fillFactorParam));
+    fillSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    fillSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
+    //fillSlider->setSkewFactorFromMidPoint(3);
     
     // Duration
     addAndMakeVisible(durationLabel);
     durationLabel.setText("Duration", dontSendNotification);
     
-    addAndMakeVisible(durationSlider);
-    durationSlider.setRange(0.01, 8.0);
-    durationSlider.setSkewFactorFromMidPoint(1.5);
-    durationSlider.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    durationSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
-    durationSlider.addListener(this);
-    durationSlider.setValue(0.01);
-    processor.durationSeconds = (float) durationSlider.getValue();
+    addAndMakeVisible(durationSlider = new ParameterSlider (*p.durationParam));
+    durationSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    durationSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
+    //durationSlider->setSkewFactorFromMidPoint(1.5);
     
     // Envelope
     addAndMakeVisible(envCenterLabel);
     envCenterLabel.setText("Env Center", dontSendNotification);
     
-    addAndMakeVisible(envCenterSlider);
-    envCenterSlider.setRange(0.0, 1.0);
-    envCenterSlider.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    envCenterSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
-    envCenterSlider.addListener(this);
-    envCenterSlider.setValue(0.5);
-    processor.envCenter = (float) envCenterSlider.getValue();
-    
+    addAndMakeVisible(envCenterSlider = new ParameterSlider(*p.envCenterParam));
+    envCenterSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    envCenterSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
+     
     addAndMakeVisible(envSustainLabel);
     envSustainLabel.setText("Env Sustain", dontSendNotification);
     
-    addAndMakeVisible(envSustainSlider);
-    envSustainSlider.setRange(0.0, 1.0);
-    envSustainSlider.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    envSustainSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
-    envSustainSlider.addListener(this);
-    envSustainSlider.setValue(0.1);
-    processor.envSustain = (float) envSustainSlider.getValue();
-    
+    addAndMakeVisible(envSustainSlider = new ParameterSlider(*p.envSustainParam));
+    envSustainSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    envSustainSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
+
     // Waveform
     addAndMakeVisible(waveform = new WaveformView (formatManager, p));
     waveform->addChangeListener (this);
@@ -105,7 +123,7 @@ void Grnlr_kleinAudioProcessorEditor::paint (Graphics& g)
 
 void Grnlr_kleinAudioProcessorEditor::resized()
 {
-    int width = getWidth() - 20;
+    int width = getWidth() - 8;
     Rectangle<int> r (getLocalBounds().reduced(4));    
     
     // Waveform
@@ -113,22 +131,29 @@ void Grnlr_kleinAudioProcessorEditor::resized()
     openButton.setBounds(10, 170, 120, 20);
     
     // Position
-    positionSlider.setBounds(10, 150, width, 15);
+    positionSlider->setBounds(10, 150, width, 15);
     
     // Fill Factor
     fillLabel.setBounds(10, 200, 60, 20);
-    fillSlider.setBounds(10, 220, 50, 65);
+    fillSlider->setBounds(10, 220, 50, 65);
     
     // Duration
     durationLabel.setBounds(70, 200, 50, 20);
-    durationSlider.setBounds(70, 220, 50, 65);
+    durationSlider->setBounds(70, 220, 50, 65);
     
     // Envelope
     envCenterLabel.setBounds(740, 200, 70, 20);
-    envCenterSlider.setBounds(740, 220, 50, 65);
+    envCenterSlider->setBounds(740, 220, 50, 65);
     envSustainLabel.setBounds(810, 200, 70, 20);
-    envSustainSlider.setBounds(810, 220, 50, 65);
+    envSustainSlider->setBounds(810, 220, 50, 65);
     
+    // Waveform
+    /*
+    if(processor.sampleIsLoaded){
+        const File file(chosenPath);
+        waveform->setFile(file);
+    }
+     */
 }
 
 void Grnlr_kleinAudioProcessorEditor::buttonClicked (Button* button)
@@ -138,16 +163,7 @@ void Grnlr_kleinAudioProcessorEditor::buttonClicked (Button* button)
 
 void Grnlr_kleinAudioProcessorEditor::sliderValueChanged(Slider* slider)
 {
-    if(slider == &fillSlider)
-        processor.lengthRatio = (float) fillSlider.getValue();
-    if(slider == &positionSlider)
-        processor.positionOffset = (float) positionSlider.getValue();
-    if(slider == &durationSlider)
-        processor.durationSeconds = (float) durationSlider.getValue();
-    if(slider == &envCenterSlider)
-        processor.envCenter = (float) envCenterSlider.getValue();
-    if(slider == &envSustainSlider)
-        processor.envSustain = (float) envSustainSlider.getValue();
+
 }
 
 void Grnlr_kleinAudioProcessorEditor::run()
@@ -205,6 +221,7 @@ void Grnlr_kleinAudioProcessorEditor::checkForPathToOpen()
         }
     }
 }
+
 
 void Grnlr_kleinAudioProcessorEditor::openButtonClicked()
 {

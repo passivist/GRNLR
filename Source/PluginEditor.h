@@ -40,6 +40,8 @@ private:
     // access the processor object that created it.
     Grnlr_kleinAudioProcessor& processor;
     
+    class ParameterSlider;
+    
     void openButtonClicked();
     void checkForBuffersToFree();
     void checkForPathToOpen();
@@ -55,14 +57,14 @@ private:
     
     Label fillLabel;
     Label durationLabel;
-    Slider positionSlider;
-    Slider fillSlider;
-    Slider durationSlider;
+    ScopedPointer<ParameterSlider> positionSlider;
+    ScopedPointer<ParameterSlider> fillSlider;
+    ScopedPointer<ParameterSlider> durationSlider;
     
     Label envCenterLabel;
     Label envSustainLabel;
-    Slider envCenterSlider;
-    Slider envSustainSlider;
+    ScopedPointer<ParameterSlider> envCenterSlider;
+    ScopedPointer<ParameterSlider> envSustainSlider;
     
     ScopedPointer<WaveformView> waveform;
     
