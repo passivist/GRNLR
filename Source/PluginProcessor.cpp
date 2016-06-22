@@ -7,38 +7,33 @@
  "microsound"
  
  !! TODO !!
- STUCTURE:
- ENGINE:
  > A variable Envelope
-   > Env Curve
+    > Env Curve
+    > maybe have Envelope be rendered during grain creation?? -> maybe more efficient, but no
+      problems due to the envelopecalculation being to costly thus far
+ 
  > high level randomisation of grain Events
  
  > radomisation but also algorithmic creation of grain streams
  
- > an asynchronous massaging system between the process function and things
- 
  > reverse grains
+    > have a flag in the grain object which just tells the processfunction to read the samples
+      in the reverse order
  
  > transpose grains
+    > with ResamplingAudioSource
  
- > host automation
+ > Values should reload on reopening of Host-Application
+ 
+ > Waveform and Samplepath should also reload correctly
+ 
+ > Changes made in the GUI should reflect also in the Host-Application
+    > do with something like changeValueNotifyingHost
+ 
  
  !! ISSUES !!
- > Scheduler sometimes sends bad values for first grain:
- JUCE Assertion failure in juce_AudioSampleBuffer.h:641
- JUCE Assertion failure in juce_AudioSampleBuffer.h:641
- SCHEDULER:Startposition: 57768.3 length: 66991.6 dt: 500
- > resulting in a grain that doesn't end due to bad values:
- STACK: Ended: 0 Startposition: -2147483648 current position: -2147039007 length: 66991
- 
- > Envelope behaves strange due to bad offsetting
- > investigate further
- 
- > offsets are negative for small duration values
- 
- > There are Clicks sometimes
- 
- > program crashes on sample loading sometimes
+ > Audioparameters have only linear mapping so far should be exponetional in some cases
+
  
  
  
@@ -63,7 +58,7 @@ Grnlr_kleinAudioProcessor::Grnlr_kleinAudioProcessor()
     
     addParameter(positionParam = new AudioParameterFloat("pos", "Position", 0.0f, 1.0f, 0.5f));
     addParameter(fillFactorParam = new AudioParameterFloat("fill", "Fill Factor", 0.01f, 32.0f, 4.0f));
-    addParameter(durationParam = new AudioParameterFloat("dur", "Duration", 0.001f, 4.0f, 0.3f));
+    addParameter(durationParam = new AudioParameterFloat("dur", "Duration", 0.001f, 2.0f, 0.3f));
     addParameter(envCenterParam = new AudioParameterFloat("envCenter", "Envelope Center", 0.0f, 1.0f, 0.5f));
     addParameter(envSustainParam = new AudioParameterFloat("envSustain", "Envelope Sustain", 0.0f, 1.0f, 0.5f));
 }

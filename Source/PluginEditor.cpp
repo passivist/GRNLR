@@ -20,19 +20,26 @@ public:
     : Slider (p.getName (256)), param (p)
     {
         setRange (0.0, 1.0, 0.0);
-        startTimerHz (30);
+        startTimerHz (60);
         updateSliderPos();
     }
     
     void valueChanged() override
     {
-        param.setValue ((float) Slider::getValue());
+        if(isDragging){
+            param.setValueNotifyingHost((float) Slider::getValue());
+        } else {
+            param.setValue((float) Slider::getValue());
+        }
+        
     }
+    
+    bool isDragging = false;
     
     void timerCallback() override       { updateSliderPos(); }
     
-    void startedDragging() override     { param.beginChangeGesture(); }
-    void stoppedDragging() override     { param.endChangeGesture();   }
+    void startedDragging() override     { param.beginChangeGesture(); isDragging = true; }
+    void stoppedDragging() override     { param.endChangeGesture(); isDragging = false; }
     
     double getValueFromText (const String& text) override   { return param.getValueForText (text); }
     String getTextFromValue (double value) override         { return param.getText ((float) value, 1024); }
@@ -123,7 +130,7 @@ void Grnlr_kleinAudioProcessorEditor::paint (Graphics& g)
 
 void Grnlr_kleinAudioProcessorEditor::resized()
 {
-    int width = getWidth() - 8;
+    int width = getWidth();
     Rectangle<int> r (getLocalBounds().reduced(4));    
     
     // Waveform
@@ -131,7 +138,7 @@ void Grnlr_kleinAudioProcessorEditor::resized()
     openButton.setBounds(10, 170, 120, 20);
     
     // Position
-    positionSlider->setBounds(10, 150, width, 15);
+    positionSlider->setBounds(4, 150, width - 8, 15);
     
     // Fill Factor
     fillLabel.setBounds(10, 200, 60, 20);
