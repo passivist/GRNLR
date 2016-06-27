@@ -10,11 +10,10 @@
  > A variable Envelope
     > Env Curve
     > maybe have Envelope be rendered during grain creation?? -> maybe more efficient, but no
-      problems due to the envelopecalculation being to costly thus far
+      problems due to the envelope calculation being to costly thus far
  
  > high level randomisation of grain Events
- 
- > radomisation but also algorithmic creation of grain streams
+    > radomisation but also algorithmic creation of grain streams
  
  > reverse grains
     > have a flag in the grain object which just tells the processfunction to read the samples
@@ -23,12 +22,7 @@
  > transpose grains
     > with ResamplingAudioSource
  
- > Values should reload on reopening of Host-Application
- 
  > Waveform and Samplepath should also reload correctly
- 
- > Changes made in the GUI should reflect also in the Host-Application
-    > do with something like changeValueNotifyingHost
  
  
  !! ISSUES !!
@@ -167,7 +161,7 @@ void Grnlr_kleinAudioProcessor::run()
             
             int grainLength = fillFactor * (duration * sampleRate);
             if (grainLength < 1) grainLength = 1;   // for safety if by some combination of parameters the length is 0
-            schedule( position * lengthInSamples,                 // startPosition
+            schedule( position * lengthInSamples,                       // startPosition
                      grainLength,                                       // length
                      duration,                                          // duration
                      envCenter,                                         // center
@@ -234,14 +228,20 @@ void Grnlr_kleinAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
     // You should use this method to store your parameters in the memory block.
     // Here's an example of how you can use XML to make it easy and more robust:
+    std::cout << "Save Settings" << std::endl;
     
     // Create an outer XML element..
     XmlElement xml ("GRNLRPLUGINSETTINGS");
     
     // Store the values of all our parameters, using their param ID as the XML attribute
     for (int i = 0; i < getNumParameters(); ++i)
+    {
         if (AudioProcessorParameterWithID* p = dynamic_cast<AudioProcessorParameterWithID*> (getParameters().getUnchecked(i)))
+        {
             xml.setAttribute (p->paramID, p->getValue());
+            std::cout << p->paramID << " " << p->getValue() << std::endl;
+        }
+    }
     
     // then use this helper function to stuff it into the binary blob and return it..
     copyXmlToBinary (xml, destData);
@@ -252,18 +252,26 @@ void Grnlr_kleinAudioProcessor::setStateInformation (const void* data, int sizeI
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
     
+    std::cout << "Load Settings" << std::endl;
+    
     // This getXmlFromBinary() helper function retrieves our XML from the binary blob..
     ScopedPointer<XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
     
     if (xmlState != nullptr)
     {
         // make sure that it's actually our type of XML object..
-        if (xmlState->hasTagName ("MYPLUGINSETTINGS"))
+        if (xmlState->hasTagName ("GRNLRPLUGINSETTINGS"))
         {
             // Now reload our parameters..
             for (int i = 0; i < getNumParameters(); ++i)
+            {
                 if (AudioProcessorParameterWithID* p = dynamic_cast<AudioProcessorParameterWithID*> (getParameters().getUnchecked(i)))
+                {
                     p->setValueNotifyingHost ((float) xmlState->getDoubleAttribute (p->paramID, p->getValue()));
+                    std::cout << p->paramID << " " << p->getValue() << std::endl;
+                }
+            }
+                    
         }
     }
 }
