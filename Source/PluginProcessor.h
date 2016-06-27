@@ -114,6 +114,8 @@ public:
     AudioParameterFloat* envSustainParam;
     
     bool sampleIsLoaded = false;
+    String filePath;
+    String loadedPath;
     
     int lengthInSamples;
     int positionOffsetInSamples;
@@ -131,7 +133,7 @@ public:
     int sampleRate;
     
 private:
-    Random random; // is this still needed?
+    Random random;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Grnlr_kleinAudioProcessor)

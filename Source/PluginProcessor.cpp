@@ -21,10 +21,7 @@
  
  > transpose grains
     > with ResamplingAudioSource
- 
- > Waveform and Samplepath should also reload correctly
- 
- 
+  
  !! ISSUES !!
  > Audioparameters have only linear mapping so far should be exponetional in some cases
 
@@ -178,9 +175,7 @@ void Grnlr_kleinAudioProcessor::run()
 //==============================================================================
 void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
-    
     int blockSize = buffer.getNumSamples();
-    
     
     // before we do anything we clear the current buffer to avoid noise:
     buffer.clear();
@@ -220,6 +215,7 @@ bool Grnlr_kleinAudioProcessor::hasEditor() const
 
 AudioProcessorEditor* Grnlr_kleinAudioProcessor::createEditor()
 {
+
     return new Grnlr_kleinAudioProcessorEditor (*this);
 }
 
@@ -242,6 +238,8 @@ void Grnlr_kleinAudioProcessor::getStateInformation (MemoryBlock& destData)
             std::cout << p->paramID << " " << p->getValue() << std::endl;
         }
     }
+    
+    xml.setAttribute("FilePath", filePath);
     
     // then use this helper function to stuff it into the binary blob and return it..
     copyXmlToBinary (xml, destData);
@@ -271,7 +269,8 @@ void Grnlr_kleinAudioProcessor::setStateInformation (const void* data, int sizeI
                     std::cout << p->paramID << " " << p->getValue() << std::endl;
                 }
             }
-                    
+            loadedPath = xmlState->getStringAttribute("FilePath");
+            std::cout << loadedPath << std::endl;
         }
     }
 }

@@ -115,6 +115,9 @@ Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAud
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     setSize (880, 440);
+    
+    if( ! processor.loadedPath.isEmpty())
+        swapVariables(chosenPath, processor.loadedPath);
 }
 
 Grnlr_kleinAudioProcessorEditor::~Grnlr_kleinAudioProcessorEditor()
@@ -154,13 +157,14 @@ void Grnlr_kleinAudioProcessorEditor::resized()
     envSustainLabel.setBounds(810, 200, 70, 20);
     envSustainSlider->setBounds(810, 220, 50, 65);
     
+    
     // Waveform
-    /*
+    std::cout << processor.filePath << std::endl;
     if(processor.sampleIsLoaded){
-        const File file(chosenPath);
+        const File file (processor.filePath);
         waveform->setFile(file);
     }
-     */
+     
 }
 
 void Grnlr_kleinAudioProcessorEditor::buttonClicked (Button* button)
@@ -203,6 +207,7 @@ void Grnlr_kleinAudioProcessorEditor::checkForPathToOpen()
     {
         std::cout << "We have a file!" << std::endl;
         const File file (pathToOpen);
+        processor.filePath = pathToOpen;
         ScopedPointer<AudioFormatReader> reader (formatManager.createReaderFor (file));
         
         if (reader != nullptr)
@@ -220,6 +225,8 @@ void Grnlr_kleinAudioProcessorEditor::checkForPathToOpen()
                 buffers.add (newBuffer);
                 processor.sampleIsLoaded  = true;
                 processor.lengthInSamples = reader->lengthInSamples;
+                
+                
             }
             else
             {

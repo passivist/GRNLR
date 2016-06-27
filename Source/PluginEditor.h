@@ -18,7 +18,7 @@
 //==============================================================================
 /**
  */
-class Grnlr_kleinAudioProcessorEditor : public  AudioProcessorEditor,
+class Grnlr_kleinAudioProcessorEditor : public AudioProcessorEditor,
                                         public Thread,
                                         private Slider::Listener,
                                         Button::Listener,
@@ -34,6 +34,8 @@ public:
     void buttonClicked(Button* button) override;
     void sliderValueChanged(Slider* slider) override;
     void changeListenerCallback (ChangeBroadcaster* source) override;
+    
+    String chosenPath;
     
 private:
     // This reference is provided as a quick way for your editor to
@@ -53,7 +55,6 @@ private:
     AudioFormatManager formatManager;
     
     TextButton openButton;
-    String chosenPath;
     
     Label fillLabel;
     Label durationLabel;
