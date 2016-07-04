@@ -57,19 +57,27 @@ private:
     TextButton openButton;
 
     Label fillLabel;
+    Label randFillLabel;
     Label durationLabel;
+    Label randDurLabel;
+    Label randPosLabel;
+    Label transLabel;
+    Label randTransLabel;
     ScopedPointer<ParameterSlider> positionSlider;
     ScopedPointer<ParameterSlider> fillSlider;
     ScopedPointer<ParameterSlider> durationSlider;
+    ScopedPointer<ParameterSlider> randPosSlider;
+    ScopedPointer<ParameterSlider> randFillSlider;
+    ScopedPointer<ParameterSlider> randDurSlider;
+    ScopedPointer<ParameterSlider> transSlider;
+    ScopedPointer<ParameterSlider> randTransSlider;
 
     Label envCenterLabel;
     Label envSustainLabel;
     ScopedPointer<ParameterSlider> envCenterSlider;
     ScopedPointer<ParameterSlider> envSustainSlider;
 
-    ScopedPointer<ParameterSlider> randPositionSlider;
-    ScopedPointer<ParameterSlider> randFillSlider;
-    ScopedPointer<ParameterSlider> randDurSlider;
+
 
     ScopedPointer<WaveformView> waveform;
 

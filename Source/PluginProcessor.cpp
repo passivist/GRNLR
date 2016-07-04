@@ -38,10 +38,16 @@
 Grnlr_kleinAudioProcessor::Grnlr_kleinAudioProcessor()
     :   Thread("BackgroundThread"),
         positionParam(nullptr),
+        randPosParam(nullptr),
         fillFactorParam(nullptr),
+        randFillParam(nullptr),
         durationParam(nullptr),
+        randDurParam(nullptr),
+        transParam(nullptr),
+        randTransParam(nullptr),
         envCenterParam(nullptr),
         envSustainParam(nullptr)
+
 
 {
     startThread();
@@ -53,8 +59,12 @@ Grnlr_kleinAudioProcessor::Grnlr_kleinAudioProcessor()
     addParameter(randFillParam = new AudioParameterFloat("randFill", "Random Fill Factor", 0.0f, 1.0f, 0.0f));
     addParameter(durationParam = new AudioParameterFloat("dur", "Duration", 0.001f, 2.0f, 0.3f));
     addParameter(randDurParam = new AudioParameterFloat("randDur", "Random Duration", 0.0f, 1.0f, 0.0f));
+    addParameter(transParam = new AudioParameterFloat("trans", "Transposition", -48.0f, 48.0f, 0.0f));
+    addParameter(randTransParam = new AudioParameterFloat("randTrans", "Random Trans", 0.0f, 1.0f, 0.0f ));
     addParameter(envCenterParam = new AudioParameterFloat("envCenter", "Envelope Center", 0.0f, 1.0f, 0.5f));
     addParameter(envSustainParam = new AudioParameterFloat("envSustain", "Envelope Sustain", 0.0f, 1.0f, 0.5f));
+    
+    random = *new Random(Time::currentTimeMillis());
 }
 
 Grnlr_kleinAudioProcessor::~Grnlr_kleinAudioProcessor()
@@ -140,7 +150,7 @@ void Grnlr_kleinAudioProcessor::schedule(int startPosition, int length, float du
 {
     int onset = (dur*sampleRate) + time + schedulerLatency;
 
-    std::cout << "NumGrains: " << stack.size() << std::endl;
+    //std::cout << "NumGrains: " << stack.size() << std::endl;
 
     stack.push_back(Grain(startPosition, length, onset, center, sustain, curve));
 
@@ -151,25 +161,23 @@ void Grnlr_kleinAudioProcessor::run()
 {
     while (! threadShouldExit())
     {
-        if (sampleIsLoaded)
-        {
-            const float position = *positionParam;
-            const float duration = *durationParam;
-            const float fillFactor = *fillFactorParam;
-            const float envCenter = *envCenterParam;
-            const float envSustain = *envSustainParam;
-
-            int grainLength = fillFactor * (duration * sampleRate);
+        if (sampleIsLoaded) {
+            float position   = *positionParam   + (*randPosParam * (random.nextFloat() - 0.5));
+            float duration   = *durationParam   * (1 + (*randDurParam * (random.nextFloat() * 2 - 1)));
+            float fillFactor = *fillFactorParam * (1 + (*randFillParam * (random.nextFloat() * 2 - 1)));
+            float envCenter  = *envCenterParam;
+            float envSustain = *envSustainParam;
+            
+            int grainLength = fillFactor * (duration * sampleRate);            
             if (grainLength < 1) grainLength = 1;   // for safety if by some combination of parameters the length is 0
+            
             schedule( position * lengthInSamples,                       // startPosition
                      grainLength,                                       // length
                      duration,                                          // duration
                      envCenter,                                         // center
                      envSustain,                                        // sustain
                      1 );                                               // curve
-        }
-        else
-        {
+        } else {
             wait(500);
         }
     }

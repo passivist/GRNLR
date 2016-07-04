@@ -111,6 +111,8 @@ public:
     AudioParameterFloat* randFillParam;
     AudioParameterFloat* durationParam;
     AudioParameterFloat* randDurParam;
+    AudioParameterFloat* transParam;
+    AudioParameterFloat* randTransParam;
 
     // Envelope:
     AudioParameterFloat* envCenterParam;
@@ -137,7 +139,6 @@ public:
 
 private:
     Random random;
-
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Grnlr_kleinAudioProcessor)
 };

@@ -38,8 +38,8 @@ public:
 
     void timerCallback() override       { updateSliderPos(); }
 
-    void startedDragging() override     { param.beginChangeGesture(); isDragging = true; }
-    void stoppedDragging() override     { param.endChangeGesture(); isDragging = false; }
+    void startedDragging() override     { param.beginChangeGesture(); isDragging = true;  }
+    void stoppedDragging() override     { param.endChangeGesture();   isDragging = false; }
 
     double getValueFromText (const String& text) override   { return param.getValueForText (text); }
     String getTextFromValue (double value) override         { return param.getText ((float) value, 1024); }
@@ -66,25 +66,33 @@ Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAud
     openButton.setButtonText("Open...");
     openButton.addListener(this);
 
-    // Position
+    // POSTITION
     addAndMakeVisible(positionSlider = new ParameterSlider (*p.positionParam));
     positionSlider->setSliderStyle(Slider::LinearBar);
     positionSlider->setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
 
-    addAndMakeVisible(randPositionSlider = new ParameterSlider (*p.randPosParam));
-    randPositionSlider->setSliderStyle(Slider::LinearBar);
-    randPositionSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    addAndMakeVisible(randPosLabel);
+    randPosLabel.setText("Rand Pos", dontSendNotification);
+    
+    addAndMakeVisible(randPosSlider = new ParameterSlider (*p.randPosParam));
+    randPosSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    randPosSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
 
-
-    // Fill Factor
+    // FILL FACTOR
     addAndMakeVisible(fillLabel);
     fillLabel.setText("Fill Factor", dontSendNotification);
 
     addAndMakeVisible(fillSlider = new ParameterSlider (*p.fillFactorParam));
     fillSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     fillSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
-    //fillSlider->setSkewFactorFromMidPoint(3);
-
+    
+    addAndMakeVisible(randFillLabel);
+    randFillLabel.setText("Rand Fill", dontSendNotification);
+    
+    addAndMakeVisible(randFillSlider = new ParameterSlider (*p.randFillParam));
+    randFillSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    randFillSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
+    
     // Duration
     addAndMakeVisible(durationLabel);
     durationLabel.setText("Duration", dontSendNotification);
@@ -93,8 +101,30 @@ Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAud
     durationSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     durationSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
     //durationSlider->setSkewFactorFromMidPoint(1.5);
+    
+    addAndMakeVisible(randDurLabel);
+    randDurLabel.setText("Rand Dur", dontSendNotification);
+    
+    addAndMakeVisible(randDurSlider = new ParameterSlider(*p.randDurParam));
+    randDurSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    randDurSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
+    
+    // TRANSPOSITION
+    addAndMakeVisible(transLabel);
+    transLabel.setText("Transposition", dontSendNotification);
+    
+    addAndMakeVisible(transSlider = new ParameterSlider(*p.transParam));
+    transSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    transSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
+    
+    addAndMakeVisible(randTransLabel);
+    randTransLabel.setText("Rand Trans", dontSendNotification);
+    
+    addAndMakeVisible(randTransSlider = new ParameterSlider(*p.randTransParam));
+    randTransSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    randTransSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
 
-    // Envelope
+    // ENVELOPE
     addAndMakeVisible(envCenterLabel);
     envCenterLabel.setText("Env Center", dontSendNotification);
 
@@ -148,14 +178,29 @@ void Grnlr_kleinAudioProcessorEditor::resized()
 
     // Position
     positionSlider->setBounds(4, 150, width - 8, 15);
+    randPosLabel.setBounds(130, 200, 70, 20);
+    randPosSlider->setBounds(130, 220, 50, 65);
 
     // Fill Factor
     fillLabel.setBounds(10, 200, 60, 20);
     fillSlider->setBounds(10, 220, 50, 65);
+    
+    randFillLabel.setBounds(10, 300, 60, 20);
+    randFillSlider->setBounds(10, 320, 50, 65);
 
     // Duration
     durationLabel.setBounds(70, 200, 50, 20);
     durationSlider->setBounds(70, 220, 50, 65);
+    
+    randDurLabel.setBounds(70, 300, 60, 20);
+    randDurSlider->setBounds(70, 320, 50, 65);
+    
+    // Transposition
+    transLabel.setBounds(190, 200, 70, 20);
+    transSlider->setBounds(190, 220, 50, 65);
+    
+    randTransLabel.setBounds(190, 300, 70, 20);
+    randTransSlider->setBounds(190, 320, 50, 65);
 
     // Envelope
     envCenterLabel.setBounds(740, 200, 70, 20);

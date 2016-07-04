@@ -60,7 +60,7 @@ public:
      */
     void process(AudioSampleBuffer& currentBlock, AudioSampleBuffer& fileBuffer, int time, int numChannels, int blockSize)
     {
-        int filePosition = startPosition + ((time - onset) % grainLength);
+        unsigned int filePosition = startPosition + ((time - onset) % grainLength);
         
         // ENVELOPE
         // this is inefficient, most of the calculation is the same for every sample, maybe calculate an array once at grain
@@ -87,8 +87,9 @@ public:
             
             // We copy the data from the file into the right place in the buffer and add it to the previous data:
             channelData[ time % blockSize ] += fileData[ (filePosition) % fileBuffer.getNumSamples() ] * gain;
-            //channelData[time % blockSize] += gain;
         }
+        
+        
     }
 };
 
