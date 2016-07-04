@@ -5,29 +5,29 @@
  > quasisyncronous granular synthesis engine based on a supercollider prototype
  > support for an approach to granular synthesis inspired by Curtis Roads book
  "microsound"
- 
+
  !! TODO !!
  > A variable Envelope
     > Env Curve
     > maybe have Envelope be rendered during grain creation?? -> maybe more efficient, but no
       problems due to the envelope calculation being to costly thus far
- 
+
  > high level randomisation of grain Events
     > radomisation but also algorithmic creation of grain streams
- 
+
  > reverse grains
     > have a flag in the grain object which just tells the processfunction to read the samples
       in the reverse order
- 
+
  > transpose grains
     > with ResamplingAudioSource
-  
+
  !! ISSUES !!
  > Audioparameters have only linear mapping so far should be exponetional in some cases
 
- 
- 
- 
+
+
+
  ==============================================================================
  */
 
@@ -46,10 +46,13 @@ Grnlr_kleinAudioProcessor::Grnlr_kleinAudioProcessor()
 {
     startThread();
     schedulerLatency = 882;
-    
+
     addParameter(positionParam = new AudioParameterFloat("pos", "Position", 0.0f, 1.0f, 0.5f));
+    addParameter(randPosParam = new AudioParameterFloat("randPos", "Random Position", 0.0f, 1.0f, 0.0f));
     addParameter(fillFactorParam = new AudioParameterFloat("fill", "Fill Factor", 0.01f, 32.0f, 4.0f));
+    addParameter(randFillParam = new AudioParameterFloat("randFill", "Random Fill Factor", 0.0f, 1.0f, 0.0f));
     addParameter(durationParam = new AudioParameterFloat("dur", "Duration", 0.001f, 2.0f, 0.3f));
+    addParameter(randDurParam = new AudioParameterFloat("randDur", "Random Duration", 0.0f, 1.0f, 0.0f));
     addParameter(envCenterParam = new AudioParameterFloat("envCenter", "Envelope Center", 0.0f, 1.0f, 0.5f));
     addParameter(envSustainParam = new AudioParameterFloat("envSustain", "Envelope Sustain", 0.0f, 1.0f, 0.5f));
 }
@@ -106,7 +109,7 @@ int Grnlr_kleinAudioProcessor::getCurrentProgram()
 
 void Grnlr_kleinAudioProcessor::setCurrentProgram (int index)
 {
-    
+
 }
 
 const String Grnlr_kleinAudioProcessor::getProgramName (int index)
@@ -116,7 +119,7 @@ const String Grnlr_kleinAudioProcessor::getProgramName (int index)
 
 void Grnlr_kleinAudioProcessor::changeProgramName (int index, const String& newName)
 {
-    
+
 }
 
 //==============================================================================
@@ -138,9 +141,9 @@ void Grnlr_kleinAudioProcessor::schedule(int startPosition, int length, float du
     int onset = (dur*sampleRate) + time + schedulerLatency;
 
     std::cout << "NumGrains: " << stack.size() << std::endl;
-    
+
     stack.push_back(Grain(startPosition, length, onset, center, sustain, curve));
-    
+
     wait(dur*1000);
 }
 
@@ -155,7 +158,7 @@ void Grnlr_kleinAudioProcessor::run()
             const float fillFactor = *fillFactorParam;
             const float envCenter = *envCenterParam;
             const float envSustain = *envSustainParam;
-            
+
             int grainLength = fillFactor * (duration * sampleRate);
             if (grainLength < 1) grainLength = 1;   // for safety if by some combination of parameters the length is 0
             schedule( position * lengthInSamples,                       // startPosition
@@ -176,20 +179,20 @@ void Grnlr_kleinAudioProcessor::run()
 void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
     int blockSize = buffer.getNumSamples();
-    
+
     // before we do anything we clear the current buffer to avoid noise:
     buffer.clear();
-    
+
     // check if a valid buffer exists
     ReferenceCountedBuffer::Ptr retainedCurrentBuffer (currentBuffer);
     if (retainedCurrentBuffer == nullptr)
     {
         return;
     }
-    
+
     AudioSampleBuffer* currentAudioSampleBuffer (retainedCurrentBuffer->getAudioSampleBuffer());
     int numChannels = currentAudioSampleBuffer->getNumChannels();
-    
+
     for (int i=0; i < blockSize; ++i) {
         for(int i=0; i<stack.size(); ++i)
         {
@@ -197,12 +200,12 @@ void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuf
             {
                 stack.erase(stack.begin() + i);
             }
-            
+
             if(time - stack[i].onset > 0){
                 stack[i].process(buffer, *currentAudioSampleBuffer, time, numChannels, blockSize);
             }
         }
-        
+
         time += 1;
     }
 }
@@ -225,10 +228,10 @@ void Grnlr_kleinAudioProcessor::getStateInformation (MemoryBlock& destData)
     // You should use this method to store your parameters in the memory block.
     // Here's an example of how you can use XML to make it easy and more robust:
     std::cout << "Save Settings" << std::endl;
-    
+
     // Create an outer XML element..
     XmlElement xml ("GRNLRPLUGINSETTINGS");
-    
+
     // Store the values of all our parameters, using their param ID as the XML attribute
     for (int i = 0; i < getNumParameters(); ++i)
     {
@@ -238,9 +241,9 @@ void Grnlr_kleinAudioProcessor::getStateInformation (MemoryBlock& destData)
             std::cout << p->paramID << " " << p->getValue() << std::endl;
         }
     }
-    
+
     xml.setAttribute("FilePath", filePath);
-    
+
     // then use this helper function to stuff it into the binary blob and return it..
     copyXmlToBinary (xml, destData);
 }
@@ -249,12 +252,12 @@ void Grnlr_kleinAudioProcessor::setStateInformation (const void* data, int sizeI
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
-    
+
     std::cout << "Load Settings" << std::endl;
-    
+
     // This getXmlFromBinary() helper function retrieves our XML from the binary blob..
     ScopedPointer<XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
-    
+
     if (xmlState != nullptr)
     {
         // make sure that it's actually our type of XML object..
