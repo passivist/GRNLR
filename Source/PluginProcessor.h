@@ -72,7 +72,7 @@ public:
 
     void run () override;
     //==============================================================================
-    void schedule(int startPosition, int length, float durSecs, float center, float sustain, float curve);
+    void schedule(int startPosition, int length, float durSecs, float trans, float center, float sustain, float curve);
 
     //==============================================================================
     AudioProcessorEditor* createEditor() override;

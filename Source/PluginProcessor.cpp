@@ -24,6 +24,8 @@
 
  !! ISSUES !!
  > Audioparameters have only linear mapping so far should be exponetional in some cases
+ 
+ > handle samplerate mismatch between loaded file and host application
 
 
 
@@ -146,13 +148,13 @@ void Grnlr_kleinAudioProcessor::releaseResources()
 }
 
 //==============================================================================
-void Grnlr_kleinAudioProcessor::schedule(int startPosition, int length, float dur, float center, float sustain, float curve)
+void Grnlr_kleinAudioProcessor::schedule(int startPosition, int length, float dur, float trans, float center, float sustain, float curve)
 {
     int onset = (dur*sampleRate) + time + schedulerLatency;
 
     //std::cout << "NumGrains: " << stack.size() << std::endl;
 
-    stack.push_back(Grain(startPosition, length, onset, center, sustain, curve));
+    stack.push_back(Grain(startPosition, length, onset, trans, center, sustain, curve));
 
     wait(dur*1000);
 }
@@ -165,6 +167,7 @@ void Grnlr_kleinAudioProcessor::run()
             float position   = *positionParam   + (*randPosParam * (random.nextFloat() - 0.5));
             float duration   = *durationParam   * (1 + (*randDurParam * (random.nextFloat() * 2 - 1)));
             float fillFactor = *fillFactorParam * (1 + (*randFillParam * (random.nextFloat() * 2 - 1)));
+            float trans      = (*transParam + 1)  * (1 + (*randTransParam * (random.nextFloat() * 2 - 1))) - 1;
             float envCenter  = *envCenterParam;
             float envSustain = *envSustainParam;
             
@@ -174,6 +177,7 @@ void Grnlr_kleinAudioProcessor::run()
             schedule( position * lengthInSamples,                       // startPosition
                      grainLength,                                       // length
                      duration,                                          // duration
+                     trans,                                             // transposition
                      envCenter,                                         // center
                      envSustain,                                        // sustain
                      1 );                                               // curve

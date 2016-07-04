@@ -9,6 +9,7 @@ public:
     int startPosition;
     int onset;
     float grainLengthRecip;
+    float pitchRatio;
     
     float envCurve;
     
@@ -35,15 +36,20 @@ public:
         envAttack = 0.4;
         envRelease = 0.4;
         
+        pitchRatio = 1;
+        
         envAttackRecip  = 1/envAttack;
         envReleaseRecip = 1/(1 - envRelease);
     };
     
-    Grain(int start, int length, int time, float center, float sustain, float curve){
+    Grain(int start, int length, int time, float trans, float center, float sustain, float curve){
         startPosition = start;
         grainLength = length;
         onset = time;
         grainLengthRecip = 1.f / (float) grainLength;
+        
+        pitchRatio = pow (2.0, trans / 12.0);
+        
         envCurve = curve;
         
         envAttack  = (1 - sustain) * center;
@@ -60,7 +66,9 @@ public:
      */
     void process(AudioSampleBuffer& currentBlock, AudioSampleBuffer& fileBuffer, int time, int numChannels, int blockSize)
     {
-        unsigned int filePosition = startPosition + ((time - onset) % grainLength);
+        float position = (time - onset) * pitchRatio;
+        unsigned int filePosition = (startPosition + (int) position) % fileBuffer.getNumSamples();
+        float floatPosition = std::fmod(startPosition + position, fileBuffer.getNumSamples());
         
         // ENVELOPE
         // this is inefficient, most of the calculation is the same for every sample, maybe calculate an array once at grain
@@ -80,16 +88,26 @@ public:
         }
 
         // AUDIO COPYING
+        
+        const float alpha = floatPosition - filePosition;
+        const float invAlpha = 1.0f - alpha;
+        
+        /*
+        std::cout << "pos: " << filePosition
+        << " samp: " << floatPosition
+        << " alpha: " << alpha
+        << " invAlpha: " << invAlpha
+        << std::endl;
+        */
+        
         for (int channel=0; channel < currentBlock.getNumChannels(); ++channel)
         {
             float* channelData = currentBlock.getWritePointer(channel);
             const float* fileData = fileBuffer.getReadPointer(channel % numChannels);
             
             // We copy the data from the file into the right place in the buffer and add it to the previous data:
-            channelData[ time % blockSize ] += fileData[ (filePosition) % fileBuffer.getNumSamples() ] * gain;
+            channelData[ time % blockSize ] +=  (fileData[ (filePosition) ] * invAlpha + fileData[ (filePosition + 1)] * alpha) * gain;
         }
-        
-        
     }
 };
 
