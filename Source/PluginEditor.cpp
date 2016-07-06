@@ -12,12 +12,11 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-class Grnlr_kleinAudioProcessorEditor::ParameterSlider   : public Slider,
-private Timer
+class Grnlr_kleinAudioProcessorEditor::ParameterSlider : public Slider,
+                                                         private Timer
 {
 public:
-    ParameterSlider (AudioProcessorParameter& p)
-    : Slider (p.getName (256)), param (p)
+    ParameterSlider (AudioProcessorParameter& p) : Slider (p.getName (256)), param (p)
     {
         setRange (0.0, 1.0, 0.0);
         startTimerHz (60);
@@ -57,14 +56,50 @@ public:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ParameterSlider)
 };
 
+class Grnlr_kleinAudioProcessorEditor::ParameterButton : public TextButton,
+                                                         private Timer
+{
+public:
+    ParameterButton (AudioProcessorParameter& p) : TextButton (p.getName (256)), param (p)
+    {
+        updateButton();
+        startTimerHz (60);
+    }
+
+    void timerCallback() override { updateButton(); }
+
+    void clicked() override
+    {
+        param.setValueNotifyingHost(TextButton::getToggleState());
+    }
+
+    void updateButton()
+    {
+        const bool newValue = param.getValue();
+
+        if (newValue != TextButton::getToggleState())
+            TextButton::setToggleState(newValue, sendNotification);
+    }
+
+    AudioProcessorParameter& param;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ParameterButton)
+
+};
+
 //==============================================================================
 Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAudioProcessor& p) : AudioProcessorEditor (&p),
                                                                                                   Thread("loading Thread"),
                                                                                                   processor (p)
 {
+    // BUTTONS
     addAndMakeVisible(openButton);
     openButton.setButtonText("Open...");
     openButton.addListener(this);
+
+    addAndMakeVisible(holdButton = new ParameterButton(*p.holdParam));
+    holdButton->setButtonText("Hold");
+    holdButton->setClickingTogglesState(true);
 
     // POSTITION
     addAndMakeVisible(positionSlider = new ParameterSlider (*p.positionParam));
@@ -73,7 +108,7 @@ Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAud
 
     addAndMakeVisible(randPosLabel);
     randPosLabel.setText("Rand Pos", dontSendNotification);
-    
+
     addAndMakeVisible(randPosSlider = new ParameterSlider (*p.randPosParam));
     randPosSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     randPosSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
@@ -85,14 +120,14 @@ Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAud
     addAndMakeVisible(fillSlider = new ParameterSlider (*p.fillFactorParam));
     fillSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     fillSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
-    
+
     addAndMakeVisible(randFillLabel);
     randFillLabel.setText("Rand Fill", dontSendNotification);
-    
+
     addAndMakeVisible(randFillSlider = new ParameterSlider (*p.randFillParam));
     randFillSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     randFillSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
-    
+
     // Duration
     addAndMakeVisible(durationLabel);
     durationLabel.setText("Duration", dontSendNotification);
@@ -101,25 +136,25 @@ Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAud
     durationSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     durationSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
     //durationSlider->setSkewFactorFromMidPoint(1.5);
-    
+
     addAndMakeVisible(randDurLabel);
     randDurLabel.setText("Rand Dur", dontSendNotification);
-    
+
     addAndMakeVisible(randDurSlider = new ParameterSlider(*p.randDurParam));
     randDurSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     randDurSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
-    
+
     // TRANSPOSITION
     addAndMakeVisible(transLabel);
     transLabel.setText("Transposition", dontSendNotification);
-    
+
     addAndMakeVisible(transSlider = new ParameterSlider(*p.transParam));
     transSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     transSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
-    
+
     addAndMakeVisible(randTransLabel);
     randTransLabel.setText("Rand Trans", dontSendNotification);
-    
+
     addAndMakeVisible(randTransSlider = new ParameterSlider(*p.randTransParam));
     randTransSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     randTransSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
@@ -142,7 +177,6 @@ Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAud
     // Waveform
     addAndMakeVisible(waveform = new WaveformView (formatManager, p));
     waveform->addChangeListener (this);
-
 
     // Sample handling
     formatManager.registerBasicFormats();
@@ -174,7 +208,10 @@ void Grnlr_kleinAudioProcessorEditor::resized()
 
     // Waveform
     waveform->setBounds(r.removeFromTop (140));
+
+    // Buttons
     openButton.setBounds(10, 170, 120, 20);
+    holdButton->setBounds(816, 170, 60, 20);
 
     // Position
     positionSlider->setBounds(4, 150, width - 8, 15);
@@ -184,21 +221,21 @@ void Grnlr_kleinAudioProcessorEditor::resized()
     // Fill Factor
     fillLabel.setBounds(10, 200, 60, 20);
     fillSlider->setBounds(10, 220, 50, 65);
-    
+
     randFillLabel.setBounds(10, 300, 60, 20);
     randFillSlider->setBounds(10, 320, 50, 65);
 
     // Duration
     durationLabel.setBounds(70, 200, 50, 20);
     durationSlider->setBounds(70, 220, 50, 65);
-    
+
     randDurLabel.setBounds(70, 300, 60, 20);
     randDurSlider->setBounds(70, 320, 50, 65);
-    
+
     // Transposition
     transLabel.setBounds(190, 200, 70, 20);
     transSlider->setBounds(190, 220, 50, 65);
-    
+
     randTransLabel.setBounds(190, 300, 70, 20);
     randTransSlider->setBounds(190, 320, 50, 65);
 
@@ -207,7 +244,6 @@ void Grnlr_kleinAudioProcessorEditor::resized()
     envCenterSlider->setBounds(740, 220, 50, 65);
     envSustainLabel.setBounds(810, 200, 70, 20);
     envSustainSlider->setBounds(810, 220, 50, 65);
-
 
     // Waveform
     std::cout << processor.filePath << std::endl;
@@ -265,23 +301,21 @@ void Grnlr_kleinAudioProcessorEditor::checkForPathToOpen()
         {
             const double duration = reader->lengthInSamples / reader->sampleRate;
 
-            if (duration < 120)
+            if (duration < 600)
             {
-                ReferenceCountedBuffer::Ptr newBuffer = new ReferenceCountedBuffer (file.getFileName(),
-                                                                                    reader->numChannels,
-                                                                                    reader->lengthInSamples);
+                ReferenceCountedBuffer::Ptr newBuffer = new ReferenceCountedBuffer(file.getFileName(),
+                                                                                   reader->numChannels,
+                                                                                   reader->lengthInSamples);
 
                 reader->read (newBuffer->getAudioSampleBuffer(), 0, reader->lengthInSamples, 0, true, true);
                 processor.currentBuffer = newBuffer;
                 buffers.add (newBuffer);
                 processor.sampleIsLoaded  = true;
                 processor.lengthInSamples = reader->lengthInSamples;
-
-
             }
             else
             {
-                // handle the error that the file is 120 seconds or longer..
+                // handle the error that the file is 600 seconds or longer..
             }
         }
     }
@@ -291,8 +325,8 @@ void Grnlr_kleinAudioProcessorEditor::checkForPathToOpen()
 void Grnlr_kleinAudioProcessorEditor::openButtonClicked()
 {
     FileChooser chooser ( "Select a Wave file shorter than 60 seconds to play...",
-                         File::nonexistent,
-                         "*.wav" );
+                          File::nonexistent,
+                          "*.wav" );
 
     if (chooser.browseForFileToOpen())
     {
@@ -307,5 +341,5 @@ void Grnlr_kleinAudioProcessorEditor::openButtonClicked()
 void Grnlr_kleinAudioProcessorEditor::changeListenerCallback (ChangeBroadcaster* source)
 {
     if (source == waveform)
-        waveform->setFile (waveform->getLastDroppedFile());
+        waveform->setFile(waveform->getLastDroppedFile());
 }

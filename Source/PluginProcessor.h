@@ -113,6 +113,7 @@ public:
     AudioParameterFloat* randDurParam;
     AudioParameterFloat* transParam;
     AudioParameterFloat* randTransParam;
+    AudioParameterBool* holdParam;
 
     // Envelope:
     AudioParameterFloat* envCenterParam;

@@ -19,12 +19,14 @@
     > have a flag in the grain object which just tells the processfunction to read the samples
       in the reverse order
 
- > transpose grains
-    > with ResamplingAudioSource
+ > Start and Stop processing based on GUI Button
+
+ > implement MIDI Transposition
+ > implement MIDI Gate
 
  !! ISSUES !!
  > Audioparameters have only linear mapping so far should be exponetional in some cases
- 
+
  > handle samplerate mismatch between loaded file and host application
 
 
@@ -37,20 +39,18 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-Grnlr_kleinAudioProcessor::Grnlr_kleinAudioProcessor()
-    :   Thread("BackgroundThread"),
-        positionParam(nullptr),
-        randPosParam(nullptr),
-        fillFactorParam(nullptr),
-        randFillParam(nullptr),
-        durationParam(nullptr),
-        randDurParam(nullptr),
-        transParam(nullptr),
-        randTransParam(nullptr),
-        envCenterParam(nullptr),
-        envSustainParam(nullptr)
-
-
+Grnlr_kleinAudioProcessor::Grnlr_kleinAudioProcessor() : Thread("BackgroundThread"),
+                                                         positionParam(nullptr),
+                                                         randPosParam(nullptr),
+                                                         fillFactorParam(nullptr),
+                                                         randFillParam(nullptr),
+                                                         durationParam(nullptr),
+                                                         randDurParam(nullptr),
+                                                         transParam(nullptr),
+                                                         randTransParam(nullptr),
+                                                         envCenterParam(nullptr),
+                                                         envSustainParam(nullptr),
+                                                         holdParam(nullptr)
 {
     startThread();
     schedulerLatency = 882;
@@ -65,7 +65,9 @@ Grnlr_kleinAudioProcessor::Grnlr_kleinAudioProcessor()
     addParameter(randTransParam = new AudioParameterFloat("randTrans", "Random Trans", 0.0f, 1.0f, 0.0f ));
     addParameter(envCenterParam = new AudioParameterFloat("envCenter", "Envelope Center", 0.0f, 1.0f, 0.5f));
     addParameter(envSustainParam = new AudioParameterFloat("envSustain", "Envelope Sustain", 0.0f, 1.0f, 0.5f));
-    
+
+    addParameter(holdParam = new AudioParameterBool("hold", "Hold", false));
+
     random = *new Random(Time::currentTimeMillis());
 }
 
@@ -163,17 +165,17 @@ void Grnlr_kleinAudioProcessor::run()
 {
     while (! threadShouldExit())
     {
-        if (sampleIsLoaded) {
+        if (sampleIsLoaded && *holdParam) {
             float position   = *positionParam   + (*randPosParam * (random.nextFloat() - 0.5));
             float duration   = *durationParam   * (1 + (*randDurParam * (random.nextFloat() * 2 - 1)));
             float fillFactor = *fillFactorParam * (1 + (*randFillParam * (random.nextFloat() * 2 - 1)));
             float trans      = (*transParam + 1)  * (1 + (*randTransParam * (random.nextFloat() * 2 - 1))) - 1;
             float envCenter  = *envCenterParam;
             float envSustain = *envSustainParam;
-            
-            int grainLength = fillFactor * (duration * sampleRate);            
+
+            int grainLength = fillFactor * (duration * sampleRate);
             if (grainLength < 1) grainLength = 1;   // for safety if by some combination of parameters the length is 0
-            
+
             schedule( position * lengthInSamples,                       // startPosition
                      grainLength,                                       // length
                      duration,                                          // duration

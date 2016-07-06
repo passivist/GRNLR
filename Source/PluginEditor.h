@@ -43,6 +43,7 @@ private:
     Grnlr_kleinAudioProcessor& processor;
 
     class ParameterSlider;
+    class ParameterButton;
 
     void openButtonClicked();
     void checkForBuffersToFree();
@@ -55,6 +56,7 @@ private:
     AudioFormatManager formatManager;
 
     TextButton openButton;
+    ScopedPointer<ParameterButton> holdButton;
 
     Label fillLabel;
     Label randFillLabel;
@@ -76,8 +78,6 @@ private:
     Label envSustainLabel;
     ScopedPointer<ParameterSlider> envCenterSlider;
     ScopedPointer<ParameterSlider> envSustainSlider;
-
-
 
     ScopedPointer<WaveformView> waveform;
 
