@@ -79,19 +79,20 @@ public:
             float aPos;
             aPos = envPos * envAttackRecip;
             gain = aPos;
-        } else if( envAttack < envPos < envRelease){
-            gain = 1;
+        } else if( envPos < envRelease){
+            gain = 1.0;
         } else if( envPos >= envRelease ){
             float rPos;
             rPos = (envPos - envRelease) * envReleaseRecip;
             gain = rPos * (-1) + 1;
         }
+        
 
         // AUDIO COPYING
         
         const float alpha = floatPosition - filePosition;
         const float invAlpha = 1.0f - alpha;
-        
+
         /*
         std::cout << "pos: " << filePosition
         << " samp: " << floatPosition

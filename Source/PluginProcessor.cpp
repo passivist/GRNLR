@@ -48,9 +48,10 @@ Grnlr_kleinAudioProcessor::Grnlr_kleinAudioProcessor() : Thread("BackgroundThrea
                                                          randDurParam(nullptr),
                                                          transParam(nullptr),
                                                          randTransParam(nullptr),
+                                                         holdParam(nullptr),
                                                          envCenterParam(nullptr),
-                                                         envSustainParam(nullptr),
-                                                         holdParam(nullptr)
+                                                         envSustainParam(nullptr)
+                                                         
 {
     startThread();
     schedulerLatency = 882;
@@ -183,6 +184,7 @@ void Grnlr_kleinAudioProcessor::run()
                      envCenter,                                         // center
                      envSustain,                                        // sustain
                      1 );                                               // curve
+            
         } else {
             wait(500);
         }
