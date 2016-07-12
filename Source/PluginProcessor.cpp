@@ -12,14 +12,11 @@
     > maybe have Envelope be rendered during grain creation?? -> maybe more efficient, but no
       problems due to the envelope calculation being to costly thus far
 
- > high level randomisation of grain Events
-    > radomisation but also algorithmic creation of grain streams
-
  > reverse grains
     > have a flag in the grain object which just tells the processfunction to read the samples
       in the reverse order
-
- > Start and Stop processing based on GUI Button
+ 
+ > GUI Sliders should have exponential scaling
 
  > implement MIDI Transposition
  > implement MIDI Gate
@@ -170,21 +167,20 @@ void Grnlr_kleinAudioProcessor::run()
             float position   = *positionParam   + (*randPosParam * (random.nextFloat() - 0.5));
             float duration   = *durationParam   * (1 + (*randDurParam * (random.nextFloat() * 2 - 1)));
             float fillFactor = *fillFactorParam * (1 + (*randFillParam * (random.nextFloat() * 2 - 1)));
-            float trans      = (*transParam + 1)  * (1 + (*randTransParam * (random.nextFloat() * 2 - 1))) - 1;
+            float trans      = (*transParam + 1) * (1 + (*randTransParam * (random.nextFloat() * 2 - 1))) - 1;
             float envCenter  = *envCenterParam;
             float envSustain = *envSustainParam;
 
             int grainLength = fillFactor * (duration * sampleRate);
             if (grainLength < 1) grainLength = 1;   // for safety if by some combination of parameters the length is 0
 
-            schedule( position * lengthInSamples,                       // startPosition
-                     grainLength,                                       // length
-                     duration,                                          // duration
-                     trans,                                             // transposition
-                     envCenter,                                         // center
-                     envSustain,                                        // sustain
-                     1 );                                               // curve
-            
+            schedule( position * lengthInSamples,                        // startPosition
+                      grainLength,                                       // length
+                      duration,                                          // duration
+                      trans,                                             // transposition
+                      envCenter,                                         // center
+                      envSustain,                                        // sustain
+                      1 );                                               // curve
         } else {
             wait(500);
         }

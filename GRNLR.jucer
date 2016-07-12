@@ -33,21 +33,21 @@
                        isDebug="0" optimisation="3" targetName="GRNLR"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_core" path="../../../lib/JUCE_OSX/modules"/>
-        <MODULEPATH id="juce_events" path="../../../lib/JUCE_OSX/modules"/>
-        <MODULEPATH id="juce_graphics" path="../../../lib/JUCE_OSX/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../../../lib/JUCE_OSX/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../../../lib/JUCE_OSX/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../../../lib/JUCE_OSX/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../../../lib/JUCE_OSX/modules"/>
-        <MODULEPATH id="juce_video" path="../../../lib/JUCE_OSX/modules"/>
-        <MODULEPATH id="juce_opengl" path="../../../lib/JUCE_OSX/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../../../lib/JUCE_OSX/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../../../lib/JUCE_OSX/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../../../lib/JUCE_OSX/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../../../lib/JUCE_OSX/modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="../../../lib/JUCE_OSX/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../../../lib/JUCE_OSX/modules"/>
+        <MODULEPATH id="juce_core" path="../../../LIB/juce/modules"/>
+        <MODULEPATH id="juce_events" path="../../../LIB/juce/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../../LIB/juce/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../../LIB/juce/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../../LIB/juce/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../../LIB/juce/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../../../LIB/juce/modules"/>
+        <MODULEPATH id="juce_video" path="../../../LIB/juce/modules"/>
+        <MODULEPATH id="juce_opengl" path="../../../LIB/juce/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../../LIB/juce/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../../LIB/juce/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../../LIB/juce/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../../LIB/juce/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../../LIB/juce/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../../LIB/juce/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile" vstFolder="">
