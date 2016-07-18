@@ -173,6 +173,21 @@ Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAud
     addAndMakeVisible(envSustainSlider = new ParameterSlider(*p.envSustainParam));
     envSustainSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     envSustainSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
+    
+    // VOLUME
+    addAndMakeVisible(volumeLabel);
+    volumeLabel.setText("Volume", dontSendNotification);
+    
+    addAndMakeVisible(volumeSlider = new ParameterSlider(*p.volumeParam));
+    volumeSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    volumeSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
+
+    addAndMakeVisible(randVolLabel);
+    randVolLabel.setText("Rand Vol", dontSendNotification);
+    
+    addAndMakeVisible(randVolSlider = new ParameterSlider(*p.randVolumeParam));
+    randVolSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    randVolSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
 
     // Waveform
     addAndMakeVisible(waveform = new WaveformView (formatManager, p));
@@ -244,6 +259,11 @@ void Grnlr_kleinAudioProcessorEditor::resized()
     envCenterSlider->setBounds(740, 220, 50, 65);
     envSustainLabel.setBounds(810, 200, 70, 20);
     envSustainSlider->setBounds(810, 220, 50, 65);
+    
+    volumeLabel.setBounds(740, 300, 70, 20);
+    volumeSlider->setBounds(740, 320, 50, 65);
+    randVolLabel.setBounds(810, 300, 70, 20);
+    randVolSlider->setBounds(810, 320, 50, 65);
 
     // Waveform
     std::cout << processor.filePath << std::endl;

@@ -56,8 +56,8 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ReferenceCountedBuffer)
 };
 
-class Grnlr_kleinAudioProcessor  : public AudioProcessor,
-public Thread
+class Grnlr_kleinAudioProcessor  :  public AudioProcessor,
+                                    public Thread
 {
 public:
     //==============================================================================
@@ -69,6 +69,7 @@ public:
     void releaseResources() override;
 
     void processBlock (AudioSampleBuffer&, MidiBuffer&) override;
+    void processMidi (MidiBuffer& midiMessages, int numSamples);
 
     void run () override;
     //==============================================================================
@@ -81,7 +82,7 @@ public:
     //==============================================================================
     const String getName() const override;
 
-    bool acceptsMidi() const override;
+    bool acceptsMidi() const override { return true; };
     bool producesMidi() const override;
     bool silenceInProducesSilenceOut() const override;
     double getTailLengthSeconds() const override;
@@ -100,8 +101,12 @@ public:
     //==============================================================================
     AudioSampleBuffer tempBuffer;
     std::vector<Grain> stack;
+    
+    int midiNotes[128] = {0};
 
     ReferenceCountedBuffer::Ptr currentBuffer;
+    
+    MidiKeyboardState keyboardState;
 
     // CONTROLS
     // Main Grain Controls:
@@ -113,6 +118,8 @@ public:
     AudioParameterFloat* randDurParam;
     AudioParameterFloat* transParam;
     AudioParameterFloat* randTransParam;
+    AudioParameterFloat* volumeParam;
+    AudioParameterFloat* randVolumeParam;
     AudioParameterBool* holdParam;
 
     // Envelope:

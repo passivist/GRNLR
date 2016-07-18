@@ -21,8 +21,8 @@
 class Grnlr_kleinAudioProcessorEditor : public AudioProcessorEditor,
                                         public Thread,
                                         private Slider::Listener,
-                                        Button::Listener,
-                                        ChangeListener
+                                        private Button::Listener,
+                                        private ChangeListener
 {
 public:
     Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAudioProcessor&);
@@ -54,10 +54,11 @@ private:
     ReferenceCountedArray<ReferenceCountedBuffer> buffers;
 
     AudioFormatManager formatManager;
-
+    
+    // GUI:
     TextButton openButton;
     ScopedPointer<ParameterButton> holdButton;
-
+    
     Label fillLabel;
     Label randFillLabel;
     Label durationLabel;
@@ -65,6 +66,8 @@ private:
     Label randPosLabel;
     Label transLabel;
     Label randTransLabel;
+    Label volumeLabel;
+    Label randVolLabel;
     ScopedPointer<ParameterSlider> positionSlider;
     ScopedPointer<ParameterSlider> fillSlider;
     ScopedPointer<ParameterSlider> durationSlider;
@@ -73,6 +76,8 @@ private:
     ScopedPointer<ParameterSlider> randDurSlider;
     ScopedPointer<ParameterSlider> transSlider;
     ScopedPointer<ParameterSlider> randTransSlider;
+    ScopedPointer<ParameterSlider> volumeSlider;
+    ScopedPointer<ParameterSlider> randVolSlider;
 
     Label envCenterLabel;
     Label envSustainLabel;

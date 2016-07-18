@@ -4,8 +4,8 @@
     project - if you alter its contents, your changes may be overwritten!
 
     There's a section below where you can add your own custom code safely, and the
-    Introjucer will preserve the contents of that block, but the best way to change
-    any of these definitions is by using the Introjucer's project settings.
+    Projucer will preserve the contents of that block, but the best way to change
+    any of these definitions is by using the Projucer's project settings.
 
     Any commented-out settings will assume their default values.
 
@@ -40,8 +40,14 @@
 
 //==============================================================================
 #ifndef    JUCE_STANDALONE_APPLICATION
- #define   JUCE_STANDALONE_APPLICATION 0
+ #ifdef JucePlugin_Build_Standalone
+  #define  JUCE_STANDALONE_APPLICATION JucePlugin_Build_Standalone
+ #else
+  #define  JUCE_STANDALONE_APPLICATION 0
+ #endif
 #endif
+
+#define JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED 1
 
 //==============================================================================
 // juce_audio_devices flags:
@@ -103,6 +109,13 @@
 
 #ifndef    JUCE_USE_WINDOWS_MEDIA_FORMAT
  //#define JUCE_USE_WINDOWS_MEDIA_FORMAT
+#endif
+
+//==============================================================================
+// juce_audio_plugin_client flags:
+
+#ifndef    JUCE_FORCE_USE_LEGACY_PARAM_IDS
+ //#define JUCE_FORCE_USE_LEGACY_PARAM_IDS
 #endif
 
 //==============================================================================
@@ -220,11 +233,17 @@
 #ifndef  JucePlugin_Build_AU
  #define JucePlugin_Build_AU               1
 #endif
+#ifndef  JucePlugin_Build_AUv3
+ #define JucePlugin_Build_AUv3             0
+#endif
 #ifndef  JucePlugin_Build_RTAS
  #define JucePlugin_Build_RTAS             0
 #endif
 #ifndef  JucePlugin_Build_AAX
  #define JucePlugin_Build_AAX              0
+#endif
+#ifndef  JucePlugin_Build_STANDALONE
+ #define JucePlugin_Build_STANDALONE       0
 #endif
 #ifndef  JucePlugin_Name
  #define JucePlugin_Name                   "GRNLR"
@@ -242,25 +261,22 @@
  #define JucePlugin_ManufacturerEmail      ""
 #endif
 #ifndef  JucePlugin_ManufacturerCode
- #define JucePlugin_ManufacturerCode       'RSY'
+ #define JucePlugin_ManufacturerCode       0x52535900 // 'RSY'
 #endif
 #ifndef  JucePlugin_PluginCode
- #define JucePlugin_PluginCode             'Gggt'
+ #define JucePlugin_PluginCode             0x47676774 // 'Gggt'
 #endif
 #ifndef  JucePlugin_IsSynth
  #define JucePlugin_IsSynth                1
 #endif
 #ifndef  JucePlugin_WantsMidiInput
- #define JucePlugin_WantsMidiInput         0
+ #define JucePlugin_WantsMidiInput         1
 #endif
 #ifndef  JucePlugin_ProducesMidiOutput
  #define JucePlugin_ProducesMidiOutput     0
 #endif
 #ifndef  JucePlugin_IsMidiEffect
  #define JucePlugin_IsMidiEffect           0
-#endif
-#ifndef  JucePlugin_SilenceInProducesSilenceOut
- #define JucePlugin_SilenceInProducesSilenceOut  0
 #endif
 #ifndef  JucePlugin_EditorRequiresKeyboardFocus
  #define JucePlugin_EditorRequiresKeyboardFocus  0
