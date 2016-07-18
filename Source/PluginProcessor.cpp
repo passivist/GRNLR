@@ -16,9 +16,15 @@
  > have a flag in the grain object which just tells the processfunction to read the samples
  in the reverse order
  
+    > Env Curve
+    > maybe have Envelope be rendered during grain creation?? -> maybe more efficient, but no
+      problems due to the envelope calculation being to costly thus far
+
+ > reverse grains
+    > have a flag in the grain object which just tells the processfunction to read the samples
+      in the reverse order
  
- > implement MIDI Transposition
- > implement MIDI Gate
+ > GUI Sliders should have exponential scaling
  
  !! ISSUES !!
  > Audioparameters have only linear mapping so far should be exponetional in some cases
