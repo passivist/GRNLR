@@ -63,16 +63,16 @@ Grnlr_kleinAudioProcessor::Grnlr_kleinAudioProcessor() : Thread("BackgroundThrea
     schedulerLatency = 882;
     
     addParameter(positionParam = new AudioParameterFloat("pos", "Position", 0.0f, 1.0f, 0.5f));
-    addParameter(randPosParam = new AudioParameterFloat("randPos", "Random Position", 0.0f, 1.0f, 0.0f));
-    addParameter(fillFactorParam = new AudioParameterFloat("fill", "Fill Factor", 0.01f, 32.0f, 4.0f));
+    addParameter(randPosParam = new AudioParameterFloat("randPos", "Random Position", NormalisableRange<float>(0.0, 1.0, 0.01, 0.5), 0.0f));
+    addParameter(fillFactorParam = new AudioParameterFloat("fill", "Fill Factor", NormalisableRange<float>(0.001, 80.0, 0.001, 0.2), 10.0f));
     addParameter(randFillParam = new AudioParameterFloat("randFill", "Random Fill Factor", 0.0f, 1.0f, 0.0f));
-    addParameter(durationParam = new AudioParameterFloat("dur", "Duration", 0.001f, 2.0f, 0.3f));
+    addParameter(durationParam = new AudioParameterFloat("dur", "Duration", NormalisableRange<float>(0.001, 4, 0.001, 0.3), 0.3f));
     addParameter(randDurParam = new AudioParameterFloat("randDur", "Random Duration", 0.0f, 1.0f, 0.0f));
     addParameter(transParam = new AudioParameterFloat("trans", "Transposition", -48.0f, 48.0f, 0.0f));
-    addParameter(randTransParam = new AudioParameterFloat("randTrans", "Random Trans", 0.0f, 1.0f, 0.0f ));
+    addParameter(randTransParam = new AudioParameterFloat("randTrans", "Random Trans", NormalisableRange<float>(0, 24.0, 0.001, 0.5), 0.0f ));
     addParameter(envCenterParam = new AudioParameterFloat("envCenter", "Envelope Center", 0.0f, 1.0f, 0.5f));
     addParameter(envSustainParam = new AudioParameterFloat("envSustain", "Envelope Sustain", 0.0f, 1.0f, 0.5f));
-    addParameter(volumeParam = new AudioParameterFloat("vol", "Volume", 0.0f, 1.0f, 0.7f));
+    addParameter(volumeParam = new AudioParameterFloat("vol", "Volume", NormalisableRange<float>(0.001, 1.0, 0.001, 0.7), 0.7f));
     addParameter(randVolumeParam = new AudioParameterFloat("randVol", "Random Volume", 0.0f, 1.0f, 0.0f));
     
     addParameter(holdParam = new AudioParameterBool("hold", "Hold", false));
