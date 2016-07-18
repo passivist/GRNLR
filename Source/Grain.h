@@ -21,6 +21,8 @@ public:
     float envSustainRecip;
     float envReleaseRecip;
     
+    float volume;
+    
     bool hasEnded = false;
     /**
      CONSTRUCTOR
@@ -40,9 +42,11 @@ public:
         
         envAttackRecip  = 1/envAttack;
         envReleaseRecip = 1/(1 - envRelease);
+        
+        volume = 0.8;
     };
     
-    Grain(int start, int length, int time, float trans, float center, float sustain, float curve){
+    Grain(int start, int length, int time, float trans, float center, float sustain, float curve, float vol){
         startPosition = start;
         grainLength = length;
         onset = time;
@@ -57,6 +61,8 @@ public:
         
         envAttackRecip  = 1/envAttack;
         envReleaseRecip = 1/(1 - envRelease);
+        
+        volume = vol;
     };
     
     /**
@@ -67,7 +73,7 @@ public:
     void process(AudioSampleBuffer& currentBlock, AudioSampleBuffer& fileBuffer, int time, int numChannels, int blockSize)
     {
         float position = (time - onset) * pitchRatio;
-        unsigned int filePosition = (startPosition + (int) position) % fileBuffer.getNumSamples();
+        int filePosition = (startPosition + (int) position) % fileBuffer.getNumSamples();
         float floatPosition = std::fmod(startPosition + position, fileBuffer.getNumSamples());
         
         // ENVELOPE
@@ -89,25 +95,17 @@ public:
         
 
         // AUDIO COPYING
-        
+        // Linear Interpolation:
         const float alpha = floatPosition - filePosition;
         const float invAlpha = 1.0f - alpha;
 
-        /*
-        std::cout << "pos: " << filePosition
-        << " samp: " << floatPosition
-        << " alpha: " << alpha
-        << " invAlpha: " << invAlpha
-        << std::endl;
-        */
-        
         for (int channel=0; channel < currentBlock.getNumChannels(); ++channel)
         {
             float* channelData = currentBlock.getWritePointer(channel);
             const float* fileData = fileBuffer.getReadPointer(channel % numChannels);
             
             // We copy the data from the file into the right place in the buffer and add it to the previous data:
-            channelData[ time % blockSize ] +=  (fileData[ (filePosition) ] * invAlpha + fileData[ (filePosition + 1)] * alpha) * gain;
+            channelData[ time % blockSize ] +=  (fileData[ (filePosition) ] * invAlpha + fileData[ (filePosition + 1)] * alpha) * gain * volume;
         }
     }
 };

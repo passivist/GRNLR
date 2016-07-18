@@ -31,6 +31,8 @@
  
  > handle samplerate mismatch between loaded file and host application
  
+ > midi control introduced some crashes? not shure yet
+ 
  
  
  
@@ -51,10 +53,10 @@ Grnlr_kleinAudioProcessor::Grnlr_kleinAudioProcessor() : Thread("BackgroundThrea
                                                          transParam(nullptr),
                                                          randTransParam(nullptr),
                                                          holdParam(nullptr),
-                                                         envCenterParam(nullptr),
-                                                         envSustainParam(nullptr),
                                                          volumeParam(nullptr),
-                                                         randVolumeParam(nullptr)
+                                                         randVolumeParam(nullptr),
+                                                         envCenterParam(nullptr),
+                                                         envSustainParam(nullptr)
 
 {
     startThread();
@@ -150,14 +152,20 @@ void Grnlr_kleinAudioProcessor::releaseResources()
 }
 
 //==============================================================================
-void Grnlr_kleinAudioProcessor::schedule(int startPosition, int length, float dur, float trans, float center, float sustain, float curve)
+void Grnlr_kleinAudioProcessor::schedule(int startPosition, int length, float dur, float trans, float center, float sustain, float curve, float volume)
 {
     int onset = (dur*sampleRate) + time + schedulerLatency;
     
     //std::cout << "NumGrains: " << stack.size() << std::endl;
     
-    stack.push_back(Grain(startPosition, length, onset, trans, center, sustain, curve));
-    
+    stack.push_back(Grain(startPosition, length, onset, trans, center, sustain, curve, volume));
+    /*
+    std::cout   << "startPos: " << startPosition
+                << " length: " << length
+                << " onset: " << onset
+                << " trans: " << trans
+                << std::endl;
+    */
     wait(dur*1000);
 }
 
@@ -181,15 +189,16 @@ void Grnlr_kleinAudioProcessor::run()
                 if(activeNotes.size()>0){
                     midiNote = activeNotes[random.nextInt(activeNotes.size())][0];
                 }
-                
+    
                 midiNote = (midiNote - 60);
-                
-                float position   = *positionParam   + (*randPosParam * (random.nextFloat() - 0.5));
+
+                float position   = std::fmod(1.0f, *positionParam + (*randPosParam * (random.nextFloat() - 0.5)));
                 float duration   = *durationParam   * (1 + (*randDurParam * (random.nextFloat() * 2 - 1)));
                 float fillFactor = *fillFactorParam * (1 + (*randFillParam * (random.nextFloat() * 2 - 1)));
-                float trans      = (midiNote + *transParam + 1)  * (1 + (*randTransParam * (random.nextFloat() * 2 - 1))) - 1;
+                float trans      = (midiNote + *transParam) + (1 + (*randTransParam * (random.nextFloat() * 2 - 1)));
                 float envCenter  = *envCenterParam;
                 float envSustain = *envSustainParam;
+                float volume = *volumeParam * (1 + *randVolumeParam * (random.nextFloat() * 2 - 1));
                 
                 int grainLength = fillFactor * (duration * sampleRate);
                 if (grainLength < 1) grainLength = 1;   // for safety if by some combination of parameters the length is 0
@@ -200,7 +209,8 @@ void Grnlr_kleinAudioProcessor::run()
                          trans,                                             // transposition
                          envCenter,                                         // center
                          envSustain,                                        // sustain
-                         1 );                                               // curve
+                         1,                                                 // curve
+                         volume);
             }
         } else {
             wait(500);
