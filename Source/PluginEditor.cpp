@@ -356,7 +356,7 @@ void Grnlr_kleinAudioProcessorEditor::openButtonClicked()
 {
     FileChooser chooser ( "Select a Wave file shorter than 60 seconds to play...",
                           File::nonexistent,
-                          "*.wav" );
+                          "*.wav, *.aiff, *.aif" );
 
     if (chooser.browseForFileToOpen())
     {
