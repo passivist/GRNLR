@@ -58,19 +58,19 @@ Grnlr_kleinAudioProcessor::Grnlr_kleinAudioProcessor() : Thread("BackgroundThrea
     startThread();
     schedulerLatency = 882;
 
-    addParameter(positionParam   = new AudioParameterFloat("pos", "Position", 0.0f, 1.0f, 0.5f));
-    addParameter(randPosParam    = new AudioParameterFloat("randPos", "Random Position", NormalisableRange<float>(0.0, 1.0, 0.01, 0.5), 0.0f));
-    addParameter(fillFactorParam = new AudioParameterFloat("fill", "Fill Factor", NormalisableRange<float>(0.001, 80.0, 0.001, 0.2), 10.0f));
-    addParameter(randFillParam   = new AudioParameterFloat("randFill", "Random Fill Factor", 0.0f, 1.0f, 0.0f));
-    addParameter(durationParam   = new AudioParameterFloat("dur", "Duration", NormalisableRange<float>(0.001, 4, 0.001, 0.3), 0.3f));
-    addParameter(randDurParam    = new AudioParameterFloat("randDur", "Random Duration", 0.0f, 1.0f, 0.0f));
-    addParameter(transParam      = new AudioParameterFloat("trans", "Transposition", -48.0f, 48.0f, 0.0f));
-    addParameter(randTransParam  = new AudioParameterFloat("randTrans", "Random Trans", NormalisableRange<float>(0, 24.0, 0.001, 0.5), 0.0f ));
-    addParameter(envCenterParam  = new AudioParameterFloat("envCenter", "Envelope Center", 0.0f, 1.0f, 0.5f));
-    addParameter(envSustainParam = new AudioParameterFloat("envSustain", "Envelope Sustain", 0.0f, 1.0f, 0.5f));
-    addParameter(envCurveParam  = new AudioParameterFloat("envCurve", "Envelope Curve", NormalisableRange<float>(-6, 6, 0.01, 1), 0.0f));
-    addParameter(volumeParam     = new AudioParameterFloat("vol", "Volume", NormalisableRange<float>(0.001, 1.0, 0.001, 0.7), 0.7f));
-    addParameter(randVolumeParam = new AudioParameterFloat("randVol", "Random Volume", 0.0f, 1.0f, 0.0f));
+    addParameter(positionParam   = new AudioParameterFloat("pos"       , "Position"          , 0.0f, 1.0f, 0.5f));
+    addParameter(randPosParam    = new AudioParameterFloat("randPos"   , "Random Position"   , NormalisableRange<float>(0.0, 1.0, 0.01, 0.5), 0.0f));
+    addParameter(fillFactorParam = new AudioParameterFloat("fill"      , "Fill Factor"       , NormalisableRange<float>(0.001, 80.0, 0.001, 0.2), 10.0f));
+    addParameter(randFillParam   = new AudioParameterFloat("randFill"  , "Random Fill Factor", 0.0f, 1.0f, 0.0f));
+    addParameter(durationParam   = new AudioParameterFloat("dur"       , "Duration"          , NormalisableRange<float>(0.001, 4, 0.001, 0.3), 0.3f));
+    addParameter(randDurParam    = new AudioParameterFloat("randDur"   , "Random Duration"   , 0.0f, 1.0f, 0.0f));
+    addParameter(transParam      = new AudioParameterFloat("trans"     , "Transposition"     , -48.0f, 48.0f, 0.0f));
+    addParameter(randTransParam  = new AudioParameterFloat("randTrans" , "Random Trans"      , NormalisableRange<float>(0, 24.0, 0.001, 0.5), 0.0f ));
+    addParameter(envCenterParam  = new AudioParameterFloat("envCenter" , "Envelope Center"   , 0.0f, 1.0f, 0.5f));
+    addParameter(envSustainParam = new AudioParameterFloat("envSustain", "Envelope Sustain"  , 0.0f, 1.0f, 0.5f));
+    addParameter(envCurveParam   = new AudioParameterFloat("envCurve"  , "Envelope Curve"    , NormalisableRange<float>(12, -12, 0.01, 1), 0.0f));
+    addParameter(volumeParam     = new AudioParameterFloat("vol"       , "Volume"            , NormalisableRange<float>(0.001, 1.0, 0.001, 0.7), 0.7f));
+    addParameter(randVolumeParam = new AudioParameterFloat("randVol"   , "Random Volume"     , 0.0f, 1.0f, 0.0f));
 
     addParameter(holdParam = new AudioParameterBool("hold", "Hold", false));
 
@@ -161,6 +161,7 @@ void Grnlr_kleinAudioProcessor::schedule(int startPosition, int length, float du
                 << " length: " << length
                 << " onset: " << onset
                 << " trans: " << trans
+                << " curve: " << curve
                 << std::endl;
     */
     wait(dur*1000);
@@ -195,7 +196,8 @@ void Grnlr_kleinAudioProcessor::run()
                 float trans      = (midiNote + *transParam) + (1 + (*randTransParam * (random.nextFloat() * 2 - 1)));
                 float envCenter  = *envCenterParam;
                 float envSustain = *envSustainParam;
-                float volume = *volumeParam * (1 + *randVolumeParam * (random.nextFloat() * 2 - 1));
+                float envCurve   = *envCurveParam;
+                float volume     = *volumeParam * (1 + *randVolumeParam * (random.nextFloat() * 2 - 1));
 
                 int grainLength = fillFactor * (duration * sampleRate);
                 if (grainLength < 1) grainLength = 1;   // for safety if by some combination of parameters the length is 0
@@ -206,7 +208,7 @@ void Grnlr_kleinAudioProcessor::run()
                          trans,                                             // transposition
                          envCenter,                                         // center
                          envSustain,                                        // sustain
-                         1,                                                 // curve
+                         envCurve,                                          // curve
                          volume);
             }
         } else {
