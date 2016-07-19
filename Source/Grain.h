@@ -101,17 +101,45 @@ public:
         // maybe calculate an array once at grain maybe calculate an array once at grain
         // creation and just index into it in here
         float envPos, gain;
-        envPos = (time - onset) * rainLengthRecip;
+
+
+
+        //level = begLevel + (endLevel - begLevel) * (numer/denom);
+
+        envPos = (time - onset) * grainLengthRecip;
         if(envPos <= envAttack){
+          if(abs(envCurve) > 0.001){
             float aPos;
+
+            aPos = envPos * envAttackRecip;
+
+            double denom = 1.0f - exp(envCurve);
+            double numer = 1.0f - exp(aPos * envCurve);
+
+            gain = (numer/denom);
+          } else {
+            float aPos;
+
             aPos = envPos * envAttackRecip;
             gain = aPos;
+          }
         } else if( envPos < envRelease){
             gain = 1.0;
         } else if( envPos >= envRelease ){
+          if(abs(envCurve) > 0.001){
             float rPos;
             rPos = (envPos - envRelease) * envReleaseRecip;
+
+            double denom = 1.0f - exp(envCurve);
+            double numer = 1.0f - exp(rPos * envCurve);
+
+            gain = (numer/denom) * (-1) + 1;
+          } else {
+            float rPos;
+            
+            rPos = (envPos - envRelease) * envReleaseRecip;
             gain = rPos * (-1) + 1;
+          }
         }
 
         /** LINEAR INTERPOLATION
@@ -127,8 +155,8 @@ public:
             float* channelData = currentBlock.getWritePointer(channel);
             const float* fileData = fileBuffer.getReadPointer(channel % numChannels);
 
-            // We copy the data from the file into the right place in the buffer and add it to the previous data:
-            channelData[ time % blockSize ] +=  (fileData[ (filePosition) ] * invAlpha + fileData[ (filePosition + 1)] * alpha) * gain * volume;
+            /* We copy the data from the file into the right place in the buffer and add it to the previous data: */
+            channelData[ time % blockSize ] += (fileData[ (filePosition) ] * invAlpha + fileData[ (filePosition + 1)] * alpha) * gain * volume;
         }
     }
 };

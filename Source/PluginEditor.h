@@ -54,11 +54,11 @@ private:
     ReferenceCountedArray<ReferenceCountedBuffer> buffers;
 
     AudioFormatManager formatManager;
-    
+
     // GUI:
     TextButton openButton;
     ScopedPointer<ParameterButton> holdButton;
-    
+
     Label fillLabel;
     Label randFillLabel;
     Label durationLabel;
@@ -68,6 +68,7 @@ private:
     Label randTransLabel;
     Label volumeLabel;
     Label randVolLabel;
+    
     ScopedPointer<ParameterSlider> positionSlider;
     ScopedPointer<ParameterSlider> fillSlider;
     ScopedPointer<ParameterSlider> durationSlider;
@@ -81,8 +82,10 @@ private:
 
     Label envCenterLabel;
     Label envSustainLabel;
+    Label envCurveLabel;
     ScopedPointer<ParameterSlider> envCenterSlider;
     ScopedPointer<ParameterSlider> envSustainSlider;
+    ScopedPointer<ParameterSlider> envCurveSlider;
 
     ScopedPointer<WaveformView> waveform;
 

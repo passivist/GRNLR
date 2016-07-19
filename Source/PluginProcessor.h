@@ -101,11 +101,11 @@ public:
     //==============================================================================
     AudioSampleBuffer tempBuffer;
     std::vector<Grain> stack;
-    
+
     int midiNotes[128] = {0};
 
     ReferenceCountedBuffer::Ptr currentBuffer;
-    
+
     MidiKeyboardState keyboardState;
 
     // CONTROLS
@@ -125,6 +125,7 @@ public:
     // Envelope:
     AudioParameterFloat* envCenterParam;
     AudioParameterFloat* envSustainParam;
+    AudioParameterFloat* envCurveParam;
 
     bool sampleIsLoaded = false;
     String filePath;

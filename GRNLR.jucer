@@ -57,21 +57,21 @@
                        targetName="GRNLR" binaryPath="/home/raffael/.vst/"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_core" path="../../dev/lib/JUCE/modules"/>
-        <MODULEPATH id="juce_events" path="../../dev/lib/JUCE/modules"/>
-        <MODULEPATH id="juce_graphics" path="../../dev/lib/JUCE/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../../dev/lib/JUCE/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../../dev/lib/JUCE/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../../dev/lib/JUCE/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../../dev/lib/JUCE/modules"/>
-        <MODULEPATH id="juce_video" path="../../dev/lib/JUCE/modules"/>
-        <MODULEPATH id="juce_opengl" path="../../dev/lib/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../../dev/lib/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../../dev/lib/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../../dev/lib/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../../dev/lib/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="../../dev/lib/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../../dev/lib/JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_video" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_opengl" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../lib/JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
   </EXPORTFORMATS>

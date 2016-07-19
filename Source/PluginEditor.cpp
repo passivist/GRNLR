@@ -173,18 +173,25 @@ Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAud
     addAndMakeVisible(envSustainSlider = new ParameterSlider(*p.envSustainParam));
     envSustainSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     envSustainSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
-    
+
+    addAndMakeVisible(envCurveLabel);
+    envCurveLabel.setText("Env Curve", dontSendNotification);
+
+    addAndMakeVisible(envCurveSlider = new ParameterSlider(*p.envCurveParam));
+    envCurveSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    envCurveSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
+
     // VOLUME
     addAndMakeVisible(volumeLabel);
     volumeLabel.setText("Volume", dontSendNotification);
-    
+
     addAndMakeVisible(volumeSlider = new ParameterSlider(*p.volumeParam));
     volumeSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     volumeSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
 
     addAndMakeVisible(randVolLabel);
     randVolLabel.setText("Rand Vol", dontSendNotification);
-    
+
     addAndMakeVisible(randVolSlider = new ParameterSlider(*p.randVolumeParam));
     randVolSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     randVolSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
@@ -255,11 +262,14 @@ void Grnlr_kleinAudioProcessorEditor::resized()
     randTransSlider->setBounds(190, 320, 50, 65);
 
     // Envelope
-    envCenterLabel.setBounds(740, 200, 70, 20);
-    envCenterSlider->setBounds(740, 220, 50, 65);
-    envSustainLabel.setBounds(810, 200, 70, 20);
-    envSustainSlider->setBounds(810, 220, 50, 65);
-    
+    envCenterLabel.setBounds(670, 200, 70, 20);
+    envCenterSlider->setBounds(670, 220, 50, 65);
+    envSustainLabel.setBounds(740, 200, 70, 20);
+    envSustainSlider->setBounds(740, 220, 50, 65);
+    envCurveLabel.setBounds(810, 200, 70, 20);
+    envCurveSlider->setBounds(810, 220, 50, 65);
+
+    // Volume
     volumeLabel.setBounds(740, 300, 70, 20);
     volumeSlider->setBounds(740, 320, 50, 65);
     randVolLabel.setBounds(810, 300, 70, 20);
