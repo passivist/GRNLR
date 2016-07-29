@@ -128,8 +128,8 @@ public:
                 
                 rPos = (envPos - envRelease) * envReleaseRecip;
                 
-                double denom = 1.0f - exp(envCurve);
-                double numer = 1.0f - exp(rPos * envCurve);
+                double denom = 1.0f - exp(-envCurve);
+                double numer = 1.0f - exp(rPos * -envCurve);
                 
                 gain = (numer/denom) * (-1) + 1;
             } else {
