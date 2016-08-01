@@ -7,8 +7,6 @@
  "microsound"
 
  !! TODO !!
- > A variable Envelope
- > Env Curve
  > maybe have Envelope be rendered during grain creation?? -> maybe more efficient, but no
  problems due to the envelope calculation being to costly thus far
 
@@ -20,15 +18,9 @@
     > maybe have Envelope be rendered during grain creation?? -> maybe more efficient, but no
       problems due to the envelope calculation being to costly thus far
 
- > reverse grains
-    > have a flag in the grain object which just tells the processfunction to read the samples
-      in the reverse order
-
  > GUI Sliders should have exponential scaling
 
  !! ISSUES !!
- > Audioparameters have only linear mapping so far should be exponetional in some cases
-
  > handle samplerate mismatch between loaded file and host application
 
  ==============================================================================
@@ -39,20 +31,20 @@
 
 //==============================================================================
 GrnlrAudioProcessor::GrnlrAudioProcessor() : Thread("BackgroundThread"),
-                                                         positionParam(nullptr),
-                                                         randPosParam(nullptr),
-                                                         fillFactorParam(nullptr),
-                                                         randFillParam(nullptr),
-                                                         durationParam(nullptr),
-                                                         randDurParam(nullptr),
-                                                         transParam(nullptr),
-                                                         randTransParam(nullptr),
-                                                         holdParam(nullptr),
-                                                         volumeParam(nullptr),
-                                                         randVolumeParam(nullptr),
-                                                         envCenterParam(nullptr),
-                                                         envSustainParam(nullptr),
-                                                         envCurveParam(nullptr)
+                                             positionParam(nullptr),
+                                             randPosParam(nullptr),
+                                             fillFactorParam(nullptr),
+                                             randFillParam(nullptr),
+                                             durationParam(nullptr),
+                                             randDurParam(nullptr),
+                                             transParam(nullptr),
+                                             randTransParam(nullptr),
+                                             volumeParam(nullptr),
+                                             randVolumeParam(nullptr),
+                                             envCenterParam(nullptr),
+                                             envSustainParam(nullptr),
+                                             envCurveParam(nullptr),
+                                             holdParam(nullptr)
 
 {
     startThread();
@@ -66,11 +58,12 @@ GrnlrAudioProcessor::GrnlrAudioProcessor() : Thread("BackgroundThread"),
     addParameter(randDurParam    = new AudioParameterFloat("randDur"   , "Random Duration"   , 0.0f, 1.0f, 0.0f));
     addParameter(transParam      = new AudioParameterFloat("trans"     , "Transposition"     , -48.0f, 48.0f, 0.0f));
     addParameter(randTransParam  = new AudioParameterFloat("randTrans" , "Random Trans"      , NormalisableRange<float>(0, 24.0, 0.001, 0.5), 0.0f ));
+    addParameter(volumeParam     = new AudioParameterFloat("vol"       , "Volume"            , NormalisableRange<float>(0.001, 1.0, 0.001, 0.7), 0.7f));
+    addParameter(randVolumeParam = new AudioParameterFloat("randVol"   , "Random Volume"     , 0.0f, 1.0f, 0.0f));
     addParameter(envCenterParam  = new AudioParameterFloat("envCenter" , "Envelope Center"   , 0.0f, 1.0f, 0.5f));
     addParameter(envSustainParam = new AudioParameterFloat("envSustain", "Envelope Sustain"  , 0.0f, 1.0f, 0.5f));
     addParameter(envCurveParam   = new AudioParameterFloat("envCurve"  , "Envelope Curve"    , NormalisableRange<float>(12, -12, 0.01, 1), 0.0f));
-    addParameter(volumeParam     = new AudioParameterFloat("vol"       , "Volume"            , NormalisableRange<float>(0.001, 1.0, 0.001, 0.7), 0.7f));
-    addParameter(randVolumeParam = new AudioParameterFloat("randVol"   , "Random Volume"     , 0.0f, 1.0f, 0.0f));
+
 
     addParameter(holdParam = new AudioParameterBool("hold", "Hold", false));
 
@@ -158,10 +151,10 @@ void GrnlrAudioProcessor::schedule(int startPosition, int length, float dur, flo
     stack.push_back(Grain(startPosition, length, onset, trans, center, sustain, curve, volume));
     /*
     std::cout   << "startPos: " << startPosition
-                << " length: " << length
-                << " onset: " << onset
-                << " trans: " << trans
-                << " curve: " << curve
+                << " length: "  << length
+                << " onset: "   << onset
+                << " trans: "   << trans
+                << " curve: "   << curve
                 << std::endl;
     */
     wait(dur*1000);
