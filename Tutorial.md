@@ -1,4 +1,6 @@
-# Tutorial
+# GRNLR
+### developing a VST/AU plugin in the JUCE Framework
+## Tutorial
 This tutorial assumes that you have not wrote any "serious" C++ before but have like me programmed
 some in artist oriented programming languages like SuperCollider, Processing, OpenFrameworks or PD/MAX.
 It documents my journey from a relatively finished concept and a working prototype in SuperCollider
