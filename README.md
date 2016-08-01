@@ -4,5 +4,6 @@
 a synthesizer I wrote in SuperCollider and the approach is inspired by Curtis Roads book
 *"Microsound"*.
 
-GRNLR is the practical part of my bachelors thesis. This readme being the theoretical part
-and also a tutorial on how to port a SuperCollider program to VST/AU using the JUCE Framework.
+GRNLR is not just an open source granular synthesizer but also a
+ [tutorial](https://github.com/passivist/GRNLR/blob/master/Tutorial.md)
+on how to build a VST/AU plugin on the basis of a prototype in SuperCollider.
