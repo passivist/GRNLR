@@ -56,13 +56,13 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ReferenceCountedBuffer)
 };
 
-class Grnlr_kleinAudioProcessor  :  public AudioProcessor,
+class GrnlrAudioProcessor  :  public AudioProcessor,
                                     public Thread
 {
 public:
     //==============================================================================
-    Grnlr_kleinAudioProcessor();
-    ~Grnlr_kleinAudioProcessor();
+    GrnlrAudioProcessor();
+    ~GrnlrAudioProcessor();
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
@@ -149,7 +149,7 @@ public:
 private:
     Random random;
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Grnlr_kleinAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GrnlrAudioProcessor)
 };
 
 #endif  // PLUGINPROCESSOR_H_INCLUDED

@@ -16,7 +16,7 @@ class  WaveformView : public Component,
 {
 public:
     WaveformView ( AudioFormatManager& formatManager,
-                   Grnlr_kleinAudioProcessor& p ) : thumbnailCache (5),
+                   GrnlrAudioProcessor& p ) : thumbnailCache (5),
     thumbnail (512, formatManager, thumbnailCache),
     processor(p)
     {
@@ -130,7 +130,7 @@ private:
     
     DrawableRectangle positionMarker;
     
-    Grnlr_kleinAudioProcessor& processor;
+    GrnlrAudioProcessor& processor;
     
     float timeToX (const double time) const
     {

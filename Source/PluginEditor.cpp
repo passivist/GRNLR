@@ -12,7 +12,7 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-class Grnlr_kleinAudioProcessorEditor::ParameterSlider : public Slider,
+class GrnlrAudioProcessorEditor::ParameterSlider : public Slider,
                                                          private Timer
 {
 public:
@@ -56,7 +56,7 @@ public:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ParameterSlider)
 };
 
-class Grnlr_kleinAudioProcessorEditor::ParameterButton : public TextButton,
+class GrnlrAudioProcessorEditor::ParameterButton : public TextButton,
                                                          private Timer
 {
 public:
@@ -88,7 +88,7 @@ public:
 };
 
 //==============================================================================
-Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAudioProcessor& p) : AudioProcessorEditor (&p),
+GrnlrAudioProcessorEditor::GrnlrAudioProcessorEditor (GrnlrAudioProcessor& p) : AudioProcessorEditor (&p),
                                                                                                   Thread("loading Thread"),
                                                                                                   processor (p)
 {
@@ -212,18 +212,18 @@ Grnlr_kleinAudioProcessorEditor::Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAud
         swapVariables(chosenPath, processor.loadedPath);
 }
 
-Grnlr_kleinAudioProcessorEditor::~Grnlr_kleinAudioProcessorEditor()
+GrnlrAudioProcessorEditor::~GrnlrAudioProcessorEditor()
 {
     stopThread(4000);
 }
 
 //==============================================================================
-void Grnlr_kleinAudioProcessorEditor::paint (Graphics& g)
+void GrnlrAudioProcessorEditor::paint (Graphics& g)
 {
     g.fillAll (Colours::white);
 }
 
-void Grnlr_kleinAudioProcessorEditor::resized()
+void GrnlrAudioProcessorEditor::resized()
 {
     int width = getWidth();
     Rectangle<int> r (getLocalBounds().reduced(4));
@@ -284,17 +284,17 @@ void Grnlr_kleinAudioProcessorEditor::resized()
 
 }
 
-void Grnlr_kleinAudioProcessorEditor::buttonClicked (Button* button)
+void GrnlrAudioProcessorEditor::buttonClicked (Button* button)
 {
     if(button == &openButton) openButtonClicked();
 }
 
-void Grnlr_kleinAudioProcessorEditor::sliderValueChanged(Slider* slider)
+void GrnlrAudioProcessorEditor::sliderValueChanged(Slider* slider)
 {
 
 }
 
-void Grnlr_kleinAudioProcessorEditor::run()
+void GrnlrAudioProcessorEditor::run()
 {
     while (! threadShouldExit())
     {
@@ -304,7 +304,7 @@ void Grnlr_kleinAudioProcessorEditor::run()
     }
 }
 
-void Grnlr_kleinAudioProcessorEditor::checkForBuffersToFree()
+void GrnlrAudioProcessorEditor::checkForBuffersToFree()
 {
     for (int i = buffers.size(); --i >= 0;)
     {
@@ -315,7 +315,7 @@ void Grnlr_kleinAudioProcessorEditor::checkForBuffersToFree()
     }
 }
 
-void Grnlr_kleinAudioProcessorEditor::checkForPathToOpen()
+void GrnlrAudioProcessorEditor::checkForPathToOpen()
 {
     String pathToOpen;
     swapVariables (pathToOpen, chosenPath);
@@ -352,7 +352,7 @@ void Grnlr_kleinAudioProcessorEditor::checkForPathToOpen()
 }
 
 
-void Grnlr_kleinAudioProcessorEditor::openButtonClicked()
+void GrnlrAudioProcessorEditor::openButtonClicked()
 {
     FileChooser chooser ( "Select a Wave file shorter than 60 seconds to play...",
                           File::nonexistent,
@@ -368,7 +368,7 @@ void Grnlr_kleinAudioProcessorEditor::openButtonClicked()
     }
 }
 
-void Grnlr_kleinAudioProcessorEditor::changeListenerCallback (ChangeBroadcaster* source)
+void GrnlrAudioProcessorEditor::changeListenerCallback (ChangeBroadcaster* source)
 {
     if (source == waveform)
         waveform->setFile(waveform->getLastDroppedFile());

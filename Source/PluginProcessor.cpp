@@ -38,7 +38,7 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-Grnlr_kleinAudioProcessor::Grnlr_kleinAudioProcessor() : Thread("BackgroundThread"),
+GrnlrAudioProcessor::GrnlrAudioProcessor() : Thread("BackgroundThread"),
                                                          positionParam(nullptr),
                                                          randPosParam(nullptr),
                                                          fillFactorParam(nullptr),
@@ -77,18 +77,18 @@ Grnlr_kleinAudioProcessor::Grnlr_kleinAudioProcessor() : Thread("BackgroundThrea
     random = *new Random(Time::currentTimeMillis());
 }
 
-Grnlr_kleinAudioProcessor::~Grnlr_kleinAudioProcessor()
+GrnlrAudioProcessor::~GrnlrAudioProcessor()
 {
     stopThread(4000);
 }
 
 //==============================================================================
-const String Grnlr_kleinAudioProcessor::getName() const
+const String GrnlrAudioProcessor::getName() const
 {
     return JucePlugin_Name;
 }
 
-bool Grnlr_kleinAudioProcessor::producesMidi() const
+bool GrnlrAudioProcessor::producesMidi() const
 {
 #if JucePlugin_ProducesMidiOutput
     return true;
@@ -97,44 +97,44 @@ bool Grnlr_kleinAudioProcessor::producesMidi() const
 #endif
 }
 
-bool Grnlr_kleinAudioProcessor::silenceInProducesSilenceOut() const
+bool GrnlrAudioProcessor::silenceInProducesSilenceOut() const
 {
     return false;
 }
 
-double Grnlr_kleinAudioProcessor::getTailLengthSeconds() const
+double GrnlrAudioProcessor::getTailLengthSeconds() const
 {
     return 0.0;
 }
 
-int Grnlr_kleinAudioProcessor::getNumPrograms()
+int GrnlrAudioProcessor::getNumPrograms()
 {
     return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
     // so this should be at least 1, even if you're not really implementing programs.
 }
 
-int Grnlr_kleinAudioProcessor::getCurrentProgram()
+int GrnlrAudioProcessor::getCurrentProgram()
 {
     return 0;
 }
 
-void Grnlr_kleinAudioProcessor::setCurrentProgram (int index)
+void GrnlrAudioProcessor::setCurrentProgram (int index)
 {
 
 }
 
-const String Grnlr_kleinAudioProcessor::getProgramName (int index)
+const String GrnlrAudioProcessor::getProgramName (int index)
 {
     return String();
 }
 
-void Grnlr_kleinAudioProcessor::changeProgramName (int index, const String& newName)
+void GrnlrAudioProcessor::changeProgramName (int index, const String& newName)
 {
 
 }
 
 //==============================================================================
-void Grnlr_kleinAudioProcessor::prepareToPlay (double sRate, int samplesPerBlock)
+void GrnlrAudioProcessor::prepareToPlay (double sRate, int samplesPerBlock)
 {
     time = 0;
     sampleRate = sRate;
@@ -142,14 +142,14 @@ void Grnlr_kleinAudioProcessor::prepareToPlay (double sRate, int samplesPerBlock
     keyboardState.reset();
 }
 
-void Grnlr_kleinAudioProcessor::releaseResources()
+void GrnlrAudioProcessor::releaseResources()
 {
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
 }
 
 //==============================================================================
-void Grnlr_kleinAudioProcessor::schedule(int startPosition, int length, float dur, float trans, float center, float sustain, float curve, float volume)
+void GrnlrAudioProcessor::schedule(int startPosition, int length, float dur, float trans, float center, float sustain, float curve, float volume)
 {
     int onset = (dur*sampleRate) + time + schedulerLatency;
 
@@ -167,7 +167,7 @@ void Grnlr_kleinAudioProcessor::schedule(int startPosition, int length, float du
     wait(dur*1000);
 }
 
-void Grnlr_kleinAudioProcessor::run()
+void GrnlrAudioProcessor::run()
 {
     while (! threadShouldExit())
     {
@@ -218,7 +218,7 @@ void Grnlr_kleinAudioProcessor::run()
 }
 
 //==============================================================================
-void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
+void GrnlrAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
     int blockSize = buffer.getNumSamples();
 
@@ -255,7 +255,7 @@ void Grnlr_kleinAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuf
 }
 
 //==============================================================================
-void Grnlr_kleinAudioProcessor::processMidi(MidiBuffer& midiMessages, int numSamples)
+void GrnlrAudioProcessor::processMidi(MidiBuffer& midiMessages, int numSamples)
 {
     MidiBuffer::Iterator i (midiMessages);
     MidiMessage message;
@@ -277,19 +277,19 @@ void Grnlr_kleinAudioProcessor::processMidi(MidiBuffer& midiMessages, int numSam
 }
 
 //==============================================================================
-bool Grnlr_kleinAudioProcessor::hasEditor() const
+bool GrnlrAudioProcessor::hasEditor() const
 {
     return true; // (change this to false if you choose to not supply an editor)
 }
 
-AudioProcessorEditor* Grnlr_kleinAudioProcessor::createEditor()
+AudioProcessorEditor* GrnlrAudioProcessor::createEditor()
 {
 
-    return new Grnlr_kleinAudioProcessorEditor (*this);
+    return new GrnlrAudioProcessorEditor (*this);
 }
 
 //==============================================================================
-void Grnlr_kleinAudioProcessor::getStateInformation (MemoryBlock& destData)
+void GrnlrAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
     // You should use this method to store your parameters in the memory block.
     // Here's an example of how you can use XML to make it easy and more robust:
@@ -314,7 +314,7 @@ void Grnlr_kleinAudioProcessor::getStateInformation (MemoryBlock& destData)
     copyXmlToBinary (xml, destData);
 }
 
-void Grnlr_kleinAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void GrnlrAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
@@ -348,5 +348,5 @@ void Grnlr_kleinAudioProcessor::setStateInformation (const void* data, int sizeI
 // This creates new instances of the plugin..
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new Grnlr_kleinAudioProcessor();
+    return new GrnlrAudioProcessor();
 }

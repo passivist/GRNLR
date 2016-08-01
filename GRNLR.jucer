@@ -29,7 +29,7 @@
         <CONFIGURATION name="Debug" osxSDK="default" osxCompatibility="default" osxArchitecture="64BitIntel"
                        isDebug="1" optimisation="3" targetName="GRNLR"/>
         <CONFIGURATION name="Release" osxSDK="default" osxCompatibility="default" osxArchitecture="64BitUniversal"
-                       isDebug="0" optimisation="3" targetName="GRNLR"/>
+                       isDebug="0" optimisation="3" targetName="GRNLR" linkTimeOptimisation="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../lib/JUCE/modules"/>

@@ -18,15 +18,15 @@
 //==============================================================================
 /**
  */
-class Grnlr_kleinAudioProcessorEditor : public AudioProcessorEditor,
+class GrnlrAudioProcessorEditor : public AudioProcessorEditor,
                                         public Thread,
                                         private Slider::Listener,
                                         private Button::Listener,
                                         private ChangeListener
 {
 public:
-    Grnlr_kleinAudioProcessorEditor (Grnlr_kleinAudioProcessor&);
-    ~Grnlr_kleinAudioProcessorEditor();
+    GrnlrAudioProcessorEditor (GrnlrAudioProcessor&);
+    ~GrnlrAudioProcessorEditor();
 
     //==============================================================================
     void paint (Graphics&) override;
@@ -40,7 +40,7 @@ public:
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
-    Grnlr_kleinAudioProcessor& processor;
+    GrnlrAudioProcessor& processor;
 
     class ParameterSlider;
     class ParameterButton;
@@ -89,7 +89,7 @@ private:
 
     ScopedPointer<WaveformView> waveform;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Grnlr_kleinAudioProcessorEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GrnlrAudioProcessorEditor)
 };
 
 #endif  // PLUGINEDITOR_H_INCLUDED
