@@ -14,12 +14,6 @@
  > have a flag in the grain object which just tells the processfunction to read the samples
  in the reverse order
 
-    > Env Curve
-    > maybe have Envelope be rendered during grain creation?? -> maybe more efficient, but no
-      problems due to the envelope calculation being to costly thus far
-
- > GUI Sliders should have exponential scaling
-
  !! ISSUES !!
  > handle samplerate mismatch between loaded file and host application
 

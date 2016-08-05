@@ -354,7 +354,7 @@ void GrnlrAudioProcessorEditor::checkForPathToOpen()
 
 void GrnlrAudioProcessorEditor::openButtonClicked()
 {
-    FileChooser chooser ( "Select a Wave file shorter than 60 seconds to play...",
+    FileChooser chooser ( "Select a Wave file shorter than 600 seconds to play...",
                           File::nonexistent,
                           "*.wav, *.aiff, *.aif" );
 
@@ -368,8 +368,15 @@ void GrnlrAudioProcessorEditor::openButtonClicked()
     }
 }
 
+// This function implements a callback that the WaveformView class sends when sendChangeMessage() is
+// called in the files dropped function. We use it to load the file that we have dropped in the
+// WaveformView
 void GrnlrAudioProcessorEditor::changeListenerCallback (ChangeBroadcaster* source)
 {
-    if (source == waveform)
-        waveform->setFile(waveform->getLastDroppedFile());
+    if (source == waveform){
+        const File file(waveform->getLastDroppedFile());
+        String path (file.getFullPathName());
+        swapVariables(chosenPath, path);
+        waveform->setFile(file);
+    }
 }

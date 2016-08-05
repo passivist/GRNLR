@@ -4,7 +4,7 @@
 This [tutorial](https://github.com/passivist/GRNLR/blob/master/Tutorial.md) assumes that you have not wrote any "serious" C++ before but have like me programmed
 some in artist oriented programming languages like SuperCollider, Processing, OpenFrameworks or PD/MAX.
 It documents my journey from a relatively finished concept and a working prototype in SuperCollider
-so I will often reference the process of "porting" the program from SuperCollider to JUCE. <doppelt?>  
+so I will often reference the process of "porting" the program from SuperCollider to JUCE. 
 
 Some knowledge in digital audio might come in handy but I'll try to keep the technical details
 as sparse and simple as possible.
@@ -24,3 +24,5 @@ tutorial. For Linux users there is also a handy
 Once you are comfortable with your IDE of choice and the Projucer as well as the Plugin-Host you can start by
 
 ### Making Plans
+Because I started out with a working prototype that had all the functions that I wanted to implement I first thought
+about which of these functions I wanted to have in the plugin version of the program and which I wanted to discard.
