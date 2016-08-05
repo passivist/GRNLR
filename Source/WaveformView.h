@@ -1,13 +1,6 @@
 #ifndef WAVEFORMVIEW_H_INCLUDED
 #define WAVEFORMVIEW_H_INCLUDED
 
-/**
- TODO: needs an interface to communicate with the GUI parameters to update things like
- the position and stuff.
- ISSUE: file drag and drop doesn't work correctly
- -> seems to work somewhat under MacOS
- */
-
 class  WaveformView : public Component,
                       public ChangeListener,
                       public FileDragAndDropTarget,

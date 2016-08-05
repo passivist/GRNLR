@@ -27,6 +27,7 @@
 GrnlrAudioProcessor::GrnlrAudioProcessor() : Thread("BackgroundThread"),
                                              positionParam(nullptr),
                                              randPosParam(nullptr),
+                                             directionParam(nullptr),
                                              fillFactorParam(nullptr),
                                              randFillParam(nullptr),
                                              durationParam(nullptr),
@@ -46,6 +47,7 @@ GrnlrAudioProcessor::GrnlrAudioProcessor() : Thread("BackgroundThread"),
 
     addParameter(positionParam   = new AudioParameterFloat("pos"       , "Position"          , 0.0f, 1.0f, 0.5f));
     addParameter(randPosParam    = new AudioParameterFloat("randPos"   , "Random Position"   , NormalisableRange<float>(0.0, 1.0, 0.01, 0.5), 0.0f));
+    addParameter(directionParam  = new AudioParameterFloat("dir"       , "Direction"         , 0.0f, 1.0f, 1.0f));
     addParameter(fillFactorParam = new AudioParameterFloat("fill"      , "Fill Factor"       , NormalisableRange<float>(0.001, 80.0, 0.001, 0.2), 10.0f));
     addParameter(randFillParam   = new AudioParameterFloat("randFill"  , "Random Fill Factor", 0.0f, 1.0f, 0.0f));
     addParameter(durationParam   = new AudioParameterFloat("dur"       , "Duration"          , NormalisableRange<float>(0.001, 4, 0.001, 0.3), 0.3f));
@@ -60,8 +62,6 @@ GrnlrAudioProcessor::GrnlrAudioProcessor() : Thread("BackgroundThread"),
 
 
     addParameter(holdParam = new AudioParameterBool("hold", "Hold", false));
-
-    random = *new Random(Time::currentTimeMillis());
 }
 
 GrnlrAudioProcessor::~GrnlrAudioProcessor()
@@ -136,19 +136,34 @@ void GrnlrAudioProcessor::releaseResources()
 }
 
 //==============================================================================
-void GrnlrAudioProcessor::schedule(int startPosition, int length, float dur, float trans, float center, float sustain, float curve, float volume)
+int GrnlrAudioProcessor::wchoose(float weight){
+    Array<float> weightArr = {1 - weight, weight};
+    float random = Random::getSystemRandom().nextFloat();
+    for(int i = 0; i < weightArr.size(); i++)
+    {
+        if(random < weightArr[i])
+        {
+            return i;
+        }
+        random -= weightArr[i];
+    }
+}
+
+void GrnlrAudioProcessor::schedule(int startPosition, int length, float dur, float trans, bool direction, float center, float sustain, float curve, float volume)
 {
     int onset = (dur*sampleRate) + time + schedulerLatency;
 
     //std::cout << "NumGrains: " << stack.size() << std::endl;
 
-    stack.push_back(Grain(startPosition, length, onset, trans, center, sustain, curve, volume));
+    stack.push_back(Grain(startPosition, length, onset, trans, direction, center, sustain, curve, volume));
     /*
-    std::cout   << "startPos: " << startPosition
-                << " length: "  << length
-                << " onset: "   << onset
-                << " trans: "   << trans
-                << " curve: "   << curve
+    std::cout   << "startPos: "     << startPosition
+                << " length: "      << length
+                << " onset: "       << onset
+                << " trans: "       << trans
+                << " curve: "       << curve
+                << " direction: "   << direction
+                << " vol: "         << volume
                 << std::endl;
     */
     wait(dur*1000);
@@ -172,19 +187,20 @@ void GrnlrAudioProcessor::run()
                 float midiNote = 60;
 
                 if(activeNotes.size()>0){
-                    midiNote = activeNotes[random.nextInt(activeNotes.size())][0];
+                    midiNote = activeNotes[Random::getSystemRandom().nextInt(activeNotes.size())][0];
                 }
 
                 midiNote = (midiNote - 60);
 
-                float position   = std::fmod(1.0f, *positionParam + (*randPosParam * (random.nextFloat() - 0.5)));
-                float duration   = *durationParam   * (1 + (*randDurParam * (random.nextFloat() * 2 - 1)));
-                float fillFactor = *fillFactorParam * (1 + (*randFillParam * (random.nextFloat() * 2 - 1)));
-                float trans      = (midiNote + *transParam) + (1 + (*randTransParam * (random.nextFloat() * 2 - 1)));
+                float position   = std::fmod(1.0f, *positionParam + (*randPosParam * (Random::getSystemRandom().nextFloat() - 0.5)));
+                float duration   = *durationParam   * (1 + (*randDurParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));
+                float fillFactor = *fillFactorParam * (1 + (*randFillParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));
+                float trans      = (midiNote + *transParam) + (1 + (*randTransParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));
                 float envCenter  = *envCenterParam;
                 float envSustain = *envSustainParam;
                 float envCurve   = *envCurveParam;
-                float volume     = *volumeParam * (1 + *randVolumeParam * (random.nextFloat() * 2 - 1));
+                float volume     = *volumeParam * (1 + *randVolumeParam * (Random::getSystemRandom().nextFloat() * 2 - 1));
+                bool direction   = wchoose(*directionParam);
 
                 int grainLength = fillFactor * (duration * sampleRate);
                 if (grainLength < 1) grainLength = 1;   // for safety if by some combination of parameters the length is 0
@@ -193,6 +209,7 @@ void GrnlrAudioProcessor::run()
                          grainLength,                                       // length
                          duration,                                          // duration
                          trans,                                             // transposition
+                         direction,                                         // direction
                          envCenter,                                         // center
                          envSustain,                                        // sustain
                          envCurve,                                          // curve

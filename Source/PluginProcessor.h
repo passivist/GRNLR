@@ -73,7 +73,19 @@ public:
 
     void run () override;
     //==============================================================================
-    void schedule(int startPosition, int length, float durSecs, float trans, float center, float sustain, float curve, float volume);
+    void schedule(
+                  int startPosition,
+                  int length,
+                  float durSecs,
+                  float trans,
+                  bool direciton,
+                  float center,
+                  float sustain,
+                  float curve,
+                  float volume
+                  );
+    
+    int wchoose(float weight);
 
     //==============================================================================
     AudioProcessorEditor* createEditor() override;
@@ -112,6 +124,7 @@ public:
     // Main Grain Controls:
     AudioParameterFloat* positionParam;
     AudioParameterFloat* randPosParam;
+    AudioParameterFloat* directionParam;
     AudioParameterFloat* fillFactorParam;
     AudioParameterFloat* randFillParam;
     AudioParameterFloat* durationParam;
@@ -147,7 +160,6 @@ public:
     int sampleRate;
 
 private:
-    Random random;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GrnlrAudioProcessor)
 };

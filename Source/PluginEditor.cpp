@@ -89,8 +89,8 @@ public:
 
 //==============================================================================
 GrnlrAudioProcessorEditor::GrnlrAudioProcessorEditor (GrnlrAudioProcessor& p) : AudioProcessorEditor (&p),
-                                                                                                  Thread("loading Thread"),
-                                                                                                  processor (p)
+                                                                                Thread("loading Thread"),
+                                                                                processor (p)
 {
     // BUTTONS
     addAndMakeVisible(openButton);
@@ -112,6 +112,13 @@ GrnlrAudioProcessorEditor::GrnlrAudioProcessorEditor (GrnlrAudioProcessor& p) : 
     addAndMakeVisible(randPosSlider = new ParameterSlider (*p.randPosParam));
     randPosSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     randPosSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
+    
+    addAndMakeVisible(directionLabel);
+    directionLabel.setText("Direction", dontSendNotification);
+    
+    addAndMakeVisible(directionSlider = new ParameterSlider(*p.directionParam));
+    directionSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    directionSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
 
     // FILL FACTOR
     addAndMakeVisible(fillLabel);
@@ -237,8 +244,12 @@ void GrnlrAudioProcessorEditor::resized()
 
     // Position
     positionSlider->setBounds(4, 150, width - 8, 15);
-    randPosLabel.setBounds(130, 200, 70, 20);
-    randPosSlider->setBounds(130, 220, 50, 65);
+    
+    directionLabel.setBounds(130, 200, 70, 20);
+    directionSlider->setBounds(130, 220, 50, 65);
+    
+    randPosLabel.setBounds(130, 300, 70, 20);
+    randPosSlider->setBounds(130, 320, 50, 65);
 
     // Fill Factor
     fillLabel.setBounds(10, 200, 60, 20);

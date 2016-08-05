@@ -59,6 +59,7 @@ private:
     TextButton openButton;
     ScopedPointer<ParameterButton> holdButton;
 
+    Label directionLabel;
     Label fillLabel;
     Label randFillLabel;
     Label durationLabel;
@@ -70,6 +71,7 @@ private:
     Label randVolLabel;
     
     ScopedPointer<ParameterSlider> positionSlider;
+    ScopedPointer<ParameterSlider> directionSlider;
     ScopedPointer<ParameterSlider> fillSlider;
     ScopedPointer<ParameterSlider> durationSlider;
     ScopedPointer<ParameterSlider> randPosSlider;

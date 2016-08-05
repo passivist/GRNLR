@@ -15,6 +15,7 @@ public:
     int grainLength;
     int startPosition;
     int onset;
+    bool direction;
     float grainLengthRecip;
     float pitchRatio;
     
@@ -64,11 +65,13 @@ public:
         volume = 0.8;
     };
     
-    Grain(int start, int length, int time, float trans, float center, float sustain, float curve, float vol){
+    Grain(int start, int length, int time, float trans, bool dir, float center, float sustain, float curve, float vol){
         startPosition = start;
         grainLength = length;
         onset = time;
         grainLengthRecip = 1.f / (float) grainLength;
+        
+        direction = dir;
         
         pitchRatio = pow (2.0, trans / 12.0);
         
@@ -91,8 +94,27 @@ public:
     void process(AudioSampleBuffer& currentBlock, AudioSampleBuffer& fileBuffer, int time, int numChannels, int blockSize)
     {
         float position = (time - onset) * pitchRatio;
-        int filePosition = (startPosition + (int) position) % fileBuffer.getNumSamples();
-        float floatPosition = std::fmod(startPosition + position, fileBuffer.getNumSamples());
+        int filePosition;
+        float floatPosition;
+        
+        /** DIRECTION
+         We calculate the position to read from differently if we want to play foward or reverse.
+         The important part here is the frame of reference:
+            If the Grain should play forward the position to read at is defined as starting at the startPosition
+            and continueing by adding the current position to that.
+         
+            If the grain should play backwards the position to read is defined as the end of the grain
+            (startPosition + grainLength) and the current position is subtracted from that.
+         */
+        if(direction){
+            filePosition = (startPosition + (int) position) % fileBuffer.getNumSamples();
+            floatPosition = std::fmod(startPosition + position, fileBuffer.getNumSamples());
+        } else {
+            filePosition = abs(startPosition + grainLength - (int) position) % fileBuffer.getNumSamples();
+            floatPosition = fabs(std::fmod(startPosition + grainLength - position, fileBuffer.getNumSamples()));
+
+        }
+        
         
         /** ENVELOPE
          */
@@ -103,7 +125,6 @@ public:
         float envPos, gain;
         
         envPos = (time - onset) * grainLengthRecip;
-        //std::cout << envCurve << std::endl;
         if(envPos <= envAttack){
             if(std::abs(envCurve) > 0.001){
                 float aPos;
@@ -142,8 +163,14 @@ public:
         
         /** LINEAR INTERPOLATION
          */
-        const float alpha = floatPosition - filePosition;
+        const float alpha = fabs(floatPosition - filePosition);
         const float invAlpha = 1.0f - alpha;
+        
+        std::cout   << "floatPos: " << floatPosition
+                    << " filePos: " << filePosition
+                    << " alpha: " << alpha
+                    << " invAlpha: " << invAlpha
+                    << std::endl;
         
         /** AUDIO COPYING
          
