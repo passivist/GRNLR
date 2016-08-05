@@ -165,13 +165,13 @@ public:
          */
         const float alpha = fabs(floatPosition - filePosition);
         const float invAlpha = 1.0f - alpha;
-        
+        /*
         std::cout   << "floatPos: " << floatPosition
                     << " filePos: " << filePosition
                     << " alpha: " << alpha
                     << " invAlpha: " << invAlpha
                     << std::endl;
-        
+        */
         /** AUDIO COPYING
          
          */
