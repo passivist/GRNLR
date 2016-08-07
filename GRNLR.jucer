@@ -74,6 +74,31 @@
         <MODULEPATH id="juce_audio_utils" path="../../lib/JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
+    <VS2015 targetFolder="Builds/VisualStudio2015" vstFolder="">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
+                       isDebug="1" optimisation="1" targetName="GRNLR"/>
+        <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
+                       isDebug="0" optimisation="3" targetName="GRNLR"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_video" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_opengl" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../lib/JUCE/modules"/>
+      </MODULEPATHS>
+    </VS2015>
   </EXPORTFORMATS>
   <MODULES>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0"/>
