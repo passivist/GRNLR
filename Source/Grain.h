@@ -181,7 +181,11 @@ public:
             const float* fileData = fileBuffer.getReadPointer(channel % numChannels);
             
             /* We copy the data from the file into the right place in the buffer and add it to the previous data: */
-            channelData[ time % blockSize ] += (fileData[ (filePosition) ] * invAlpha + fileData[ (filePosition + 1)] * alpha) * gain * volume;
+            if(direction)
+                channelData[ time % blockSize ] += (fileData[ (filePosition) ] * invAlpha + fileData[ (filePosition + 1)] * alpha) * gain * volume;
+            else
+                channelData[ time % blockSize ] += (fileData[ (filePosition) ] * invAlpha + fileData[ (filePosition - 1)] * alpha) * gain * volume;
+            
         }
     }
 };

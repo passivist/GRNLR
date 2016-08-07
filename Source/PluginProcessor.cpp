@@ -235,12 +235,16 @@ void GrnlrAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& m
     {
         return;
     }
+    
+    // process MIDI
+    processMidi(midiMessages, blockSize);
+    
     // check if we have a grain to process
     if(stack.size()<1){
         return;
     }
     
-    processMidi(midiMessages, blockSize);
+    
 
     AudioSampleBuffer* currentAudioSampleBuffer (retainedCurrentBuffer->getAudioSampleBuffer());
     int numChannels = currentAudioSampleBuffer->getNumChannels();
