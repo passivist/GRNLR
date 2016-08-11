@@ -229,54 +229,31 @@ void GrnlrAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& m
     // before we do anything we clear the current buffer to avoid noise:
     buffer.clear();
 
+    processMidi(midiMessages, blockSize);
+
     // check if a valid buffer exists
     ReferenceCountedBuffer::Ptr retainedCurrentBuffer (currentBuffer);
     if (retainedCurrentBuffer == nullptr)
     {
         return;
     }
-    
-    // process MIDI
-    processMidi(midiMessages, blockSize);
-    
-    // check if we have a grain to process
-    if(stack.size()<1){
-        return;
-    }
-    
-    
 
     AudioSampleBuffer* currentAudioSampleBuffer (retainedCurrentBuffer->getAudioSampleBuffer());
     int numChannels = currentAudioSampleBuffer->getNumChannels();
 
     for (int i=0; i < blockSize; ++i) {
-        /*
-        for(int i=0; i<stack.size(); ++i) {
+        for(int i=0; i<stack.size(); ++i)
+        {
             if(time > stack[i].onset + stack[i].grainLength)
             {
                 stack.erase(stack.begin() + i);
             }
-        }
-         */
-        std::vector<Grain> localStack;
-        
-        for(auto g : stack){
-            if(time < g.onset + g.grainLength){
-                localStack.push_back(g);
+
+            if(time - stack[i].onset > 0){
+                stack[i].process(buffer, *currentAudioSampleBuffer, time, numChannels, blockSize);
             }
         }
 
-        if (localStack.size() < 1){
-            return;
-        }
-        
-        for(auto g : localStack)
-        {
-            if(time - g.onset > 0){
-                g.process(buffer, *currentAudioSampleBuffer, time, numChannels, blockSize);
-            }
-        }
-        stack = localStack;
         time += 1;
     }
 }
@@ -311,7 +288,6 @@ bool GrnlrAudioProcessor::hasEditor() const
 
 AudioProcessorEditor* GrnlrAudioProcessor::createEditor()
 {
-
     return new GrnlrAudioProcessorEditor (*this);
 }
 
