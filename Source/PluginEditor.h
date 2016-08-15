@@ -18,7 +18,7 @@
 //==============================================================================
 /**
  */
-class GrnlrAudioProcessorEditor : public AudioProcessorEditor,
+class GrnlrAudioProcessorEditor :       public AudioProcessorEditor,
                                         public Thread,
                                         private Slider::Listener,
                                         private Button::Listener,

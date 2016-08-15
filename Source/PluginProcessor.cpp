@@ -10,10 +10,6 @@
  > maybe have Envelope be rendered during grain creation?? -> maybe more efficient, but no
  problems due to the envelope calculation being to costly thus far
 
- > reverse grains
- > have a flag in the grain object which just tells the processfunction to read the samples
- in the reverse order
-
  !! ISSUES !!
  > handle samplerate mismatch between loaded file and host application
 
@@ -147,6 +143,7 @@ int GrnlrAudioProcessor::wchoose(float weight){
         }
         random -= weightArr[i];
     }
+    return 0;
 }
 
 void GrnlrAudioProcessor::schedule(int startPosition, int length, float dur, float trans, bool direction, float center, float sustain, float curve, float volume)
@@ -190,7 +187,7 @@ void GrnlrAudioProcessor::run()
                     midiNote = activeNotes[Random::getSystemRandom().nextInt(activeNotes.size())][0];
                 }
 
-                midiNote = (midiNote - 60);
+                midiNote = (midiNote - 61);
 
                 float position   = std::fmod(1.0f, *positionParam + (*randPosParam * (Random::getSystemRandom().nextFloat() - 0.5)));
                 float duration   = *durationParam   * (1 + (*randDurParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));

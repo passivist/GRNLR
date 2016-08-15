@@ -261,7 +261,7 @@
  #define JucePlugin_ManufacturerEmail      ""
 #endif
 #ifndef  JucePlugin_ManufacturerCode
- #define JucePlugin_ManufacturerCode       0x52535900 // 'RSY'
+ #define JucePlugin_ManufacturerCode       0x52737900 // 'Rsy'
 #endif
 #ifndef  JucePlugin_PluginCode
  #define JucePlugin_PluginCode             0x47676774 // 'Gggt'
