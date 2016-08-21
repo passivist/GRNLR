@@ -41,7 +41,7 @@ GrnlrAudioProcessor::GrnlrAudioProcessor() : Thread("BackgroundThread"),
     startThread();
     schedulerLatency = 882;
 
-    addParameter(positionParam   = new AudioParameterFloat("pos"       , "Position"          , 0.0f, 1.0f, 0.5f));
+    addParameter(positionParam   = new AudioParameterFloat("pos"       , "Position"          , 0.0001f, 1.0f, 0.5f));
     addParameter(randPosParam    = new AudioParameterFloat("randPos"   , "Random Position"   , NormalisableRange<float>(0.0, 1.0, 0.01, 0.5), 0.0f));
     addParameter(directionParam  = new AudioParameterFloat("dir"       , "Direction"         , 0.0f, 1.0f, 1.0f));
     addParameter(fillFactorParam = new AudioParameterFloat("fill"      , "Fill Factor"       , NormalisableRange<float>(0.001, 80.0, 0.001, 0.2), 10.0f));
@@ -153,7 +153,7 @@ void GrnlrAudioProcessor::schedule(int startPosition, int length, float dur, flo
     //std::cout << "NumGrains: " << stack.size() << std::endl;
 
     stack.push_back(Grain(startPosition, length, onset, trans, direction, center, sustain, curve, volume));
-    /*
+    
     std::cout   << "startPos: "     << startPosition
                 << " length: "      << length
                 << " onset: "       << onset
@@ -162,7 +162,7 @@ void GrnlrAudioProcessor::schedule(int startPosition, int length, float dur, flo
                 << " direction: "   << direction
                 << " vol: "         << volume
                 << std::endl;
-    */
+    
     wait(dur*1000);
 }
 
