@@ -48,6 +48,7 @@ private:
     void openButtonClicked();
     void checkForBuffersToFree();
     void checkForPathToOpen();
+    void checkForRestoredPath();
 
     void run() override;
 

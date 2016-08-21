@@ -78,10 +78,12 @@ public:
         envCurve = curve;
         
         envAttack  = (1 - sustain) * center;
-        envRelease = (1 - sustain) * (-1 * center) + 1;
+        envRelease = sustain + envAttack;
         
         envAttackRecip  = 1/envAttack;
         envReleaseRecip = 1/(1 - envRelease);
+        
+        std::cout << envAttack << " " << sustain << " " << envRelease << std::endl;
         
         volume = vol;
     };
@@ -115,7 +117,6 @@ public:
 
         }
         
-        
         /** ENVELOPE
          */
         
@@ -126,6 +127,7 @@ public:
         
         envPos = (time - onset) * grainLengthRecip;
         if(envPos <= envAttack){
+            //std::cout << "att " << envPos << " " << envAttack << std::endl;
             if(std::abs(envCurve) > 0.001){
                 float aPos;
                 
@@ -143,7 +145,9 @@ public:
             }
         } else if( envPos < envRelease){
             gain = 1.0;
+            //std::cout << "sus " << envPos << " " << envRelease << std::endl;
         } else if( envPos >= envRelease ){
+            //std::cout << "rel " << envPos << " " << envRelease << std::endl;
             if(std::abs(envCurve) > 0.001){
                 float rPos;
                 

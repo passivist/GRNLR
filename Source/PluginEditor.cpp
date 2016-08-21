@@ -309,6 +309,7 @@ void GrnlrAudioProcessorEditor::run()
 {
     while (! threadShouldExit())
     {
+        checkForRestoredPath();
         checkForPathToOpen();
         checkForBuffersToFree();
         wait (500);
@@ -323,6 +324,16 @@ void GrnlrAudioProcessorEditor::checkForBuffersToFree()
 
         if (buffer->getReferenceCount() == 2)
             buffers.remove (i);
+    }
+}
+
+void GrnlrAudioProcessorEditor::checkForRestoredPath()
+{
+    String path;
+    path = processor.loadedPath;
+    if(path.isNotEmpty()){
+        swapVariables(chosenPath, path);
+        processor.loadedPath = "";
     }
 }
 

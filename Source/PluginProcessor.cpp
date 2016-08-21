@@ -153,7 +153,7 @@ void GrnlrAudioProcessor::schedule(int startPosition, int length, float dur, flo
     //std::cout << "NumGrains: " << stack.size() << std::endl;
 
     stack.push_back(Grain(startPosition, length, onset, trans, direction, center, sustain, curve, volume));
-    
+    /*
     std::cout   << "startPos: "     << startPosition
                 << " length: "      << length
                 << " onset: "       << onset
@@ -162,7 +162,7 @@ void GrnlrAudioProcessor::schedule(int startPosition, int length, float dur, flo
                 << " direction: "   << direction
                 << " vol: "         << volume
                 << std::endl;
-    
+    */
     wait(dur*1000);
 }
 
@@ -309,6 +309,7 @@ void GrnlrAudioProcessor::getStateInformation (MemoryBlock& destData)
     }
 
     xml.setAttribute("FilePath", filePath);
+    std::cout << "Save Path: " << filePath << std::endl;
 
     // then use this helper function to stuff it into the binary blob and return it..
     copyXmlToBinary (xml, destData);
@@ -339,7 +340,7 @@ void GrnlrAudioProcessor::setStateInformation (const void* data, int sizeInBytes
                 }
             }
             loadedPath = xmlState->getStringAttribute("FilePath");
-            std::cout << loadedPath << std::endl;
+            std::cout << "Load Path: " << filePath << std::endl;
         }
     }
 }
