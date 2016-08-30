@@ -24,8 +24,8 @@ GrnlrAudioProcessor::GrnlrAudioProcessor() : Thread("BackgroundThread"),
                                              positionParam(nullptr),
                                              randPosParam(nullptr),
                                              directionParam(nullptr),
-                                             fillFactorParam(nullptr),
-                                             randFillParam(nullptr),
+                                             densityParam(nullptr),
+                                             randDensityParam(nullptr),
                                              durationParam(nullptr),
                                              randDurParam(nullptr),
                                              transParam(nullptr),
@@ -44,8 +44,8 @@ GrnlrAudioProcessor::GrnlrAudioProcessor() : Thread("BackgroundThread"),
     addParameter(positionParam   = new AudioParameterFloat("pos"       , "Position"          , 0.0001f, 1.0f, 0.5f));
     addParameter(randPosParam    = new AudioParameterFloat("randPos"   , "Random Position"   , NormalisableRange<float>(0.0, 1.0, 0.01, 0.5), 0.0f));
     addParameter(directionParam  = new AudioParameterFloat("dir"       , "Direction"         , 0.0f, 1.0f, 1.0f));
-    addParameter(fillFactorParam = new AudioParameterFloat("fill"      , "Fill Factor"       , NormalisableRange<float>(0.001, 80.0, 0.001, 0.2), 10.0f));
-    addParameter(randFillParam   = new AudioParameterFloat("randFill"  , "Random Fill Factor", 0.0f, 1.0f, 0.0f));
+    addParameter(densityParam    = new AudioParameterFloat("den"       , "Density"           , NormalisableRange<float>(0.001, 80.0, 0.001, 0.2), 10.0f));
+    addParameter(randDensityParam   = new AudioParameterFloat("randDen"  , "Random Density"    , 0.0f, 1.0f, 0.0f));
     addParameter(durationParam   = new AudioParameterFloat("dur"       , "Duration"          , NormalisableRange<float>(0.001, 4, 0.001, 0.3), 0.3f));
     addParameter(randDurParam    = new AudioParameterFloat("randDur"   , "Random Duration"   , 0.0f, 1.0f, 0.0f));
     addParameter(transParam      = new AudioParameterFloat("trans"     , "Transposition"     , -48.0f, 48.0f, 0.0f));
@@ -191,7 +191,7 @@ void GrnlrAudioProcessor::run()
 
                 float position   = std::fmod(1.0f, *positionParam + (*randPosParam * (Random::getSystemRandom().nextFloat() - 0.5)));
                 float duration   = *durationParam   * (1 + (*randDurParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));
-                float fillFactor = *fillFactorParam * (1 + (*randFillParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));
+                float density = *densityParam * (1 + (*randDensityParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));
                 float trans      = (midiNote + *transParam) + (1 + (*randTransParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));
                 float envCenter  = *envCenterParam;
                 float envSustain = *envSustainParam;
@@ -199,7 +199,7 @@ void GrnlrAudioProcessor::run()
                 float volume     = *volumeParam * (1 + *randVolumeParam * (Random::getSystemRandom().nextFloat() * 2 - 1));
                 bool direction   = wchoose(*directionParam);
 
-                int grainLength = fillFactor * (duration * sampleRate);
+                int grainLength = density * (duration * sampleRate);
                 if (grainLength < 1) grainLength = 1;   // for safety if by some combination of parameters the length is 0
 
                 schedule( position * lengthInSamples,                       // startPosition

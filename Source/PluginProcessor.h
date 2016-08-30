@@ -125,8 +125,8 @@ public:
     AudioParameterFloat* positionParam;
     AudioParameterFloat* randPosParam;
     AudioParameterFloat* directionParam;
-    AudioParameterFloat* fillFactorParam;
-    AudioParameterFloat* randFillParam;
+    AudioParameterFloat* densityParam;
+    AudioParameterFloat* randDensityParam;
     AudioParameterFloat* durationParam;
     AudioParameterFloat* randDurParam;
     AudioParameterFloat* transParam;

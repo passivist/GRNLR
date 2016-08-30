@@ -122,16 +122,16 @@ GrnlrAudioProcessorEditor::GrnlrAudioProcessorEditor (GrnlrAudioProcessor& p) : 
 
     // FILL FACTOR
     addAndMakeVisible(fillLabel);
-    fillLabel.setText("Fill Factor", dontSendNotification);
+    fillLabel.setText("Density", dontSendNotification);
 
-    addAndMakeVisible(fillSlider = new ParameterSlider (*p.fillFactorParam));
+    addAndMakeVisible(fillSlider = new ParameterSlider (*p.densityParam));
     fillSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     fillSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
 
     addAndMakeVisible(randFillLabel);
-    randFillLabel.setText("Rand Fill", dontSendNotification);
+    randFillLabel.setText("Rand Den", dontSendNotification);
 
-    addAndMakeVisible(randFillSlider = new ParameterSlider (*p.randFillParam));
+    addAndMakeVisible(randFillSlider = new ParameterSlider (*p.randDensityParam));
     randFillSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     randFillSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
 
