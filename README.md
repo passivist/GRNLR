@@ -5,5 +5,5 @@ a synthesizer I wrote in SuperCollider and the approach is inspired by Curtis Ro
 *"Microsound"*.
 
 GRNLR is not just an open source granular synthesizer but also a
- [tutorial](https://github.com/passivist/GRNLR/blob/master/Tutorial.md)
+ [tutorial](https://github.com/passivist/GRNLR/wiki)
 on how to build a VST/AU plugin on the basis of a prototype in SuperCollider.
