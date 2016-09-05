@@ -55,7 +55,7 @@ public:
         
         envCurve = 1;
         envAttack = 0.4;
-        envRelease = 0.4;
+        envRelease = 0.6;
         
         pitchRatio = 1;
         
