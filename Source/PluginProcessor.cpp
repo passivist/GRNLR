@@ -189,7 +189,7 @@ void GrnlrAudioProcessor::run()
 
                 midiNote = (midiNote - 61);
 
-                float position   = std::fmod(1.0f, *positionParam + (*randPosParam * (Random::getSystemRandom().nextFloat() - 0.5)));
+                float position   = std::fmod(*positionParam + (*randPosParam * (Random::getSystemRandom().nextFloat() - 0.5)), 1.0f);
                 float duration   = *durationParam   * (1 + (*randDurParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));
                 float density = *densityParam * (1 + (*randDensityParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));
                 float trans      = (midiNote + *transParam) + (1 + (*randTransParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));

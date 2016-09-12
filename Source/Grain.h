@@ -117,6 +117,11 @@ public:
 
         }
         
+        /*
+        float postPos = floatPosition / fileBuffer.getNumSamples();
+        std::cout << "pos: " << postPos << " flPos: " << floatPosition << std::endl;
+         */
+        
         /** ENVELOPE
          */
         
