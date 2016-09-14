@@ -41,20 +41,20 @@ GrnlrAudioProcessor::GrnlrAudioProcessor() : Thread("BackgroundThread"),
     startThread();
     schedulerLatency = 882;
 
-    addParameter(positionParam   = new AudioParameterFloat("pos"       , "Position"          , 0.0001f, 1.0f, 0.5f));
-    addParameter(randPosParam    = new AudioParameterFloat("randPos"   , "Random Position"   , NormalisableRange<float>(0.0, 1.0, 0.01, 0.5), 0.0f));
-    addParameter(directionParam  = new AudioParameterFloat("dir"       , "Direction"         , 0.0f, 1.0f, 1.0f));
-    addParameter(densityParam    = new AudioParameterFloat("den"       , "Density"           , NormalisableRange<float>(0.001, 80.0, 0.001, 0.2), 10.0f));
-    addParameter(randDensityParam   = new AudioParameterFloat("randDen"  , "Random Density"    , 0.0f, 1.0f, 0.0f));
-    addParameter(durationParam   = new AudioParameterFloat("dur"       , "Duration"          , NormalisableRange<float>(0.001, 4, 0.001, 0.3), 0.3f));
-    addParameter(randDurParam    = new AudioParameterFloat("randDur"   , "Random Duration"   , 0.0f, 1.0f, 0.0f));
-    addParameter(transParam      = new AudioParameterFloat("trans"     , "Transposition"     , -48.0f, 48.0f, 0.0f));
-    addParameter(randTransParam  = new AudioParameterFloat("randTrans" , "Random Trans"      , NormalisableRange<float>(0, 24.0, 0.001, 0.5), 0.0f ));
-    addParameter(volumeParam     = new AudioParameterFloat("vol"       , "Volume"            , NormalisableRange<float>(0.001, 1.0, 0.001, 0.7), 0.7f));
-    addParameter(randVolumeParam = new AudioParameterFloat("randVol"   , "Random Volume"     , 0.0f, 1.0f, 0.0f));
-    addParameter(envCenterParam  = new AudioParameterFloat("envCenter" , "Envelope Center"   , 0.0f, 1.0f, 0.5f));
-    addParameter(envSustainParam = new AudioParameterFloat("envSustain", "Envelope Sustain"  , 0.0f, 1.0f, 0.5f));
-    addParameter(envCurveParam   = new AudioParameterFloat("envCurve"  , "Envelope Curve"    , NormalisableRange<float>(12, -12, 0.01, 1), 0.0f));
+    addParameter(positionParam      = new AudioParameterFloat("pos"       , "Position"          , 0.0001f, 1.0f, 0.5f));
+    addParameter(randPosParam       = new AudioParameterFloat("randPos"   , "Random Position"   , NormalisableRange<float>(0.0, 1.0, 0.01, 0.5), 0.0f));
+    addParameter(directionParam     = new AudioParameterFloat("dir"       , "Direction"         , 0.0f, 1.0f, 1.0f));
+    addParameter(densityParam       = new AudioParameterFloat("den"       , "Density"           , NormalisableRange<float>(0.001, 80.0, 0.001, 0.2), 10.0f));
+    addParameter(randDensityParam   = new AudioParameterFloat("randDen"   , "Random Density"    , 0.0f, 1.0f, 0.0f));
+    addParameter(durationParam      = new AudioParameterFloat("dur"       , "Duration"          , NormalisableRange<float>(0.001, 4, 0.001, 0.3), 0.3f));
+    addParameter(randDurParam       = new AudioParameterFloat("randDur"   , "Random Duration"   , 0.0f, 1.0f, 0.0f));
+    addParameter(transParam         = new AudioParameterFloat("trans"     , "Transposition"     , -48.0f, 48.0f, 0.0f));
+    addParameter(randTransParam     = new AudioParameterFloat("randTrans" , "Random Trans"      , NormalisableRange<float>(0, 24.0, 0.001, 0.5), 0.0f ));
+    addParameter(volumeParam        = new AudioParameterFloat("vol"       , "Volume"            , NormalisableRange<float>(0.001, 1.0, 0.001, 0.7), 0.7f));
+    addParameter(randVolumeParam    = new AudioParameterFloat("randVol"   , "Random Volume"     , 0.0f, 1.0f, 0.0f));
+    addParameter(envCenterParam     = new AudioParameterFloat("envCenter" , "Envelope Center"   , 0.0f, 1.0f, 0.5f));
+    addParameter(envSustainParam    = new AudioParameterFloat("envSustain", "Envelope Sustain"  , 0.0f, 1.0f, 0.5f));
+    addParameter(envCurveParam      = new AudioParameterFloat("envCurve"  , "Envelope Curve"    , NormalisableRange<float>(12, -12, 0.01, 1), 0.0f));
 
 
     addParameter(holdParam = new AudioParameterBool("hold", "Hold", false));
@@ -191,7 +191,7 @@ void GrnlrAudioProcessor::run()
 
                 float position   = std::fmod(*positionParam + (*randPosParam * (Random::getSystemRandom().nextFloat() - 0.5)), 1.0f);
                 float duration   = *durationParam   * (1 + (*randDurParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));
-                float density = *densityParam * (1 + (*randDensityParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));
+                float density    = *densityParam * (1 + (*randDensityParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));
                 float trans      = (midiNote + *transParam) + (1 + (*randTransParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));
                 float envCenter  = *envCenterParam;
                 float envSustain = *envSustainParam;

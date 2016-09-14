@@ -57,7 +57,7 @@ public:
 };
 
 class GrnlrAudioProcessorEditor::ParameterButton : public TextButton,
-                                                         private Timer
+                                                   private Timer
 {
 public:
     ParameterButton (AudioProcessorParameter& p) : TextButton (p.getName (256)), param (p)
