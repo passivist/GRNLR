@@ -1,0 +1,19 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2015
+Project("{330A7933-1BD4-1D07-FF23-962F343D7D0A}") = "GRNLR", "GRNLR.vcxproj", "{4B453F69-796F-2CB6-FB03-462A0981C86E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4B453F69-796F-2CB6-FB03-462A0981C86E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4B453F69-796F-2CB6-FB03-462A0981C86E}.Debug|Win32.Build.0 = Debug|Win32
+		{4B453F69-796F-2CB6-FB03-462A0981C86E}.Release|Win32.ActiveCfg = Release|Win32
+		{4B453F69-796F-2CB6-FB03-462A0981C86E}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

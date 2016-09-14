@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "E95B72B2D51EE99BB200CA373094C534FD07D1BA",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "DEBAC9C6799FD4E8074B3BAF720718E3C3499FA0" : 0,
+    "E95B72B2D51EE99BB200CA373094C534FD07D1BA" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "0ECEDF82-6A0B-4CBC-A99F-BAA159129E56",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "DEBAC9C6799FD4E8074B3BAF720718E3C3499FA0" : "..\/lib\/JUCE",
+    "E95B72B2D51EE99BB200CA373094C534FD07D1BA" : "GRNLR\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "GRNLR",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Builds\/MacOSX\/GRNLR.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/julianstorer\/JUCE.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "DEBAC9C6799FD4E8074B3BAF720718E3C3499FA0"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/passivist\/GRNLR.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "E95B72B2D51EE99BB200CA373094C534FD07D1BA"
+    }
+  ]
+}
