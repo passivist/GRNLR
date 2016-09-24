@@ -173,22 +173,18 @@ void GrnlrAudioProcessor::run()
         if (sampleIsLoaded) {
             // Get Active Notes
             std::vector<std::vector<int>> activeNotes;
-
+            
             for(int i=0; i<128; i++){
                 if(midiNotes[i] > 0){
                     activeNotes.push_back( std::vector<int> {i, midiNotes[i] } );
                 }
             }
-
             
+            if(*holdParam || (activeNotes.size()>0)) {
                 float midiNote = 60;
-
-                if(activeNotes.size()>0){
-                    midiNote = activeNotes[Random::getSystemRandom().nextInt(activeNotes.size())][0];
-                }
-
+                midiNote = activeNotes[Random::getSystemRandom().nextInt(activeNotes.size())][0];
                 midiNote = (midiNote - 61);
-
+                
                 float position   = std::fmod(*positionParam + (*randPosParam * (Random::getSystemRandom().nextFloat() - 0.5)), 1.0f);
                 float trans      = (midiNote + *transParam) + (1 + (*randTransParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));
                 float ratio      = pow (2.0, trans / 12.0);
@@ -199,11 +195,11 @@ void GrnlrAudioProcessor::run()
                 float envCurve   = *envCurveParam;
                 float volume     = *volumeParam * (1 + *randVolumeParam * (Random::getSystemRandom().nextFloat() * 2 - 1));
                 bool direction   = wchoose(*directionParam);
-
+                
                 int grainLength = density * (duration * sampleRate);
                 if (grainLength < 1) grainLength = 1;   // for safety if by some combination of parameters the length is 0
-            
-            if(*holdParam || (activeNotes.size()>0)) {
+                
+                
                 schedule( position * lengthInSamples,                       // startPosition
                          grainLength,                                       // length
                          duration,                                          // duration
@@ -213,9 +209,8 @@ void GrnlrAudioProcessor::run()
                          envSustain,                                        // sustain
                          envCurve,                                          // curve
                          volume);
-               
+                wait(duration*1000);
             }
-            wait(duration*1000);
         } else {
             wait(500);
         }
