@@ -210,6 +210,8 @@ void GrnlrAudioProcessor::run()
                          envCurve,                                          // curve
                          volume);
                 wait(duration*1000);
+            } else {
+                wait(1);
             }
         } else {
             wait(500);
