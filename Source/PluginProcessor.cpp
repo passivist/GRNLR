@@ -163,8 +163,8 @@ void GrnlrAudioProcessor::schedule(int startPosition, int length, float dur, flo
                 << " vol: "         << volume
                 << std::endl;
     */
-    wait(dur*1000);
-}
+
+} 
 
 void GrnlrAudioProcessor::run()
 {
@@ -180,7 +180,7 @@ void GrnlrAudioProcessor::run()
                 }
             }
 
-            if(*holdParam || (activeNotes.size()>0)) {
+            
                 float midiNote = 60;
 
                 if(activeNotes.size()>0){
@@ -190,9 +190,10 @@ void GrnlrAudioProcessor::run()
                 midiNote = (midiNote - 61);
 
                 float position   = std::fmod(*positionParam + (*randPosParam * (Random::getSystemRandom().nextFloat() - 0.5)), 1.0f);
-                float duration   = *durationParam   * (1 + (*randDurParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));
-                float density    = *densityParam * (1 + (*randDensityParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));
                 float trans      = (midiNote + *transParam) + (1 + (*randTransParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));
+                float ratio      = pow (2.0, trans / 12.0);
+                float duration   = *durationParam * (1 + (*randDurParam * (Random::getSystemRandom().nextFloat() * 2 - 1))) * (1 / ratio) + 0.001;
+                float density    = *densityParam * (1 + (*randDensityParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));
                 float envCenter  = *envCenterParam;
                 float envSustain = *envSustainParam;
                 float envCurve   = *envCurveParam;
@@ -201,17 +202,20 @@ void GrnlrAudioProcessor::run()
 
                 int grainLength = density * (duration * sampleRate);
                 if (grainLength < 1) grainLength = 1;   // for safety if by some combination of parameters the length is 0
-
+            
+            if(*holdParam || (activeNotes.size()>0)) {
                 schedule( position * lengthInSamples,                       // startPosition
                          grainLength,                                       // length
                          duration,                                          // duration
-                         trans,                                             // transposition
+                         ratio,                                             // transposition
                          direction,                                         // direction
                          envCenter,                                         // center
                          envSustain,                                        // sustain
                          envCurve,                                          // curve
                          volume);
+               
             }
+            wait(duration*1000);
         } else {
             wait(500);
         }
