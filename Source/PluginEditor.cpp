@@ -13,7 +13,7 @@
 
 //==============================================================================
 class GrnlrAudioProcessorEditor::ParameterSlider : public Slider,
-                                                         private Timer
+                                                   private Timer
 {
 public:
     ParameterSlider (AudioProcessorParameter& p) : Slider (p.getName (256)), param (p)
@@ -215,7 +215,7 @@ GrnlrAudioProcessorEditor::GrnlrAudioProcessorEditor (GrnlrAudioProcessor& p) : 
     // editor's size to whatever you need it to be.
     setSize (880, 440);
 
-    if( ! processor.loadedPath.isEmpty())
+    if( processor.loadedPath.isNotEmpty())
         swapVariables(chosenPath, processor.loadedPath);
 }
 
