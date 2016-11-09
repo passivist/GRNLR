@@ -9,9 +9,11 @@
               pluginIsMidiEffectPlugin="0" pluginSilenceInIsSilenceOut="0"
               pluginEditorRequiresKeys="0" pluginAUExportPrefix="GRNLRAU" pluginRTASCategory=""
               aaxIdentifier="com.yourcompany.GRNLR" pluginAAXCategory="AAX_ePlugInCategory_Dynamics"
-              jucerVersion="4.2.3" buildAUv3="0">
+              jucerVersion="4.2.4" buildAUv3="0">
   <MAINGROUP id="JE5ije" name="GRNLR">
     <GROUP id="{F064CC56-9A3E-7C56-89FF-2C66DB888718}" name="Source">
+      <FILE id="x6BACx" name="ReferenceCountedBuffer.h" compile="0" resource="0"
+            file="Source/ReferenceCountedBuffer.h"/>
       <FILE id="O0wwEQ" name="WaveformView.h" compile="0" resource="0" file="Source/WaveformView.h"/>
       <FILE id="rk2ahj" name="Grain.h" compile="0" resource="0" file="Source/Grain.h"/>
       <FILE id="EMyYQw" name="PluginProcessor.cpp" compile="1" resource="0"

@@ -65,7 +65,7 @@ public:
         volume = 0.8;
     };
     
-    Grain(int start, int length, int time, float trans, bool dir, float center, float sustain, float curve, float vol){
+    Grain(int start, int length, int time, float ratio, bool dir, float center, float sustain, float curve, float vol){
         startPosition = start;
         grainLength = length;
         onset = time;
@@ -73,7 +73,7 @@ public:
         
         direction = dir;
         
-        pitchRatio = pow (2.0, trans / 12.0);
+        pitchRatio = ratio;
         
         envCurve = curve;
         
@@ -83,7 +83,6 @@ public:
         envAttackRecip  = 1/envAttack;
         envReleaseRecip = 1/(1 - envRelease);
         
-        std::cout << envAttack << " " << sustain << " " << envRelease << std::endl;
         
         volume = vol;
     };
