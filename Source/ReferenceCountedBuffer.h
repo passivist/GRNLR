@@ -17,9 +17,8 @@ public:
     
     ReferenceCountedBuffer (const String& nameToUse,
                             int numChannels,
-                            int numSamples) : position (0),
-    name (nameToUse),
-    buffer (numChannels, numSamples)
+                            int numSamples) :   name (nameToUse),
+                                                buffer (numChannels, numSamples)
     {
         DBG (
              String ("Buffer named '") + name +
@@ -36,8 +35,6 @@ public:
     {
         return &buffer;
     }
-    
-    int position;
     
 private:
     String name;

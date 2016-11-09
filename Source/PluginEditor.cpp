@@ -380,8 +380,7 @@ void GrnlrAudioProcessorEditor::openButtonClicked()
                           File::nonexistent,
                           "*.wav, *.aiff, *.aif" );
 
-    if (chooser.browseForFileToOpen())
-    {
+    if (chooser.browseForFileToOpen()){
         const File file (chooser.getResult());
         String path (file.getFullPathName());
         swapVariables (chosenPath, path);

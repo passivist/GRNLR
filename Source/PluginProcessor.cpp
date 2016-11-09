@@ -231,15 +231,12 @@ void GrnlrAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& m
 
     // check if a valid buffer exists
     ReferenceCountedBuffer::Ptr retainedCurrentBuffer (currentBuffer);
-    if (retainedCurrentBuffer == nullptr)
-    {
-        return;
-    }
+    if (retainedCurrentBuffer == nullptr) return;
 
     AudioSampleBuffer* currentAudioSampleBuffer (retainedCurrentBuffer->getAudioSampleBuffer());
     int numChannels = currentAudioSampleBuffer->getNumChannels();
 
-    for (int i=0; i < blockSize; ++i) {
+    for (int s=0; s < blockSize; ++s) {
         for(int i=0; i<stack.size(); ++i)
         {
             if(time > stack[i].onset + stack[i].grainLength)
@@ -252,7 +249,7 @@ void GrnlrAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& m
             }
         }
 
-        time += 1;
+        ++time;
     }
 }
 

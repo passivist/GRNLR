@@ -76,7 +76,6 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
     //==============================================================================
-    AudioSampleBuffer tempBuffer;
     std::vector<Grain> stack;
 
     int midiNotes[128] = {0};
