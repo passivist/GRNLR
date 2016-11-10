@@ -1,49 +1,35 @@
 /*
- ==============================================================================
- GRNLR VST IMPLEMENTATION
- Concept:
- > quasisyncronous granular synthesis engine based on a supercollider prototype
- > support for an approach to granular synthesis inspired by Curtis Roads book
- "microsound"
+  ==============================================================================
 
- !! TODO !!
- > maybe have Envelope be rendered during grain creation?? -> maybe more efficient, but no
- problems due to the envelope calculation being to costly thus far
+    This file was auto-generated!
 
- !! ISSUES !!
- > handle samplerate mismatch between loaded file and host application
+    It contains the basic framework code for a JUCE plugin processor.
 
- ==============================================================================
- */
+  ==============================================================================
+*/
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+
 //==============================================================================
-GrnlrAudioProcessor::GrnlrAudioProcessor() : Thread("BackgroundThread"),
-                                             positionParam(nullptr),
-                                             randPosParam(nullptr),
-                                             directionParam(nullptr),
-                                             densityParam(nullptr),
-                                             randDensityParam(nullptr),
-                                             durationParam(nullptr),
-                                             randDurParam(nullptr),
-                                             transParam(nullptr),
-                                             randTransParam(nullptr),
-                                             volumeParam(nullptr),
-                                             randVolumeParam(nullptr),
-                                             envCenterParam(nullptr),
-                                             envSustainParam(nullptr),
-                                             envCurveParam(nullptr),
-                                             holdParam(nullptr)
-
+GrrnlrrAudioProcessor::GrrnlrrAudioProcessor() :    Thread("scheduling thread"),
+                                                    positionParam(nullptr),
+                                                    randPosParam(nullptr),
+                                                    densityParam(nullptr),
+                                                    randDensityParam(nullptr),
+                                                    durationParam(nullptr),
+                                                    randDurParam(nullptr),
+                                                    transParam(nullptr),
+                                                    randTransParam(nullptr),
+                                                    volumeParam(nullptr),
+                                                    randVolumeParam(nullptr),
+                                                    envMidParam(nullptr),
+                                                    envSustainParam(nullptr),
+                                                    envCurveParam(nullptr)
 {
-    startThread();
-    schedulerLatency = 882;
-
     addParameter(positionParam      = new AudioParameterFloat("pos"       , "Position"          , 0.0001f, 1.0f, 0.5f));
     addParameter(randPosParam       = new AudioParameterFloat("randPos"   , "Random Position"   , NormalisableRange<float>(0.0, 1.0, 0.01, 0.5), 0.0f));
-    addParameter(directionParam     = new AudioParameterFloat("dir"       , "Direction"         , 0.0f, 1.0f, 1.0f));
     addParameter(densityParam       = new AudioParameterFloat("den"       , "Density"           , NormalisableRange<float>(0.001, 80.0, 0.001, 0.2), 10.0f));
     addParameter(randDensityParam   = new AudioParameterFloat("randDen"   , "Random Density"    , 0.0f, 1.0f, 0.0f));
     addParameter(durationParam      = new AudioParameterFloat("dur"       , "Duration"          , NormalisableRange<float>(0.001, 4, 0.001, 0.3), 0.3f));
@@ -52,214 +38,201 @@ GrnlrAudioProcessor::GrnlrAudioProcessor() : Thread("BackgroundThread"),
     addParameter(randTransParam     = new AudioParameterFloat("randTrans" , "Random Trans"      , NormalisableRange<float>(0, 24.0, 0.001, 0.5), 0.0f ));
     addParameter(volumeParam        = new AudioParameterFloat("vol"       , "Volume"            , NormalisableRange<float>(0.001, 1.0, 0.001, 0.7), 0.7f));
     addParameter(randVolumeParam    = new AudioParameterFloat("randVol"   , "Random Volume"     , 0.0f, 1.0f, 0.0f));
-    addParameter(envCenterParam     = new AudioParameterFloat("envCenter" , "Envelope Center"   , 0.0f, 1.0f, 0.5f));
+    addParameter(envMidParam        = new AudioParameterFloat("envCenter" , "Envelope Center"   , 0.0f, 1.0f, 0.5f));
     addParameter(envSustainParam    = new AudioParameterFloat("envSustain", "Envelope Sustain"  , 0.0f, 1.0f, 0.5f));
-    addParameter(envCurveParam      = new AudioParameterFloat("envCurve"  , "Envelope Curve"    , NormalisableRange<float>(12, -12, 0.01, 1), 0.0f));
-
-
-    addParameter(holdParam = new AudioParameterBool("hold", "Hold", false));
+    addParameter(envCurveParam      = new AudioParameterFloat("envCurve"  , "Envelope Curve"    , NormalisableRange<float>(-12, 12, 0.01, 1), 0.0f));
+    
+    time = 0;
+    startThread();
 }
 
-GrnlrAudioProcessor::~GrnlrAudioProcessor()
+GrrnlrrAudioProcessor::~GrrnlrrAudioProcessor()
 {
     stopThread(4000);
 }
 
 //==============================================================================
-const String GrnlrAudioProcessor::getName() const
+void GrrnlrrAudioProcessor::prepareToPlay (double sRate, int samplesPerBlock)
 {
-    return JucePlugin_Name;
-}
-
-bool GrnlrAudioProcessor::producesMidi() const
-{
-#if JucePlugin_ProducesMidiOutput
-    return true;
-#else
-    return false;
-#endif
-}
-
-bool GrnlrAudioProcessor::silenceInProducesSilenceOut() const
-{
-    return false;
-}
-
-double GrnlrAudioProcessor::getTailLengthSeconds() const
-{
-    return 0.0;
-}
-
-int GrnlrAudioProcessor::getNumPrograms()
-{
-    return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
-    // so this should be at least 1, even if you're not really implementing programs.
-}
-
-int GrnlrAudioProcessor::getCurrentProgram()
-{
-    return 0;
-}
-
-void GrnlrAudioProcessor::setCurrentProgram (int index)
-{
-
-}
-
-const String GrnlrAudioProcessor::getProgramName (int index)
-{
-    return String();
-}
-
-void GrnlrAudioProcessor::changeProgramName (int index, const String& newName)
-{
-
-}
-
-//==============================================================================
-void GrnlrAudioProcessor::prepareToPlay (double sRate, int samplesPerBlock)
-{
-    time = 0;
     sampleRate = sRate;
-
-    keyboardState.reset();
 }
 
-void GrnlrAudioProcessor::releaseResources()
+void GrrnlrrAudioProcessor::releaseResources()
 {
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
 }
 
+#ifndef JucePlugin_PreferredChannelConfigurations
+bool GrrnlrrAudioProcessor::setPreferredBusArrangement (bool isInput, int bus, const AudioChannelSet& preferredSet)
+{
+    // Reject any bus arrangements that are not compatible with your plugin
+
+    const int numChannels = preferredSet.size();  
+
+   #if JucePlugin_IsMidiEffect
+    if (numChannels != 0)
+        return false;
+   #elif JucePlugin_IsSynth
+    if (isInput || (numChannels != 1 && numChannels != 2))
+        return false;
+   #else
+    if (numChannels != 1 && numChannels != 2)
+        return false;
+
+    if (! AudioProcessor::setPreferredBusArrangement (! isInput, bus, preferredSet))
+        return false;
+   #endif
+
+    return setPreferredBusArrangement (isInput, bus, preferredSet);
+}
+#endif
+
 //==============================================================================
-int GrnlrAudioProcessor::wchoose(float weight){
-    Array<float> weightArr = {1 - weight, weight};
-    float random = Random::getSystemRandom().nextFloat();
-    for(int i = 0; i < weightArr.size(); i++)
-    {
-        if(random < weightArr[i])
-        {
-            return i;
-        }
-        random -= weightArr[i];
-    }
-    return 0;
+int GrrnlrrAudioProcessor::wrap(int val, const int low, const int high)
+{
+    int range_size = high - low + 1;
+    
+    if (val < low)
+        val += range_size * ((low - val) / range_size + 1);
+    
+    return low + (val - low) % range_size;
 }
 
-void GrnlrAudioProcessor::schedule(int startPosition, int length, float dur, float trans, bool direction, float center, float sustain, float curve, float volume)
+//==============================================================================
+void GrrnlrrAudioProcessor::run()
 {
-    int onset = (dur*sampleRate) + time + schedulerLatency;
-
-    //std::cout << "NumGrains: " << stack.size() << std::endl;
-
-    stack.push_back(Grain(startPosition, length, onset, trans, direction, center, sustain, curve, volume));
-    /*
-    std::cout   << "startPos: "     << startPosition
-                << " length: "      << length
-                << " onset: "       << onset
-                << " trans: "       << trans
-                << " curve: "       << curve
-                << " direction: "   << direction
-                << " vol: "         << volume
-                << std::endl;
-    */
-
-} 
-
-void GrnlrAudioProcessor::run()
-{
-    while (! threadShouldExit())
-    {
-        if (sampleIsLoaded) {
-            // Get Active Notes
-            std::vector<std::vector<int>> activeNotes;
-            
-            for(int i=0; i<128; i++){
-                if(midiNotes[i] > 0){
-                    activeNotes.push_back( std::vector<int> {i, midiNotes[i] } );
-                }
+    while (! threadShouldExit()) {
+        
+        // delete grains
+        if( grainStack.size() > 0){
+            for (int i=grainStack.size() - 1; i >= 0; --i) {
+                // check if the grain has ended
+                int grainEnd = grainStack[i].onset + grainStack[i].length;
+                bool hasEnded = grainEnd < time;
+                
+                if(hasEnded) grainStack.remove(i); // [4]
             }
-            
-            if(*holdParam || (activeNotes.size()>0)) {
+        }
+        
+        Array<Array<int>> activeNotes;
+        
+        for(int i=0; i<128; i++){
+            if(midiNotes[i] > 0){
+                activeNotes.add( Array<int> {i, midiNotes[i] } );
+            }
+        }
+        
+        // add grains
+        if(fileBuffer != nullptr){
+            if(activeNotes.size()>0){
+                int numSamples = fileBuffer->getAudioSampleBuffer()->getNumSamples();
+                
+                int onset = 300;
+                
+                // Transposition
                 float midiNote = 60;
                 midiNote = activeNotes[Random::getSystemRandom().nextInt(activeNotes.size())][0];
                 midiNote = (midiNote - 61);
                 
-                float position   = std::fmod(*positionParam + (*randPosParam * (Random::getSystemRandom().nextFloat() - 0.5)), 1.0f);
-                float trans      = (midiNote + *transParam) + (1 + (*randTransParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));
-                float ratio      = pow (2.0, trans / 12.0);
-                float duration   = *durationParam * (1 + (*randDurParam * (Random::getSystemRandom().nextFloat() * 2 - 1))) * (1 / ratio) + 0.001;
-                float density    = *densityParam * (1 + (*randDensityParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));
-                float envCenter  = *envCenterParam;
-                float envSustain = *envSustainParam;
-                float envCurve   = *envCurveParam;
-                float volume     = *volumeParam * (1 + *randVolumeParam * (Random::getSystemRandom().nextFloat() * 2 - 1));
-                bool direction   = wchoose(*directionParam);
+                float trans = *transParam + midiNote;
+                trans += 1 + (*randTransParam * (Random::getSystemRandom().nextFloat() * 2 - 1));
                 
-                int grainLength = density * (duration * sampleRate);
-                if (grainLength < 1) grainLength = 1;   // for safety if by some combination of parameters the length is 0
+                float ratio = pow (2.0, trans / 12.0);
                 
+                // Duration
+                float dur = *durationParam * (1 + (*randDurParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));
+                dur *= (1 / ratio) + 0.001;
                 
-                schedule( position * lengthInSamples,                       // startPosition
-                         grainLength,                                       // length
-                         duration,                                          // duration
-                         ratio,                                             // transposition
-                         direction,                                         // direction
-                         envCenter,                                         // center
-                         envSustain,                                        // sustain
-                         envCurve,                                          // curve
-                         volume);
-                wait(duration*1000);
+                // Length
+                int length = *densityParam * dur * sampleRate;
+                
+                // Position
+                float randPosition = *randPosParam * (Random::getSystemRandom().nextFloat() - 0.5);
+                int startPosition = (*positionParam + randPosition) * numSamples;
+                startPosition = wrap(startPosition, 0, numSamples);
+                
+                // Envelope
+                float envMid = *envMidParam;
+                float envSus = *envSustainParam;
+                float envCurve = *envCurveParam;
+                
+                // Amplitude
+                float amp = *volumeParam;
+                amp *= 1 + *randVolumeParam * (Random::getSystemRandom().nextFloat() * 2 - 1);
+                
+                /*
+                 std::cout   << "onset: "        << time + onset
+                 << " length: "      << length
+                 << " startPos: "    << startPosition
+                 << " envMid: "      << envMid
+                 << " envSus: "      << envSus
+                 << " envCur: "      << envCurve
+                 << " ratio: "       << ratio
+                 << " amp: "         << amp
+                 << " duration: "    << dur
+                 << std::endl;
+                 */
+                
+                grainStack.add( Grain(time + onset, length, startPosition, envMid, envSus, envCurve, ratio, amp) );
+                
+                wait(dur * 1000);
             } else {
-                wait(1);
+                wait(100);
             }
         } else {
-            wait(500);
+            wait(100);
         }
+        
     }
 }
 
 //==============================================================================
-void GrnlrAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
+void GrrnlrrAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
-    int blockSize = buffer.getNumSamples();
-
-    // before we do anything we clear the current buffer to avoid noise:
-    buffer.clear();
-
-    processMidi(midiMessages, blockSize);
-
-    // check if a valid buffer exists
-    ReferenceCountedBuffer::Ptr retainedCurrentBuffer (currentBuffer);
-    if (retainedCurrentBuffer == nullptr) return;
-
-    AudioSampleBuffer* currentAudioSampleBuffer (retainedCurrentBuffer->getAudioSampleBuffer());
-    int numChannels = currentAudioSampleBuffer->getNumChannels();
-
-    for (int s=0; s < blockSize; ++s) {
-        for(int i=0; i<stack.size(); ++i)
-        {
-            if(time > stack[i].onset + stack[i].grainLength)
-            {
-                stack.erase(stack.begin() + i);
-            }
-
-            if(time - stack[i].onset > 0){
-                stack[i].process(buffer, *currentAudioSampleBuffer, time, numChannels, blockSize);
+    // clear the buffer so we don't get any noise
+    for (int i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
+        buffer.clear (i, 0, buffer.getNumSamples());
+    
+    const int numSamplesInBlock = buffer.getNumSamples();
+    
+    processMidi(midiMessages, numSamplesInBlock);
+    
+    // make a copy of the Pointer to the fileBuffer so we are completely seperated
+    // from the other thread
+    ReferenceCountedBuffer::Ptr retainedBuffer (fileBuffer);
+    
+    // return from the function if there's no valid buffer
+    if(retainedBuffer == nullptr) return;
+    
+    // finally get a AudioSampleBuffer we can use for processing
+    AudioSampleBuffer* currentBuffer = retainedBuffer->getAudioSampleBuffer();
+    
+    
+    const int numSamplesInFile  = currentBuffer->getNumSamples();
+    
+    const Array<Grain> localStack = grainStack;
+    
+    
+    for (int s = 0; s < numSamplesInBlock; ++s) {
+        for(int i=0; i < localStack.size(); ++i) {
+            if (localStack[i].onset < time) {
+                if (time < (localStack[i].onset + localStack[i].length)) {
+                    localStack[i].process(buffer, *currentBuffer, buffer.getNumChannels(), numSamplesInBlock, numSamplesInFile, time);
+                }
             }
         }
-
-        ++time;
+        ++time; // increment time
     }
 }
 
 //==============================================================================
-void GrnlrAudioProcessor::processMidi(MidiBuffer& midiMessages, int numSamples)
+void GrrnlrrAudioProcessor::processMidi(MidiBuffer& midiMessages, int numSamples)
 {
     MidiBuffer::Iterator i (midiMessages);
     MidiMessage message;
     int time;
-
+    
     while(i.getNextEvent(message, time))
     {
         if(message.isNoteOn()) {
@@ -269,64 +242,60 @@ void GrnlrAudioProcessor::processMidi(MidiBuffer& midiMessages, int numSamples)
             midiNotes[message.getNoteNumber()] = 0;
         }
         if(message.isAllNotesOff()) {
-            for(int i=0; i < 128; i++)
+            for(int i=0; i < 128; ++i)
                 midiNotes[i] = 0;
         }
     }
 }
 
 //==============================================================================
-bool GrnlrAudioProcessor::hasEditor() const
+AudioProcessorEditor* GrrnlrrAudioProcessor::createEditor()
 {
-    return true; // (change this to false if you choose to not supply an editor)
-}
-
-AudioProcessorEditor* GrnlrAudioProcessor::createEditor()
-{
-    return new GrnlrAudioProcessorEditor (*this);
+    return new GrrnlrrAudioProcessorEditor (*this);
 }
 
 //==============================================================================
-void GrnlrAudioProcessor::getStateInformation (MemoryBlock& destData)
+void GrrnlrrAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
     // You should use this method to store your parameters in the memory block.
     // Here's an example of how you can use XML to make it easy and more robust:
     std::cout << "Save Settings" << std::endl;
-
+    
     // Create an outer XML element..
-    XmlElement xml ("GRNLRPLUGINSETTINGS");
-
+    XmlElement xml ("GRRNLRRPLUGINSETTINGS");
+    
     // Store the values of all our parameters, using their param ID as the XML attribute
     for (int i = 0; i < getNumParameters(); ++i)
     {
         if (AudioProcessorParameterWithID* p = dynamic_cast<AudioProcessorParameterWithID*> (getParameters().getUnchecked(i)))
         {
             xml.setAttribute (p->paramID, p->getValue());
+            
             std::cout << p->paramID << " " << p->getValue() << std::endl;
         }
     }
-
+    
     xml.setAttribute("FilePath", filePath);
     std::cout << "Save Path: " << filePath << std::endl;
-
+    
     // then use this helper function to stuff it into the binary blob and return it..
     copyXmlToBinary (xml, destData);
 }
 
-void GrnlrAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void GrrnlrrAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
-
+    
     std::cout << "Load Settings" << std::endl;
-
+    
     // This getXmlFromBinary() helper function retrieves our XML from the binary blob..
     ScopedPointer<XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
-
+    
     if (xmlState != nullptr)
     {
         // make sure that it's actually our type of XML object..
-        if (xmlState->hasTagName ("GRNLRPLUGINSETTINGS"))
+        if (xmlState->hasTagName ("GRRNLRRPLUGINSETTINGS"))
         {
             // Now reload our parameters..
             for (int i = 0; i < getNumParameters(); ++i)
@@ -334,10 +303,11 @@ void GrnlrAudioProcessor::setStateInformation (const void* data, int sizeInBytes
                 if (AudioProcessorParameterWithID* p = dynamic_cast<AudioProcessorParameterWithID*> (getParameters().getUnchecked(i)))
                 {
                     p->setValueNotifyingHost ((float) xmlState->getDoubleAttribute (p->paramID, p->getValue()));
+                    
                     std::cout << p->paramID << " " << p->getValue() << std::endl;
                 }
             }
-            loadedPath = xmlState->getStringAttribute("FilePath");
+            restoredPath = xmlState->getStringAttribute("FilePath");
             std::cout << "Load Path: " << filePath << std::endl;
         }
     }
@@ -347,5 +317,5 @@ void GrnlrAudioProcessor::setStateInformation (const void* data, int sizeInBytes
 // This creates new instances of the plugin..
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new GrnlrAudioProcessor();
+    return new GrrnlrrAudioProcessor();
 }

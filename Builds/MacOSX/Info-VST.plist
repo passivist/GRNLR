@@ -10,19 +10,19 @@
     <key>CFBundleIdentifier</key>
     <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
     <key>CFBundleName</key>
-    <string>GRNLR</string>
+    <string>GRRNLRR</string>
     <key>CFBundleDisplayName</key>
-    <string>GRNLR</string>
+    <string>GRRNLRR</string>
     <key>CFBundlePackageType</key>
     <string>BNDL</string>
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.0.2</string>
+    <string>1.0.0</string>
     <key>CFBundleVersion</key>
-    <string>1.0.2</string>
+    <string>1.0.0</string>
     <key>NSHumanReadableCopyright</key>
-    <string></string>
+    <string>Raffael Seyfried</string>
     <key>NSHighResolutionCapable</key>
     <true/>
   </dict>

@@ -11,13 +11,13 @@
 
 */
 
-#ifndef __JUCE_APPCONFIG_GGGT8H__
-#define __JUCE_APPCONFIG_GGGT8H__
+#ifndef __JUCE_APPCONFIG_RJZQML__
+#define __JUCE_APPCONFIG_RJZQML__
 
 //==============================================================================
 // [BEGIN_USER_CODE_SECTION]
 
-// (You can add your own code in this section, and the Introjucer will not overwrite it)
+// (You can add your own code in this section, and the Projucer will not overwrite it)
 
 // [END_USER_CODE_SECTION]
 
@@ -27,7 +27,6 @@
 #define JUCE_MODULE_AVAILABLE_juce_audio_formats            1
 #define JUCE_MODULE_AVAILABLE_juce_audio_plugin_client      1
 #define JUCE_MODULE_AVAILABLE_juce_audio_processors         1
-#define JUCE_MODULE_AVAILABLE_juce_audio_utils              1
 #define JUCE_MODULE_AVAILABLE_juce_core                     1
 #define JUCE_MODULE_AVAILABLE_juce_cryptography             1
 #define JUCE_MODULE_AVAILABLE_juce_data_structures          1
@@ -78,14 +77,6 @@
 
 #ifndef    JUCE_USE_ANDROID_OPENSLES
  //#define JUCE_USE_ANDROID_OPENSLES
-#endif
-
-#ifndef    JUCE_USE_CDREADER
- //#define JUCE_USE_CDREADER
-#endif
-
-#ifndef    JUCE_USE_CDBURNER
- //#define JUCE_USE_CDBURNER
 #endif
 
 //==============================================================================
@@ -254,25 +245,25 @@
  #define JucePlugin_Build_STANDALONE       0
 #endif
 #ifndef  JucePlugin_Name
- #define JucePlugin_Name                   "GRNLR"
+ #define JucePlugin_Name                   "GRRNLRR"
 #endif
 #ifndef  JucePlugin_Desc
- #define JucePlugin_Desc                   "GRNLR"
+ #define JucePlugin_Desc                   "GRRNLRR"
 #endif
 #ifndef  JucePlugin_Manufacturer
  #define JucePlugin_Manufacturer           "Raffael Seyfried"
 #endif
 #ifndef  JucePlugin_ManufacturerWebsite
- #define JucePlugin_ManufacturerWebsite    ""
+ #define JucePlugin_ManufacturerWebsite    "raffaelseyfried.de"
 #endif
 #ifndef  JucePlugin_ManufacturerEmail
- #define JucePlugin_ManufacturerEmail      ""
+ #define JucePlugin_ManufacturerEmail      "post@raffaelseyfried.de"
 #endif
 #ifndef  JucePlugin_ManufacturerCode
- #define JucePlugin_ManufacturerCode       0x52737900 // 'Rsy'
+ #define JucePlugin_ManufacturerCode       0x52615379 // 'RaSy'
 #endif
 #ifndef  JucePlugin_PluginCode
- #define JucePlugin_PluginCode             0x47676774 // 'Gggt'
+ #define JucePlugin_PluginCode             0x47726e6c // 'Grnl'
 #endif
 #ifndef  JucePlugin_IsSynth
  #define JucePlugin_IsSynth                1
@@ -290,13 +281,13 @@
  #define JucePlugin_EditorRequiresKeyboardFocus  0
 #endif
 #ifndef  JucePlugin_Version
- #define JucePlugin_Version                1.0.2
+ #define JucePlugin_Version                1.0.0
 #endif
 #ifndef  JucePlugin_VersionCode
- #define JucePlugin_VersionCode            0x10002
+ #define JucePlugin_VersionCode            0x10000
 #endif
 #ifndef  JucePlugin_VersionString
- #define JucePlugin_VersionString          "1.0.2"
+ #define JucePlugin_VersionString          "1.0.0"
 #endif
 #ifndef  JucePlugin_VSTUniqueID
  #define JucePlugin_VSTUniqueID            JucePlugin_PluginCode
@@ -311,16 +302,16 @@
  #define JucePlugin_AUSubType              JucePlugin_PluginCode
 #endif
 #ifndef  JucePlugin_AUExportPrefix
- #define JucePlugin_AUExportPrefix         GRNLRAU
+ #define JucePlugin_AUExportPrefix         GRRNLRRAU
 #endif
 #ifndef  JucePlugin_AUExportPrefixQuoted
- #define JucePlugin_AUExportPrefixQuoted   "GRNLRAU"
+ #define JucePlugin_AUExportPrefixQuoted   "GRRNLRRAU"
 #endif
 #ifndef  JucePlugin_AUManufacturerCode
  #define JucePlugin_AUManufacturerCode     JucePlugin_ManufacturerCode
 #endif
 #ifndef  JucePlugin_CFBundleIdentifier
- #define JucePlugin_CFBundleIdentifier     com.yourcompany.GRNLR
+ #define JucePlugin_CFBundleIdentifier     com.rasy.grrnlrr
 #endif
 #ifndef  JucePlugin_RTASCategory
  #define JucePlugin_RTASCategory           ePlugInCategory_SWGenerators
@@ -338,7 +329,7 @@
  #define JucePlugin_RTASDisableMultiMono   0
 #endif
 #ifndef  JucePlugin_AAXIdentifier
- #define JucePlugin_AAXIdentifier          com.yourcompany.GRNLR
+ #define JucePlugin_AAXIdentifier          com.yourcompany.GRRNLRR
 #endif
 #ifndef  JucePlugin_AAXManufacturerCode
  #define JucePlugin_AAXManufacturerCode    JucePlugin_ManufacturerCode
@@ -355,5 +346,14 @@
 #ifndef  JucePlugin_AAXDisableMultiMono
  #define JucePlugin_AAXDisableMultiMono    0
 #endif
+#ifndef  JucePlugin_MaxNumInputChannels
+ #define JucePlugin_MaxNumInputChannels    2
+#endif
+#ifndef  JucePlugin_MaxNumOutputChannels
+ #define JucePlugin_MaxNumOutputChannels   2
+#endif
+#ifndef  JucePlugin_PreferredChannelConfigurations
+ #define JucePlugin_PreferredChannelConfigurations  {2, 2}
+#endif
 
-#endif  // __JUCE_APPCONFIG_GGGT8H__
+#endif  // __JUCE_APPCONFIG_RJZQML__

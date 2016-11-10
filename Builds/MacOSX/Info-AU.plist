@@ -10,38 +10,38 @@
     <key>CFBundleIdentifier</key>
     <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
     <key>CFBundleName</key>
-    <string>GRNLR</string>
+    <string>GRRNLRR</string>
     <key>CFBundleDisplayName</key>
-    <string>GRNLR</string>
+    <string>GRRNLRR</string>
     <key>CFBundlePackageType</key>
     <string>BNDL</string>
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.0.2</string>
+    <string>1.0.0</string>
     <key>CFBundleVersion</key>
-    <string>1.0.2</string>
+    <string>1.0.0</string>
     <key>NSHumanReadableCopyright</key>
-    <string></string>
+    <string>Raffael Seyfried</string>
     <key>NSHighResolutionCapable</key>
     <true/>
     <key>AudioComponents</key>
     <array>
       <dict>
         <key>name</key>
-        <string>Raffael Seyfried: GRNLR</string>
+        <string>Raffael Seyfried: GRRNLRR</string>
         <key>description</key>
-        <string>GRNLR</string>
+        <string>GRRNLRR</string>
         <key>factoryFunction</key>
-        <string>GRNLRAUFactory</string>
+        <string>GRRNLRRAUFactory</string>
         <key>manufacturer</key>
-        <string>Rsy</string>
+        <string>RaSy</string>
         <key>type</key>
         <string>aumu</string>
         <key>subtype</key>
-        <string>Gggt</string>
+        <string>Grnl</string>
         <key>version</key>
-        <integer>65538</integer>
+        <integer>65536</integer>
       </dict>
     </array>
   </dict>
