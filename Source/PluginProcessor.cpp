@@ -145,7 +145,8 @@ void GrrnlrrAudioProcessor::run()
                 dur *= (1 / ratio) + 0.001;
                 
                 // Length
-                int length = *densityParam * dur * sampleRate;
+                float density = *densityParam * (1 + (*randDensityParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));
+                int length = density * dur * sampleRate;
                 
                 // Position
                 float randPosition = *randPosParam * (Random::getSystemRandom().nextFloat() - 0.5);
