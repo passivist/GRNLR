@@ -64,6 +64,8 @@ public:
     
     double sampleRate;
     long long int time;
+    long long int nextGrainOnset;
+    
     Array<Grain> grainStack;
     
     int midiNotes[128] = {0};
@@ -76,6 +78,9 @@ public:
 
     // Utility
     int wrap(int val, const int lo, const int hi);
+    float clip(float n, float lower, float upper);
+    
+    
     
     // Parameters
     // Main Grain Parameters:

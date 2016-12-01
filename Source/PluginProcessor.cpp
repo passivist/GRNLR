@@ -99,6 +99,10 @@ int GrrnlrrAudioProcessor::wrap(int val, const int low, const int high)
     return low + (val - low) % range_size;
 }
 
+float GrrnlrrAudioProcessor::clip(float n, float lower, float upper) {
+    return std::max(lower, std::min(n, upper));
+}
+
 //==============================================================================
 void GrrnlrrAudioProcessor::run()
 {
@@ -126,9 +130,10 @@ void GrrnlrrAudioProcessor::run()
         // add grains
         if(fileBuffer != nullptr){
             if(activeNotes.size()>0){
-                int numSamples = fileBuffer->getAudioSampleBuffer()->getNumSamples();
+                // initialize nextGrainOnset to lie in the future
+                if(nextGrainOnset == 0) nextGrainOnset = time;
                 
-                int onset = 300;
+                int numSamples = fileBuffer->getAudioSampleBuffer()->getNumSamples();
                 
                 // Transposition
                 float midiNote = 60;
@@ -142,7 +147,11 @@ void GrrnlrrAudioProcessor::run()
                 
                 // Duration
                 float dur = *durationParam * (1 + (*randDurParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));
-                dur *= (1 / ratio) + 0.001;
+                // this mapping introduces some problems check later!
+                //dur *= (1 / ratio);
+                
+                int schedDelay = 700;
+                int onset = nextGrainOnset + schedDelay;
                 
                 // Length
                 float density = *densityParam * (1 + (*randDensityParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));
@@ -162,23 +171,17 @@ void GrrnlrrAudioProcessor::run()
                 float amp = *volumeParam;
                 amp *= 1 + *randVolumeParam * (Random::getSystemRandom().nextFloat() * 2 - 1);
                 
-                /*
-                 std::cout   << "onset: "        << time + onset
-                 << " length: "      << length
-                 << " startPos: "    << startPosition
-                 << " envMid: "      << envMid
-                 << " envSus: "      << envSus
-                 << " envCur: "      << envCurve
-                 << " ratio: "       << ratio
-                 << " amp: "         << amp
-                 << " duration: "    << dur
-                 << std::endl;
-                 */
+                nextGrainOnset = onset + (dur * sampleRate);
                 
-                grainStack.add( Grain(time + onset, length, startPosition, envMid, envSus, envCurve, ratio, amp) );
+                grainStack.add( Grain(onset, length, startPosition, envMid, envSus, envCurve, ratio, amp) );
+                
+                double schedError = ((onset - schedDelay) - time) / sampleRate;
+                dur += schedError;
                 
                 wait(dur * 1000);
             } else {
+                // there are no held notes so we should reset the value for nextGrainOnset
+                nextGrainOnset = 0;
                 wait(100);
             }
         } else {
@@ -191,11 +194,11 @@ void GrrnlrrAudioProcessor::run()
 //==============================================================================
 void GrrnlrrAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
+    const int numSamplesInBlock = buffer.getNumSamples();
+    
     // clear the buffer so we don't get any noise
     for (int i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
-    
-    const int numSamplesInBlock = buffer.getNumSamples();
+        buffer.clear (i, 0, numSamplesInBlock);
     
     processMidi(midiMessages, numSamplesInBlock);
     
@@ -208,7 +211,6 @@ void GrrnlrrAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer&
     
     // finally get a AudioSampleBuffer we can use for processing
     AudioSampleBuffer* currentBuffer = retainedBuffer->getAudioSampleBuffer();
-    
     
     const int numSamplesInFile  = currentBuffer->getNumSamples();
     
@@ -223,6 +225,21 @@ void GrrnlrrAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer&
                 }
             }
         }
+        // check for bad values
+        for(int channel = 0; channel < buffer.getNumChannels(); ++channel ){
+            float* channelData = buffer.getWritePointer(channel);
+            float currentSample = channelData[s];
+            
+            if(currentSample >  1.0){
+                
+            }
+            if(currentSample < -1.0){
+                
+            }
+            
+            channelData[s] = clip(currentSample, -1.0, 1.0);
+        }
+        
         ++time; // increment time
     }
 }
@@ -238,6 +255,7 @@ void GrrnlrrAudioProcessor::processMidi(MidiBuffer& midiMessages, int numSamples
     {
         if(message.isNoteOn()) {
             midiNotes[message.getNoteNumber()] = message.getVelocity();
+            notify();
         }
         if(message.isNoteOff()) {
             midiNotes[message.getNoteNumber()] = 0;

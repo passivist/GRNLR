@@ -88,7 +88,6 @@ public:
                 gain = rPos * (-1) + 1;
             }
         }
-
         return gain;
     }
     
@@ -127,9 +126,9 @@ public:
             float c = fileData[(readPos - 1) % fileNumSamples];
             
             currentSample = cubicinterp(fracPos, a, b, c, currentSample);
-        
-            channelData[time % blockNumSamples] += currentSample * gain * amp;
+            currentSample = currentSample * gain * amp;
             
+            channelData[time % blockNumSamples] += currentSample;
         }
     }
 };
