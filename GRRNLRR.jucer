@@ -32,7 +32,7 @@
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="GRRNLRR"/>
         <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="GRRNLRR"
-                       linkTimeOptimisation="1"/>
+                       linkTimeOptimisation="1" osxCompatibility="10.9 SDK"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../../dev/lib/JUCE/modules"/>
