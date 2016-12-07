@@ -1,137 +1,58 @@
+/*
+ ==============================================================================
+ 
+ Grain.h
+ Created: 26 Sep 2016 10:33:15pm
+ Author:  Raffael Seyfried
+ 
+ ==============================================================================
+ */
+
 #ifndef GRAIN_H_INCLUDED
 #define GRAIN_H_INCLUDED
 
-#include <math.h>
-
-/** GRAIN CLASS
- In this file is the Grain class that describes an object holding
- all the information about a single grain.
- **/
-
-class Grain {
-    /* We first define all the member variables of the grain class. */
-    // not shure if this couldn't all be private...
+class Grain
+{
 public:
-    int grainLength;
-    int startPosition;
-    int onset;
-    bool direction;
-    float grainLengthRecip;
-    float pitchRatio;
+    const int onset;
+    const int length;
+    const int startPosition;
     
-    float envCurve;
+    const float envAttack, envAttackRecip;
+    const float envRelease, envReleaseRecip;
+    const float envCurve;
+    const float lengthRecip;
     
-    float envAttack;
-    float envSustain;
-    float envRelease;
+    const float rate;
+    const float amp;
     
-    float envAttackRecip;
-    float envSustainRecip;
-    float envReleaseRecip;
-    
-    float volume;
-    
-    bool hasEnded = false;
-    
-    /** CONSTRUCTOR
-     The constructor is a member function of a class to create an instance
-     (an object) of that class.
-     
-     We have 2 versions of the constructor. The first version has no arguments
-     and is implemented mainly for safety and style reasons. It provides a
-     default version of the grain object so the program doesn't crash when we
-     try to create a grain without providing arguments.
-     
-     The second version will be the one actually used by the scheduling function
-     in the PluginProcessor file.
-     */
-    
-    Grain()
+    Grain(int onset, int length, int startPos, float center, float sustain, float curve, float r, float a)    : onset(onset), length(length), startPosition(startPos),
+                                                                                            envAttack((1 - sustain) * center), envAttackRecip(1/envAttack),
+                                                                                            envRelease(sustain + envAttack), envReleaseRecip(1/(1-envRelease)),
+                                                                                            envCurve(curve),
+                                                                                            lengthRecip(1/(float)length), rate(r), amp(a)
     {
-        startPosition = 0;
-        grainLength = 2048;
-        grainLengthRecip = 1.f / (float) grainLength;
-        onset = 0;
         
-        envCurve = 1;
-        envAttack = 0.4;
-        envRelease = 0.6;
-        
-        pitchRatio = 1;
-        
-        envAttackRecip  = 1/envAttack;
-        envReleaseRecip = 1/(1 - envRelease);
-        
-        volume = 0.8;
-    };
+    }
     
-    Grain(int start, int length, int time, float ratio, bool dir, float center, float sustain, float curve, float vol){
-        startPosition = start;
-        grainLength = length;
-        onset = time;
-        grainLengthRecip = 1.f / (float) grainLength;
-        
-        direction = dir;
-        
-        pitchRatio = ratio;
-        
-        envCurve = curve;
-        
-        envAttack  = (1 - sustain) * center;
-        envRelease = sustain + envAttack;
-        
-        envAttackRecip  = 1/envAttack;
-        envReleaseRecip = 1/(1 - envRelease);
-        
-        
-        volume = vol;
-    };
-    
-    /** PROCESS FUNCTION:
-     render an audio-block of a single grain for and add them to the
-     current block
-     */
-    
-    void process(AudioSampleBuffer& currentBlock, AudioSampleBuffer& fileBuffer, int time, int numChannels, int blockSize)
+    Grain() :   onset(0), length(1000), startPosition(0),
+                envAttack(0.3), envAttackRecip(1/envAttack),
+                envRelease(0.6), envReleaseRecip(1/envRelease),
+                envCurve(0), lengthRecip(1/length), rate(1), amp(1)
     {
-        float position = (time - onset) * pitchRatio;
-        int filePosition;
-        float floatPosition;
         
-        /** DIRECTION
-         We calculate the position to read from differently if we want to play foward or reverse.
-         The important part here is the frame of reference:
-            If the Grain should play forward the position to read at is defined as starting at the startPosition
-            and continueing by adding the current position to that.
-         
-            If the grain should play backwards the position to read is defined as the end of the grain
-            (startPosition + grainLength) and the current position is subtracted from that.
-         */
-        if(direction){
-            filePosition = (startPosition + (int) position) % fileBuffer.getNumSamples();
-            floatPosition = std::fmod(startPosition + position, fileBuffer.getNumSamples());
-        } else {
-            filePosition = abs(startPosition + grainLength - (int) position) % fileBuffer.getNumSamples();
-            floatPosition = fabs(std::fmod(startPosition + grainLength - position, fileBuffer.getNumSamples()));
-
-        }
+    }
+    
+    ~Grain(){}
+    
+    float envelope (int time)
+    {
+        float gain;
+        float envPos;
         
-        /*
-        float postPos = floatPosition / fileBuffer.getNumSamples();
-        std::cout << "pos: " << postPos << " flPos: " << floatPosition << std::endl;
-         */
+        envPos = (time - onset) * lengthRecip;
         
-        /** ENVELOPE
-         */
-        
-        // this seems inefficient, most of the calculation is the same for every sample,
-        // maybe calculate an array once at grain maybe calculate an array once at grain
-        // creation and just index into it in here
-        float envPos, gain;
-        
-        envPos = (time - onset) * grainLengthRecip;
         if(envPos <= envAttack){
-            //std::cout << "att " << envPos << " " << envAttack << std::endl;
             if(std::abs(envCurve) > 0.001){
                 float aPos;
                 
@@ -149,9 +70,8 @@ public:
             }
         } else if( envPos < envRelease){
             gain = 1.0;
-            //std::cout << "sus " << envPos << " " << envRelease << std::endl;
+            
         } else if( envPos >= envRelease ){
-            //std::cout << "rel " << envPos << " " << envRelease << std::endl;
             if(std::abs(envCurve) > 0.001){
                 float rPos;
                 
@@ -168,34 +88,51 @@ public:
                 gain = rPos * (-1) + 1;
             }
         }
+        return gain;
+    }
+    
+    inline float cubicinterp(float x, float y0, float y1, float y2, float y3)
+    {
+        // 4-point, 3rd-order Hermite (x-form)
+        float c0 = y1;
+        float c1 = 0.5f * (y2 - y0);
+        float c2 = y0 - 2.5f * y1 + 2.f * y2 - 0.5f * y3;
+        float c3 = 0.5f * (y3 - y0) + 1.5f * (y1 - y2);
         
-        /** LINEAR INTERPOLATION
-         */
-        const float alpha = fabs(floatPosition - filePosition);
-        const float invAlpha = 1.0f - alpha;
-        /*
-        std::cout   << "floatPos: " << floatPosition
-                    << " filePos: " << filePosition
-                    << " alpha: " << alpha
-                    << " invAlpha: " << invAlpha
-                    << std::endl;
-        */
-        /** AUDIO COPYING
-         
-         */
-        for (int channel=0; channel < currentBlock.getNumChannels(); ++channel)
-        {
+        return ((c3 * x + c2) * x + c1) * x + c0;
+    }
+    
+    void process (AudioSampleBuffer& currentBlock, AudioSampleBuffer& fileBuffer, int numChannels, int blockNumSamples, int fileNumSamples, int time)
+    {
+        for(int channel=0; channel<numChannels; ++channel){
+            const float gain = envelope(time);
+            
+            // [1]
             float* channelData = currentBlock.getWritePointer(channel);
-            const float* fileData = fileBuffer.getReadPointer(channel % numChannels);
+            const float* fileData = fileBuffer.getReadPointer(channel%fileBuffer.getNumChannels());
             
-            /* We copy the data from the file into the right place in the buffer and add it to the previous data: */
-            if(direction)
-                channelData[ time % blockSize ] += (fileData[ (filePosition) ] * invAlpha + fileData[ (filePosition + 1)] * alpha) * gain * volume;
-            else
-                channelData[ time % blockSize ] += (fileData[ (filePosition) ] * invAlpha + fileData[ (filePosition - 1)] * alpha) * gain * volume;
+            const float position = (time - onset) * rate;
+            const int iPosition = (int) std::ceil(position);
             
+            // [2]
+            const float fracPos = position - iPosition;
+            
+            const int readPos = iPosition + startPosition;
+            
+            // [3]
+            float currentSample = fileData[readPos % fileNumSamples];
+            float a = fileData[(readPos - 3) % fileNumSamples];
+            float b = fileData[(readPos - 2) % fileNumSamples];
+            float c = fileData[(readPos - 1) % fileNumSamples];
+            
+            currentSample = cubicinterp(fracPos, a, b, c, currentSample);
+            currentSample = currentSample * gain * amp;
+            
+            channelData[time % blockNumSamples] += currentSample;
         }
     }
 };
 
-#endif /* Grain_h */
+
+
+#endif  // GRAIN_H_INCLUDED

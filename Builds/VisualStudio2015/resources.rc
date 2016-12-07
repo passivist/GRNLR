@@ -7,16 +7,17 @@
 #include <windows.h>
 
 VS_VERSION_INFO VERSIONINFO
-FILEVERSION  1,0,2,0
+FILEVERSION  1,0,0,0
 BEGIN
   BLOCK "StringFileInfo"
   BEGIN
     BLOCK "040904E4"
     BEGIN
-      VALUE "FileDescription",  "GRNLR\0"
-      VALUE "FileVersion",  "1.0.2\0"
-      VALUE "ProductName",  "GRNLR\0"
-      VALUE "ProductVersion",  "1.0.2\0"
+      VALUE "CompanyName",  "Raffael Seyfried\0"
+      VALUE "FileDescription",  "GRRNLRR\0"
+      VALUE "FileVersion",  "1.0.0\0"
+      VALUE "ProductName",  "GRRNLRR\0"
+      VALUE "ProductVersion",  "1.0.0\0"
     END
   END
 
