@@ -47,8 +47,8 @@ public:
     
     float envelope (int time)
     {
-        float gain;
-        float envPos;
+        float gain = 0;
+        float envPos = 0;
         
         envPos = (time - onset) * lengthRecip;
         
