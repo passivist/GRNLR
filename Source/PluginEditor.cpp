@@ -111,6 +111,8 @@ GrrnlrrAudioProcessorEditor::GrrnlrrAudioProcessorEditor (GrrnlrrAudioProcessor&
     startThread();
     
     setSize (500, 300);
+    
+    LOG("PluginEditor constructor called");
 }
 
 GrrnlrrAudioProcessorEditor::~GrrnlrrAudioProcessorEditor()
@@ -177,7 +179,10 @@ void GrrnlrrAudioProcessorEditor::checkForRestoredPath()
 {
     String path;
     path = processor.restoredPath;
+    
     if(path.isNotEmpty()){
+        //processor.filePath = path;
+        
         swapVariables(chosenPath, path);
         processor.restoredPath = "";
     }
@@ -189,6 +194,7 @@ void GrrnlrrAudioProcessorEditor::checkForPathToOpen()
     swapVariables(pathToOpen, chosenPath);
     
     if(pathToOpen.isNotEmpty()){
+        processor.filePath = pathToOpen;
         loadAudioFile(pathToOpen);
     }
 }
@@ -224,9 +230,6 @@ void GrrnlrrAudioProcessorEditor::openButtonClicked()
         String path (file.getFullPathName());
         swapVariables (chosenPath, path);
         
-        processor.filePath = chosenPath;
-        std::cout << processor.filePath << std::endl;
-        
         notify();
     }
 }
@@ -239,9 +242,9 @@ void GrrnlrrAudioProcessorEditor::paint (Graphics& g)
 void GrrnlrrAudioProcessorEditor::loadAudioFile(String path)
 {
     const File file (path);
-    
+    LOG("Trying to load a file at: " << path << "\n");
     if(file.exists()){
-        std::cout << "We have a file!" << std::endl;
+        LOG("We have a file at: " << path << "\n");
         // we create the right kind of AudioFormatReader for our File
         ScopedPointer<AudioFormatReader> reader(formatManager.createReaderFor(file));
         ReferenceCountedBuffer::Ptr newBuffer = new ReferenceCountedBuffer(file.getFileName(),
@@ -257,6 +260,6 @@ void GrrnlrrAudioProcessorEditor::loadAudioFile(String path)
             processor.fileBuffer = newBuffer;
         }
     } else {
-        std::cout << "Sorry but the file you are trying to load does not exist :(" << std::endl;
+        LOG("Sorry but the file you are trying to load does not exist :(");
     }
 }

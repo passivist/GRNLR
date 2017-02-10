@@ -16,6 +16,8 @@
 #include "ReferenceCountedBuffer.h"
 #include "ParameterGUIclasses.h"
 
+#define LOG(textToWrite)          JUCE_BLOCK_WITH_FORCED_SEMICOLON (juce::String tempDbgBuf; tempDbgBuf << textToWrite; juce::Logger::writeToLog (tempDbgBuf);)
+
 //==============================================================================
 /**
 */

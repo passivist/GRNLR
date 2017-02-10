@@ -10,8 +10,6 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-
-#define LOG(textToWrite)          JUCE_BLOCK_WITH_FORCED_SEMICOLON (juce::String tempDbgBuf; tempDbgBuf << textToWrite; juce::Logger::writeToLog (tempDbgBuf);)
 //==============================================================================
 GrrnlrrAudioProcessor::GrrnlrrAudioProcessor() :    Thread("scheduling thread"),
                                                     positionParam(nullptr),
@@ -46,6 +44,7 @@ GrrnlrrAudioProcessor::GrrnlrrAudioProcessor() :    Thread("scheduling thread"),
     
     time = 0;
     startThread();
+
 }
 
 GrrnlrrAudioProcessor::~GrrnlrrAudioProcessor()
@@ -283,7 +282,7 @@ void GrrnlrrAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
     // You should use this method to store your parameters in the memory block.
     // Here's an example of how you can use XML to make it easy and more robust:
-     LOG("Save Settings: ");
+     LOG("\nSave Settings: ");
     
     // Create an outer XML element..
     XmlElement xml ("GRRNLRRPLUGINSETTINGS");
@@ -301,7 +300,7 @@ void GrrnlrrAudioProcessor::getStateInformation (MemoryBlock& destData)
     }
     
     xml.setAttribute("FilePath", filePath);
-    LOG("\n Save Path: " << filePath);
+    LOG("\nSave Path: " << filePath);
     
     // then use this helper function to stuff it into the binary blob and return it..
     copyXmlToBinary (xml, destData);
@@ -333,7 +332,7 @@ void GrrnlrrAudioProcessor::setStateInformation (const void* data, int sizeInByt
                 }
             }
             restoredPath = xmlState->getStringAttribute("FilePath");
-            LOG("\n Load Path: " << filePath);
+            LOG("\nLoad Path: " << restoredPath);
         }
     }
 }
