@@ -117,7 +117,7 @@ void GrrnlrrAudioProcessor::run()
         if( grainStack.size() > 0){
             for (int i=grainStack.size() - 1; i >= 0; --i) {
                 // check if the grain has ended
-                int grainEnd = grainStack[i].onset + grainStack[i].length;
+                long long int grainEnd = grainStack[i].onset + grainStack[i].length;
                 bool hasEnded = grainEnd < time;
                 
                 if(hasEnded) grainStack.remove(i); // [4]
@@ -156,7 +156,7 @@ void GrrnlrrAudioProcessor::run()
                 //dur *= (1 / ratio);
                 
                 int schedDelay = 700;
-                int onset = nextGrainOnset + schedDelay;
+                long long int onset = nextGrainOnset + schedDelay;
                 
                 // Length
                 float density = *densityParam * (1 + (*randDensityParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));

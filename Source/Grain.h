@@ -14,7 +14,7 @@
 class Grain
 {
 public:
-    const int onset;
+    const long long int onset;
     const int length;
     const int startPosition;
     
@@ -26,7 +26,7 @@ public:
     const float rate;
     const float amp;
     
-    Grain(int onset, int length, int startPos, float center, float sustain, float curve, float r, float a)    : onset(onset), length(length), startPosition(startPos),
+    Grain(long long int onset, int length, int startPos, float center, float sustain, float curve, float r, float a) : onset(onset), length(length), startPosition(startPos),
                                                                                             envAttack((1 - sustain) * center), envAttackRecip(1/envAttack),
                                                                                             envRelease(sustain + envAttack), envReleaseRecip(1/(1-envRelease)),
                                                                                             envCurve(curve),
@@ -102,7 +102,7 @@ public:
         return ((c3 * x + c2) * x + c1) * x + c0;
     }
     
-    void process (AudioSampleBuffer& currentBlock, AudioSampleBuffer& fileBuffer, int numChannels, int blockNumSamples, int fileNumSamples, int time)
+    void process (AudioSampleBuffer& currentBlock, AudioSampleBuffer& fileBuffer, int numChannels, int blockNumSamples, int fileNumSamples, long long int time)
     {
         for(int channel=0; channel<numChannels; ++channel){
             const float gain = envelope(time);
