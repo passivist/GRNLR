@@ -62,6 +62,9 @@ public:
     
     void run() override;
     
+    //==============================================================================
+    FileLogger* grLog = FileLogger::createDefaultAppLogger("GRNLR", "GRNLR.log", "GRNLR LOG:", 256*1024);
+    
     double sampleRate;
     long long int time;
     long long int nextGrainOnset;

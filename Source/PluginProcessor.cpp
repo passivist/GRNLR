@@ -11,7 +11,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-
+#define LOG(textToWrite)          JUCE_BLOCK_WITH_FORCED_SEMICOLON (juce::String tempDbgBuf; tempDbgBuf << textToWrite; juce::Logger::writeToLog (tempDbgBuf);)
 //==============================================================================
 GrrnlrrAudioProcessor::GrrnlrrAudioProcessor() :    Thread("scheduling thread"),
                                                     positionParam(nullptr),
@@ -42,6 +42,8 @@ GrrnlrrAudioProcessor::GrrnlrrAudioProcessor() :    Thread("scheduling thread"),
     addParameter(envSustainParam    = new AudioParameterFloat("envSustain", "Envelope Sustain"  , 0.0f, 1.0f, 0.5f));
     addParameter(envCurveParam      = new AudioParameterFloat("envCurve"  , "Envelope Curve"    , NormalisableRange<float>(-12, 12, 0.01, 1), 0.0f));
     
+    Logger::setCurrentLogger(grLog);
+    
     time = 0;
     startThread();
 }
@@ -49,6 +51,9 @@ GrrnlrrAudioProcessor::GrrnlrrAudioProcessor() :    Thread("scheduling thread"),
 GrrnlrrAudioProcessor::~GrrnlrrAudioProcessor()
 {
     stopThread(4000);
+    
+    Logger::setCurrentLogger(nullptr);
+    delete grLog;
 }
 
 //==============================================================================
@@ -278,7 +283,7 @@ void GrrnlrrAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
     // You should use this method to store your parameters in the memory block.
     // Here's an example of how you can use XML to make it easy and more robust:
-    std::cout << "Save Settings" << std::endl;
+     LOG("Save Settings: ");
     
     // Create an outer XML element..
     XmlElement xml ("GRRNLRRPLUGINSETTINGS");
@@ -290,12 +295,13 @@ void GrrnlrrAudioProcessor::getStateInformation (MemoryBlock& destData)
         {
             xml.setAttribute (p->paramID, p->getValue());
             
-            std::cout << p->paramID << " " << p->getValue() << std::endl;
+            LOG(p->paramID << " " << p->getValue());
+            
         }
     }
     
     xml.setAttribute("FilePath", filePath);
-    std::cout << "Save Path: " << filePath << std::endl;
+    LOG("\n Save Path: " << filePath);
     
     // then use this helper function to stuff it into the binary blob and return it..
     copyXmlToBinary (xml, destData);
@@ -306,7 +312,7 @@ void GrrnlrrAudioProcessor::setStateInformation (const void* data, int sizeInByt
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
     
-    std::cout << "Load Settings" << std::endl;
+    LOG("Load Settings: ");
     
     // This getXmlFromBinary() helper function retrieves our XML from the binary blob..
     ScopedPointer<XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
@@ -323,11 +329,11 @@ void GrrnlrrAudioProcessor::setStateInformation (const void* data, int sizeInByt
                 {
                     p->setValueNotifyingHost ((float) xmlState->getDoubleAttribute (p->paramID, p->getValue()));
                     
-                    std::cout << p->paramID << " " << p->getValue() << std::endl;
+                    LOG(p->paramID << " " << p->getValue());
                 }
             }
             restoredPath = xmlState->getStringAttribute("FilePath");
-            std::cout << "Load Path: " << filePath << std::endl;
+            LOG("\n Load Path: " << filePath);
         }
     }
 }
