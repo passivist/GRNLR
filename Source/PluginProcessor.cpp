@@ -233,14 +233,33 @@ void GrrnlrrAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer&
         for(int channel = 0; channel < buffer.getNumChannels(); ++channel ){
             float* channelData = buffer.getWritePointer(channel);
             float currentSample = channelData[s];
-            
-            if(currentSample >  1.0){
-                
-            }
-            if(currentSample < -1.0){
-                
-            }
-            
+			for (int i = 0; i < localStack.size(); ++i) {
+				if (currentSample > 1.0) {
+					LOG("WARN: Bad Sample Value: " << currentSample);
+					LOG( "Dumping Grain Stack: "
+						<< localStack[i].onset
+						<< localStack[i].length
+						<< localStack[i].startPosition
+						<< localStack[i].envAttack
+						<< localStack[i].envRelease
+						<< localStack[i].envCurve
+						<< localStack[i].rate
+						<< localStack[i].amp);
+				}
+
+				if (currentSample < -1.0) {
+					LOG("WARN: Bad Sample Value: " << currentSample);
+					LOG("Dumping Grain Stack: "
+						<< localStack[i].onset
+						<< localStack[i].length
+						<< localStack[i].startPosition
+						<< localStack[i].envAttack
+						<< localStack[i].envRelease
+						<< localStack[i].envCurve
+						<< localStack[i].rate
+						<< localStack[i].amp);
+				}
+			}
             channelData[s] = clip(currentSample, -1.0, 1.0);
         }
         
