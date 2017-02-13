@@ -1,4 +1,20 @@
 /*
+ GRNLR - a granular synthesis instrument
+ Copyright (C) 2017  Raffael Seyfried
+ 
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ 
   ==============================================================================
 
     This file was auto-generated!
@@ -10,8 +26,6 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-
-
 //==============================================================================
 GrrnlrrAudioProcessor::GrrnlrrAudioProcessor() :    Thread("scheduling thread"),
                                                     positionParam(nullptr),
@@ -42,13 +56,19 @@ GrrnlrrAudioProcessor::GrrnlrrAudioProcessor() :    Thread("scheduling thread"),
     addParameter(envSustainParam    = new AudioParameterFloat("envSustain", "Envelope Sustain"  , 0.0f, 1.0f, 0.5f));
     addParameter(envCurveParam      = new AudioParameterFloat("envCurve"  , "Envelope Curve"    , NormalisableRange<float>(-12, 12, 0.01, 1), 0.0f));
     
+    Logger::setCurrentLogger(grLog);
+    
     time = 0;
     startThread();
+
 }
 
 GrrnlrrAudioProcessor::~GrrnlrrAudioProcessor()
 {
     stopThread(4000);
+    
+    Logger::setCurrentLogger(nullptr);
+    delete grLog;
 }
 
 //==============================================================================
@@ -112,7 +132,7 @@ void GrrnlrrAudioProcessor::run()
         if( grainStack.size() > 0){
             for (int i=grainStack.size() - 1; i >= 0; --i) {
                 // check if the grain has ended
-                int grainEnd = grainStack[i].onset + grainStack[i].length;
+                long long int grainEnd = grainStack[i].onset + grainStack[i].length;
                 bool hasEnded = grainEnd < time;
                 
                 if(hasEnded) grainStack.remove(i); // [4]
@@ -151,7 +171,7 @@ void GrrnlrrAudioProcessor::run()
                 //dur *= (1 / ratio);
                 
                 int schedDelay = 700;
-                int onset = nextGrainOnset + schedDelay;
+                long long int onset = nextGrainOnset + schedDelay;
                 
                 // Length
                 float density = *densityParam * (1 + (*randDensityParam * (Random::getSystemRandom().nextFloat() * 2 - 1)));
@@ -229,14 +249,33 @@ void GrrnlrrAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer&
         for(int channel = 0; channel < buffer.getNumChannels(); ++channel ){
             float* channelData = buffer.getWritePointer(channel);
             float currentSample = channelData[s];
-            
-            if(currentSample >  1.0){
-                
-            }
-            if(currentSample < -1.0){
-                
-            }
-            
+			for (int i = 0; i < localStack.size(); ++i) {
+				if (currentSample > 1.0) {
+					LOG("WARN: Bad Sample Value: " << currentSample);
+					LOG( "Dumping Grain Stack: "
+						<< localStack[i].onset
+						<< localStack[i].length
+						<< localStack[i].startPosition
+						<< localStack[i].envAttack
+						<< localStack[i].envRelease
+						<< localStack[i].envCurve
+						<< localStack[i].rate
+						<< localStack[i].amp);
+				}
+
+				if (currentSample < -1.0) {
+					LOG("WARN: Bad Sample Value: " << currentSample);
+					LOG("Dumping Grain Stack: "
+						<< localStack[i].onset
+						<< localStack[i].length
+						<< localStack[i].startPosition
+						<< localStack[i].envAttack
+						<< localStack[i].envRelease
+						<< localStack[i].envCurve
+						<< localStack[i].rate
+						<< localStack[i].amp);
+				}
+			}
             channelData[s] = clip(currentSample, -1.0, 1.0);
         }
         
@@ -278,7 +317,7 @@ void GrrnlrrAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
     // You should use this method to store your parameters in the memory block.
     // Here's an example of how you can use XML to make it easy and more robust:
-    std::cout << "Save Settings" << std::endl;
+     LOG("\nSave Settings: ");
     
     // Create an outer XML element..
     XmlElement xml ("GRRNLRRPLUGINSETTINGS");
@@ -290,12 +329,13 @@ void GrrnlrrAudioProcessor::getStateInformation (MemoryBlock& destData)
         {
             xml.setAttribute (p->paramID, p->getValue());
             
-            std::cout << p->paramID << " " << p->getValue() << std::endl;
+            LOG(p->paramID << " " << p->getValue());
+            
         }
     }
     
     xml.setAttribute("FilePath", filePath);
-    std::cout << "Save Path: " << filePath << std::endl;
+    LOG("\nSave Path: " << filePath);
     
     // then use this helper function to stuff it into the binary blob and return it..
     copyXmlToBinary (xml, destData);
@@ -306,7 +346,7 @@ void GrrnlrrAudioProcessor::setStateInformation (const void* data, int sizeInByt
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
     
-    std::cout << "Load Settings" << std::endl;
+    LOG("Load Settings: ");
     
     // This getXmlFromBinary() helper function retrieves our XML from the binary blob..
     ScopedPointer<XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
@@ -323,11 +363,11 @@ void GrrnlrrAudioProcessor::setStateInformation (const void* data, int sizeInByt
                 {
                     p->setValueNotifyingHost ((float) xmlState->getDoubleAttribute (p->paramID, p->getValue()));
                     
-                    std::cout << p->paramID << " " << p->getValue() << std::endl;
+                    LOG(p->paramID << " " << p->getValue());
                 }
             }
             restoredPath = xmlState->getStringAttribute("FilePath");
-            std::cout << "Load Path: " << filePath << std::endl;
+            LOG("\nLoad Path: " << restoredPath);
         }
     }
 }

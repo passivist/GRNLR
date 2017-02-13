@@ -1,11 +1,19 @@
 /*
- ==============================================================================
+ GRNLR - a granular synthesis instrument
+ Copyright (C) 2017  Raffael Seyfried
  
- Grain.h
- Created: 26 Sep 2016 10:33:15pm
- Author:  Raffael Seyfried
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
  
- ==============================================================================
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef GRAIN_H_INCLUDED
@@ -14,7 +22,7 @@
 class Grain
 {
 public:
-    const int onset;
+    const long long int onset;
     const int length;
     const int startPosition;
     
@@ -26,7 +34,7 @@ public:
     const float rate;
     const float amp;
     
-    Grain(int onset, int length, int startPos, float center, float sustain, float curve, float r, float a)    : onset(onset), length(length), startPosition(startPos),
+    Grain(long long int onset, int length, int startPos, float center, float sustain, float curve, float r, float a) : onset(onset), length(length), startPosition(startPos),
                                                                                             envAttack((1 - sustain) * center), envAttackRecip(1/envAttack),
                                                                                             envRelease(sustain + envAttack), envReleaseRecip(1/(1-envRelease)),
                                                                                             envCurve(curve),
@@ -102,7 +110,7 @@ public:
         return ((c3 * x + c2) * x + c1) * x + c0;
     }
     
-    void process (AudioSampleBuffer& currentBlock, AudioSampleBuffer& fileBuffer, int numChannels, int blockNumSamples, int fileNumSamples, int time)
+    void process (AudioSampleBuffer& currentBlock, AudioSampleBuffer& fileBuffer, int numChannels, int blockNumSamples, int fileNumSamples, long long int time)
     {
         for(int channel=0; channel<numChannels; ++channel){
             const float gain = envelope(time);

@@ -1,4 +1,20 @@
 /*
+ GRNLR - a granular synthesis instrument
+ Copyright (C) 2017  Raffael Seyfried
+ 
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ 
   ==============================================================================
 
     This file was auto-generated!
@@ -15,6 +31,8 @@
 #include "Grain.h"
 #include "ReferenceCountedBuffer.h"
 #include "ParameterGUIclasses.h"
+
+#define LOG(textToWrite)          JUCE_BLOCK_WITH_FORCED_SEMICOLON (juce::String tempDbgBuf; tempDbgBuf << textToWrite; juce::Logger::writeToLog (tempDbgBuf);)
 
 //==============================================================================
 /**
@@ -61,6 +79,9 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
     
     void run() override;
+    
+    //==============================================================================
+    FileLogger* grLog = FileLogger::createDefaultAppLogger("GRNLR", "GRNLR.log", "GRNLR LOG:", 256*1024);
     
     double sampleRate;
     long long int time;
