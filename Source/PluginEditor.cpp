@@ -14,14 +14,7 @@
  
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
-  ==============================================================================
 
-    This file was auto-generated!
-
-    It contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
 */
 
 #include "PluginProcessor.h"
@@ -32,6 +25,9 @@
 GrrnlrrAudioProcessorEditor::GrrnlrrAudioProcessorEditor (GrrnlrrAudioProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
 {
+    addAndMakeVisible(waveform = new WaveformView (p.formatManager));
+    waveform->addChangeListener (this);
+    
     addAndMakeVisible(openButton);
     openButton.setButtonText("Open...");
     openButton.addListener(this);
@@ -122,7 +118,9 @@ GrrnlrrAudioProcessorEditor::GrrnlrrAudioProcessorEditor (GrrnlrrAudioProcessor&
     envCurveSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     envCurveSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
     
-    setSize (500, 300);
+    startTimerHz(10);
+    
+    setSize (500, 320);
     
     LOG("PluginEditor constructor called");
 }
@@ -137,49 +135,65 @@ void GrrnlrrAudioProcessorEditor::resized()
 {
     const int width = getWidth();
     
-    openButton.setBounds(10, 10, 120, 20);
+    // Waveform
+    waveform->setBounds(10, 5, 480, 100);
+    
+    if(processor.filePath.isNotEmpty()){
+        const File file (processor.filePath);
+        waveform->setFile(file);
+    }
+    
+    openButton.setBounds(10, 115, 120, 20);
     
     // Position:
-    positionSlider->setBounds(10, 40, width - 50, 20);
+    positionSlider->setBounds(10, 140, width - 50, 20);
     
-    randPosLabel.setBounds(width - 30, 20, 25, 20);
-    randPosSlider->setBounds(width - 30, 37, 25, 25);
+    randPosLabel.setBounds(width - 30, 120, 25, 20);
+    randPosSlider->setBounds(width - 30, 137, 25, 25);
     
     // Duration:
-    durationLabel.setBounds(10, 70, 50, 20);
-    durationSlider->setBounds(10, 90, 50, 65);
+    durationLabel.setBounds(10, 170, 50, 20);
+    durationSlider->setBounds(10, 190, 50, 65);
     
-    randDurSlider->setBounds(15, 160, 40, 40);
+    randDurSlider->setBounds(15, 260, 40, 40);
     
     // Density:
-    densityLabel.setBounds(70, 70, 70, 20);
-    densitySlider->setBounds(70, 90, 50, 65);
+    densityLabel.setBounds(70, 170, 70, 20);
+    densitySlider->setBounds(70, 190, 50, 65);
     
-    randDenSlider->setBounds(75, 160, 40, 40);
+    randDenSlider->setBounds(75, 260, 40, 40);
     
     // Transposition
-    transLabel.setBounds(130, 70, 70, 20);
-    transSlider->setBounds(130, 90, 50, 65);
+    transLabel.setBounds(130, 170, 70, 20);
+    transSlider->setBounds(130, 190, 50, 65);
     
-    randTransSlider->setBounds(135, 160, 40, 40);
+    randTransSlider->setBounds(135, 260, 40, 40);
     
     // Volume
-    volLabel.setBounds(190, 70, 70, 20);
-    volSlider->setBounds(190, 90, 50, 65);
+    volLabel.setBounds(190, 170, 70, 20);
+    volSlider->setBounds(190, 190, 50, 65);
     
-    randVolSlider->setBounds(195, 160, 40, 40);
+    randVolSlider->setBounds(195, 260, 40, 40);
     
     // Envelope
-    envLabel.setBounds(320, 70, 70, 20);
+    envLabel.setBounds(320, 170, 70, 20);
     
-    envMidLabel.setBounds(320, 85, 70, 20);
-    envMidSlider->setBounds(320, 105, 50, 65);
+    envMidLabel.setBounds(320, 185, 70, 20);
+    envMidSlider->setBounds(320, 205, 50, 65);
     
-    envSusLabel.setBounds(380, 85, 70, 20);
-    envSusSlider->setBounds(380, 105, 50, 65);
+    envSusLabel.setBounds(380, 185, 70, 20);
+    envSusSlider->setBounds(380, 205, 50, 65);
     
-    envCurveLabel.setBounds(440, 85, 70, 20);
-    envCurveSlider->setBounds(440, 105, 50, 65);
+    envCurveLabel.setBounds(440, 185, 70, 20);
+    envCurveSlider->setBounds(440, 205, 50, 65);
+}
+
+void GrrnlrrAudioProcessorEditor::timerCallback()
+{
+    if(processor.filePath.isNotEmpty()){
+        const File file (processor.filePath);
+        waveform->setFile(file);
+    }
 }
 
 void GrrnlrrAudioProcessorEditor::buttonClicked(Button* button)
@@ -192,6 +206,19 @@ void GrrnlrrAudioProcessorEditor::sliderValueChanged(Slider* slider)
     
 }
 
+// This function implements a callback that the WaveformView class sends when sendChangeMessage() is
+// called in the files dropped function. We use it to load the file that we have dropped in the
+// WaveformView
+void GrrnlrrAudioProcessorEditor::changeListenerCallback (ChangeBroadcaster* source)
+{
+    if (source == waveform){
+        const File file(waveform->getLastDroppedFile());
+        String path (file.getFullPathName());
+        swapVariables(processor.chosenPath, path);
+        waveform->setFile(file);
+    }
+}
+
 void GrrnlrrAudioProcessorEditor::openButtonClicked()
 {
     FileChooser chooser ("Select a File to open...",
@@ -201,6 +228,7 @@ void GrrnlrrAudioProcessorEditor::openButtonClicked()
     if(chooser.browseForFileToOpen()){
         const File file (chooser.getResult());
         String path (file.getFullPathName());
+        waveform->setFile(file);
         swapVariables (processor.chosenPath, path);
     }
 }

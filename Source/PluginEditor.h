@@ -28,7 +28,9 @@
 #define PLUGINEDITOR_H_INCLUDED
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "WaveformView.h"
 #include "PluginProcessor.h"
+
 
 
 //==============================================================================
@@ -36,7 +38,9 @@
 */
 class GrrnlrrAudioProcessorEditor  : public AudioProcessorEditor,
                                      private Button::Listener,
-                                     private Slider::Listener
+                                     private Slider::Listener,
+                                     private ChangeListener,
+                                     private Timer
 {
 public:
     GrrnlrrAudioProcessorEditor (GrrnlrrAudioProcessor&);
@@ -48,9 +52,12 @@ public:
     
     void buttonClicked(Button* button) override;
     void sliderValueChanged(Slider* slider) override;
+    void changeListenerCallback (ChangeBroadcaster* source) override;
+    
+    void timerCallback () override;
     
     void openButtonClicked();
-
+    
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
@@ -58,6 +65,7 @@ private:
     
     // GUI
     TextButton openButton;
+    ScopedPointer<WaveformView> waveform;
 
     // Position:
     ScopedPointer<ParameterSlider> positionSlider;

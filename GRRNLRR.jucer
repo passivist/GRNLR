@@ -13,6 +13,7 @@
               companyEmail="post@raffaelseyfried.de">
   <MAINGROUP id="p0Zaug" name="GRRNLRR">
     <GROUP id="{9EB2E728-F39F-7683-6BA3-88875324FB2A}" name="Source">
+      <FILE id="L384Ur" name="WaveformView.h" compile="0" resource="0" file="Source/WaveformView.h"/>
       <FILE id="QVmAXB" name="ParameterGUIclasses.h" compile="0" resource="0"
             file="Source/ParameterGUIclasses.h"/>
       <FILE id="sZVW4X" name="ReferenceCountedBuffer.h" compile="0" resource="0"
@@ -49,6 +50,7 @@
         <MODULEPATH id="juce_audio_formats" path="../../../dev/lib/JUCE/modules"/>
         <MODULEPATH id="juce_audio_processors" path="../../../dev/lib/JUCE/modules"/>
         <MODULEPATH id="juce_audio_plugin_client" path="../../../dev/lib/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../../dev/lib/JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <VS2015 targetFolder="Builds/VisualStudio2015" vstFolder="">
@@ -73,6 +75,7 @@
         <MODULEPATH id="juce_audio_formats" path="..\..\..\dev\lib\JUCE\modules"/>
         <MODULEPATH id="juce_audio_processors" path="..\..\..\dev\lib\JUCE\modules"/>
         <MODULEPATH id="juce_audio_plugin_client" path="..\..\..\dev\lib\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_utils" path="..\..\..\dev\lib\JUCE\modules"/>
       </MODULEPATHS>
     </VS2015>
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile" vstFolder="~/dev/lib/VST3 SDK">
@@ -97,6 +100,7 @@
         <MODULEPATH id="juce_audio_formats" path="../../lib/JUCE/modules"/>
         <MODULEPATH id="juce_audio_processors" path="../../lib/JUCE/modules"/>
         <MODULEPATH id="juce_audio_plugin_client" path="../../lib/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../lib/JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
   </EXPORTFORMATS>
@@ -106,6 +110,7 @@
     <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0"/>
     <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"/>
     <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0"/>
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="0"/>
     <MODULE id="juce_cryptography" showAllCode="1" useLocalCopy="0"/>
     <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0"/>

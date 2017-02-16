@@ -65,6 +65,7 @@ OBJECTS := \
   $(JUCE_OBJDIR)/juce_audio_plugin_client_utils_35fbf7.o \
   $(JUCE_OBJDIR)/juce_audio_plugin_client_VST2_fd137df.o \
   $(JUCE_OBJDIR)/juce_audio_processors_dea3173d.o \
+  $(JUCE_OBJDIR)/juce_audio_utils_c7eb679f.o \
   $(JUCE_OBJDIR)/juce_core_75b14332.o \
   $(JUCE_OBJDIR)/juce_cryptography_6de2ebff.o \
   $(JUCE_OBJDIR)/juce_data_structures_72d3da2c.o \
@@ -134,6 +135,11 @@ $(JUCE_OBJDIR)/juce_audio_plugin_client_VST2_fd137df.o: ../../JuceLibraryCode/ju
 $(JUCE_OBJDIR)/juce_audio_processors_dea3173d.o: ../../JuceLibraryCode/juce_audio_processors.cpp
 	-@mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling juce_audio_processors.cpp"
+	@$(CXX) $(JUCE_CXXFLAGS) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/juce_audio_utils_c7eb679f.o: ../../JuceLibraryCode/juce_audio_utils.cpp
+	-@mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling juce_audio_utils.cpp"
 	@$(CXX) $(JUCE_CXXFLAGS) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/juce_core_75b14332.o: ../../JuceLibraryCode/juce_core.cpp
