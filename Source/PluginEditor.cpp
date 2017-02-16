@@ -30,7 +30,7 @@
 
 //==============================================================================
 GrrnlrrAudioProcessorEditor::GrrnlrrAudioProcessorEditor (GrrnlrrAudioProcessor& p)
-    : AudioProcessorEditor (&p), Thread("Audio loading thread"), processor (p)
+    : AudioProcessorEditor (&p), processor (p)
 {
     addAndMakeVisible(openButton);
     openButton.setButtonText("Open...");
@@ -122,10 +122,6 @@ GrrnlrrAudioProcessorEditor::GrrnlrrAudioProcessorEditor (GrrnlrrAudioProcessor&
     envCurveSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     envCurveSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
     
-    // Thread
-    formatManager.registerBasicFormats();
-    startThread();
-    
     setSize (500, 300);
     
     LOG("PluginEditor constructor called");
@@ -133,7 +129,7 @@ GrrnlrrAudioProcessorEditor::GrrnlrrAudioProcessorEditor (GrrnlrrAudioProcessor&
 
 GrrnlrrAudioProcessorEditor::~GrrnlrrAudioProcessorEditor()
 {
-    stopThread(4000);
+    
 }
 
 //==============================================================================
@@ -186,45 +182,6 @@ void GrrnlrrAudioProcessorEditor::resized()
     envCurveSlider->setBounds(440, 105, 50, 65);
 }
 
-void GrrnlrrAudioProcessorEditor::checkForBuffersToFree()
-{
-    
-}
-
-void GrrnlrrAudioProcessorEditor::checkForRestoredPath()
-{
-    String path;
-    path = processor.restoredPath;
-    
-    if(path.isNotEmpty()){
-        //processor.filePath = path;
-        
-        swapVariables(chosenPath, path);
-        processor.restoredPath = "";
-    }
-}
-
-void GrrnlrrAudioProcessorEditor::checkForPathToOpen()
-{
-    String pathToOpen;
-    swapVariables(pathToOpen, chosenPath);
-    
-    if(pathToOpen.isNotEmpty()){
-        processor.filePath = pathToOpen;
-        loadAudioFile(pathToOpen);
-    }
-}
-
-void GrrnlrrAudioProcessorEditor::run()
-{
-    while(! threadShouldExit()){
-        checkForRestoredPath();
-        checkForPathToOpen();
-        checkForBuffersToFree();
-        wait(500);
-    }
-}
-
 void GrrnlrrAudioProcessorEditor::buttonClicked(Button* button)
 {
     if(button == &openButton) openButtonClicked();
@@ -244,38 +201,11 @@ void GrrnlrrAudioProcessorEditor::openButtonClicked()
     if(chooser.browseForFileToOpen()){
         const File file (chooser.getResult());
         String path (file.getFullPathName());
-        swapVariables (chosenPath, path);
-        
-        notify();
+        swapVariables (processor.chosenPath, path);
     }
 }
 
 void GrrnlrrAudioProcessorEditor::paint (Graphics& g)
 {
     g.fillAll (Colours::white);
-}
-
-void GrrnlrrAudioProcessorEditor::loadAudioFile(String path)
-{
-    const File file (path);
-    LOG("Trying to load a file at: " << path << "\n");
-    if(file.exists()){
-        LOG("We have a file at: " << path << "\n");
-        // we create the right kind of AudioFormatReader for our File
-        ScopedPointer<AudioFormatReader> reader(formatManager.createReaderFor(file));
-        ReferenceCountedBuffer::Ptr newBuffer = new ReferenceCountedBuffer(file.getFileName(),
-                                                                           reader->numChannels,
-                                                                           reader->lengthInSamples);
-        
-        if(reader != nullptr){
-            // stream the contents of the Audio File into the Buffer
-            // args: AudioSampleBuffer*, startSample, endSample, readerStartSample, useLeftChan, useRightChan
-            reader->read (newBuffer->getAudioSampleBuffer(), 0, reader->lengthInSamples, 0, true, true);
-            std::cout << "Samples in Buffer: " << newBuffer->getAudioSampleBuffer()->getNumSamples() << std::endl;
-            
-            processor.fileBuffer = newBuffer;
-        }
-    } else {
-        LOG("Sorry but the file you are trying to load does not exist :(");
-    }
 }

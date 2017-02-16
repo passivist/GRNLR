@@ -80,7 +80,15 @@ public:
     
     void run() override;
     
+    void checkForRestoredPath();
+    void checkForPathToOpen();
+    void checkForBuffersToFree();
+    
+    void loadAudioFile(String);
+    
     //==============================================================================
+    AudioFormatManager formatManager;
+    
     FileLogger* grLog = FileLogger::createDefaultAppLogger("GRNLR", "GRNLR.log", "GRNLR LOG:", 256*1024);
     
     double sampleRate;
@@ -96,12 +104,11 @@ public:
     // Sample Path
     String filePath;
     String restoredPath;
+    String chosenPath;
 
     // Utility
     int wrap(int val, const int lo, const int hi);
     float clip(float n, float lower, float upper);
-    
-    
     
     // Parameters
     // Main Grain Parameters:
