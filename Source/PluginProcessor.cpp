@@ -59,6 +59,7 @@ GrrnlrrAudioProcessor::GrrnlrrAudioProcessor() :    Thread("scheduling thread"),
     Logger::setCurrentLogger(grLog);
     
     time = 0;
+    formatManager.registerBasicFormats();
     startThread();
 
 }
@@ -124,9 +125,67 @@ float GrrnlrrAudioProcessor::clip(float n, float lower, float upper) {
 }
 
 //==============================================================================
+
+void GrrnlrrAudioProcessor::loadAudioFile(String path)
+{
+    const File file (path);
+    LOG("Trying to load a file at: " << path << "\n");
+    if(file.exists()){
+        LOG("We have a file at: " << path << "\n");
+        // we create the right kind of AudioFormatReader for our File
+        ScopedPointer<AudioFormatReader> reader(formatManager.createReaderFor(file));
+        ReferenceCountedBuffer::Ptr newBuffer = new ReferenceCountedBuffer(file.getFileName(),
+                                                                           reader->numChannels,
+                                                                           reader->lengthInSamples);
+        
+        if(reader != nullptr){
+            // stream the contents of the Audio File into the Buffer
+            // args: AudioSampleBuffer*, startSample, endSample, readerStartSample, useLeftChan, useRightChan
+            reader->read (newBuffer->getAudioSampleBuffer(), 0, reader->lengthInSamples, 0, true, true);
+            std::cout << "Samples in Buffer: " << newBuffer->getAudioSampleBuffer()->getNumSamples() << std::endl;
+            
+            fileBuffer = newBuffer;
+        }
+    } else {
+        LOG("Sorry but the file you are trying to load does not exist :(");
+    }
+}
+
+void GrrnlrrAudioProcessor::checkForBuffersToFree()
+{
+    
+}
+
+void GrrnlrrAudioProcessor::checkForRestoredPath()
+{
+    String path;
+    path = restoredPath;
+    if(path.isNotEmpty()){
+        LOG("restoredPath: " << path);
+        swapVariables(chosenPath, path);
+        restoredPath = "";
+    }
+}
+
+void GrrnlrrAudioProcessor::checkForPathToOpen()
+{
+    String pathToOpen;
+    swapVariables(pathToOpen, chosenPath);
+    
+    if(pathToOpen.isNotEmpty()){
+        LOG("pathToOpen: " << pathToOpen);
+        filePath = pathToOpen;
+        loadAudioFile(pathToOpen);
+    }
+}
+
 void GrrnlrrAudioProcessor::run()
 {
     while (! threadShouldExit()) {
+        
+        checkForRestoredPath();
+        checkForPathToOpen();
+        checkForBuffersToFree();
         
         // delete grains
         if( grainStack.size() > 0){
@@ -139,6 +198,7 @@ void GrrnlrrAudioProcessor::run()
             }
         }
         
+        // handle MIDI
         Array<Array<int>> activeNotes;
         
         for(int i=0; i<128; i++){
@@ -250,30 +310,17 @@ void GrrnlrrAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer&
             float* channelData = buffer.getWritePointer(channel);
             float currentSample = channelData[s];
 			for (int i = 0; i < localStack.size(); ++i) {
-				if (currentSample > 1.0) {
+				if (currentSample > 1.0 || currentSample < -1.0) {
 					LOG("WARN: Bad Sample Value: " << currentSample);
 					LOG( "Dumping Grain Stack: "
-						<< localStack[i].onset
-						<< localStack[i].length
-						<< localStack[i].startPosition
-						<< localStack[i].envAttack
-						<< localStack[i].envRelease
-						<< localStack[i].envCurve
-						<< localStack[i].rate
-						<< localStack[i].amp);
-				}
-
-				if (currentSample < -1.0) {
-					LOG("WARN: Bad Sample Value: " << currentSample);
-					LOG("Dumping Grain Stack: "
-						<< localStack[i].onset
-						<< localStack[i].length
-						<< localStack[i].startPosition
-						<< localStack[i].envAttack
-						<< localStack[i].envRelease
-						<< localStack[i].envCurve
-						<< localStack[i].rate
-						<< localStack[i].amp);
+						<< " Onset: " << localStack[i].onset
+						<< " length: " << localStack[i].length
+						<< " startPos: " << localStack[i].startPosition
+						<< " envAttack: " << localStack[i].envAttack
+						<< " envRelease: " << localStack[i].envRelease
+						<< " envCurve: " << localStack[i].envCurve
+						<< " Rate: " << localStack[i].rate
+						<< " Amp: " << localStack[i].amp);
 				}
 			}
             channelData[s] = clip(currentSample, -1.0, 1.0);

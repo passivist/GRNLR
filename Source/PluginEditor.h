@@ -35,7 +35,6 @@
 /**
 */
 class GrrnlrrAudioProcessorEditor  : public AudioProcessorEditor,
-                                     public Thread,
                                      private Button::Listener,
                                      private Slider::Listener
 {
@@ -47,21 +46,10 @@ public:
     void paint (Graphics&) override;
     void resized() override;
     
-    void run() override;
-    
     void buttonClicked(Button* button) override;
     void sliderValueChanged(Slider* slider) override;
     
     void openButtonClicked();
-    
-    void checkForRestoredPath();
-    void checkForPathToOpen();
-    void checkForBuffersToFree();
-    
-    void loadAudioFile(String);
-    AudioFormatManager formatManager;
-    
-    String chosenPath;
 
 private:
     // This reference is provided as a quick way for your editor to
