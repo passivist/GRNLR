@@ -30,6 +30,7 @@
 GrrnlrrAudioProcessor::GrrnlrrAudioProcessor() :    Thread("scheduling thread"),
                                                     positionParam(nullptr),
                                                     randPosParam(nullptr),
+													spreadParam(nullptr),
                                                     densityParam(nullptr),
                                                     randDensityParam(nullptr),
                                                     durationParam(nullptr),
@@ -44,7 +45,8 @@ GrrnlrrAudioProcessor::GrrnlrrAudioProcessor() :    Thread("scheduling thread"),
 {
     addParameter(positionParam      = new AudioParameterFloat("pos"       , "Position"          , 0.0001f, 1.0f, 0.5f));
     addParameter(randPosParam       = new AudioParameterFloat("randPos"   , "Random Position"   , NormalisableRange<float>(0.0, 1.0, 0.01, 0.5), 0.0f));
-    addParameter(densityParam       = new AudioParameterFloat("den"       , "Density"           , NormalisableRange<float>(0.001, 80.0, 0.001, 0.2), 10.0f));
+	addParameter(spreadParam		= new AudioParameterFloat("spread"	  , "Spread"			, NormalisableRange<float>(0.0, 1.0, 0.001, 0.30), 0.0f));
+    addParameter(densityParam       = new AudioParameterFloat("den"       , "Density"           , NormalisableRange<float>(0.001, 80.0, 0.001, 0.2), 2.0f));
     addParameter(randDensityParam   = new AudioParameterFloat("randDen"   , "Random Density"    , 0.0f, 1.0f, 0.0f));
     addParameter(durationParam      = new AudioParameterFloat("dur"       , "Duration"          , NormalisableRange<float>(0.001, 4, 0.001, 0.3), 0.3f));
     addParameter(randDurParam       = new AudioParameterFloat("randDur"   , "Random Duration"   , 0.0f, 1.0f, 0.0f));
@@ -61,7 +63,6 @@ GrrnlrrAudioProcessor::GrrnlrrAudioProcessor() :    Thread("scheduling thread"),
     time = 0;
     formatManager.registerBasicFormats();
     startThread();
-
 }
 
 GrrnlrrAudioProcessor::~GrrnlrrAudioProcessor()
@@ -162,7 +163,7 @@ void GrrnlrrAudioProcessor::checkForRestoredPath()
     path = restoredPath;
     if(path.isNotEmpty()){
         LOG("restoredPath: " << path);
-        swapVariables(chosenPath, path);
+		chosenPath.swapWith(path);
         restoredPath = "";
     }
 }
@@ -170,8 +171,8 @@ void GrrnlrrAudioProcessor::checkForRestoredPath()
 void GrrnlrrAudioProcessor::checkForPathToOpen()
 {
     String pathToOpen;
-    swapVariables(pathToOpen, chosenPath);
-    
+	pathToOpen.swapWith(chosenPath);
+
     if(pathToOpen.isNotEmpty()){
         LOG("pathToOpen: " << pathToOpen);
         filePath = pathToOpen;
@@ -241,6 +242,11 @@ void GrrnlrrAudioProcessor::run()
                 float randPosition = *randPosParam * (Random::getSystemRandom().nextFloat() - 0.5);
                 int startPosition = (*positionParam + randPosition) * numSamples;
                 startPosition = wrap(startPosition, 0, numSamples);
+
+				// Spread
+				Array<int> offsets;
+				for (int i = 0; i < 2; ++i) offsets.add( Random::getSystemRandom().nextInt(Range<int>::between(0, *spreadParam * (numSamples)/2) ) );
+				LOG("offsets: " << offsets[0] << " " << offsets[1]);
                 
                 // Envelope
                 float envMid = *envMidParam;
@@ -253,7 +259,7 @@ void GrrnlrrAudioProcessor::run()
                 
                 nextGrainOnset = onset + (dur * sampleRate);
                 
-                grainStack.add( Grain(onset, length, startPosition, envMid, envSus, envCurve, ratio, amp) );
+                grainStack.add( Grain(onset, length, startPosition, envMid, envSus, envCurve, ratio, amp, offsets) );
                 
                 double schedError = ((onset - schedDelay) - time) / sampleRate;
                 dur += schedError;
@@ -295,7 +301,6 @@ void GrrnlrrAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer&
     const int numSamplesInFile  = currentBuffer->getNumSamples();
     
     const Array<Grain> localStack = grainStack;
-    
     
     for (int s = 0; s < numSamplesInBlock; ++s) {
         for(int i=0; i < localStack.size(); ++i) {

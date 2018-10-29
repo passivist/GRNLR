@@ -72,11 +72,15 @@ private:
     
     Label randPosLabel;
     ScopedPointer<ParameterSlider> randPosSlider;
+
+	Label spreadLabel;
+	ScopedPointer<ParameterSlider> spreadSlider;
     
     //  Duration
     Label durationLabel;
     ScopedPointer<ParameterSlider> durationSlider;
     ScopedPointer<ParameterSlider> randDurSlider;
+	
     
     // Density:
     Label densityLabel;

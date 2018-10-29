@@ -19,12 +19,14 @@
 #ifndef GRAIN_H_INCLUDED
 #define GRAIN_H_INCLUDED
 
+#define LOG(textToWrite)          JUCE_BLOCK_WITH_FORCED_SEMICOLON (juce::String tempDbgBuf; tempDbgBuf << textToWrite; juce::Logger::writeToLog (tempDbgBuf);)
+
 class Grain
 {
 public:
-    const long long int onset;
-    const int length;
-    const int startPosition;
+    const long long int onset; // the onset time of this grain in samples
+    const int length; // length of the grain in samples
+    const int startPosition; // the startposition in samples
     
     const float envAttack, envAttackRecip;
     const float envRelease, envReleaseRecip;
@@ -33,20 +35,37 @@ public:
     
     const float rate;
     const float amp;
-    
-    Grain(long long int onset, int length, int startPos, float center, float sustain, float curve, float r, float a) : onset(onset), length(length), startPosition(startPos),
-                                                                                            envAttack((1 - sustain) * center), envAttackRecip(1/envAttack),
-                                                                                            envRelease(sustain + envAttack), envReleaseRecip(1/(1-envRelease)),
-                                                                                            envCurve(curve),
-                                                                                            lengthRecip(1/(float)length), rate(r), amp(a)
+	const Array<int> offsets;
+	// const int offsetL; const int offsetR;
+
+
+    Grain(long long int onset, int length, int startPos, float center, float sustain,
+		  float curve, float r, float a, 
+		  Array<int> offsets
+		  //int offsetL, int offsetR
+	) : onset(onset), length(length), startPosition(startPos),
+        envAttack((1 - sustain) * center), envAttackRecip(1/envAttack),
+        envRelease(sustain + envAttack), envReleaseRecip(1/(1-envRelease)),
+        envCurve(curve),
+        lengthRecip(1/(float)length), rate(r), amp(a),
+		offsets(offsets)
+		//offsetL(offsetL), offsetR(offsetR)
     {
-        
     }
     
-    Grain() :   onset(0), length(1000), startPosition(0),
-                envAttack(0.3), envAttackRecip(1/envAttack),
-                envRelease(0.6), envReleaseRecip(1/envRelease),
-                envCurve(0), lengthRecip(1/length), rate(1), amp(1)
+	Grain() : onset(0),
+			  length(1000),
+			  startPosition(0),
+			  envAttack(0.3),
+			  envAttackRecip(1 / envAttack),
+			  envRelease(0.6),
+			  envReleaseRecip(1 / envRelease),
+			  envCurve(0),
+			  lengthRecip(1 / length),
+			  rate(1),
+			  amp(1),
+			  offsets({ 0, 0 })
+			  //offsetL(0), offsetR(0)
     {
         
     }
@@ -66,10 +85,10 @@ public:
                 
                 aPos = envPos * envAttackRecip;
                 
-                double denom = 1.0f - exp(envCurve);
-                double numer = 1.0f - exp(aPos * envCurve);
+                double denom = 1.0 - exp(envCurve);
+                double numer = 1.0 - exp(aPos * envCurve);
                 
-                gain = (numer/denom);
+                gain = double(numer/denom);
             } else {
                 float aPos;
                 
@@ -125,7 +144,10 @@ public:
             // [2]
             const float fracPos = position - iPosition;
             
-            const int readPos = iPosition + startPosition;
+            int readPos = iPosition + startPosition + offsets[channel];
+
+			// if (channel == 0) readPos += offsetL;
+			//if (channel == 1) readPos += offsetR;
             
             // [3]
             float currentSample = fileData[readPos % fileNumSamples];

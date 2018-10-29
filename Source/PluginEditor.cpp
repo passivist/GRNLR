@@ -38,12 +38,19 @@ GrrnlrrAudioProcessorEditor::GrrnlrrAudioProcessorEditor (GrrnlrrAudioProcessor&
     positionSlider->setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
     
     addAndMakeVisible(randPosLabel);
-    randPosLabel.setText("rP", dontSendNotification);
+    randPosLabel.setText("randPos", dontSendNotification);
     
     addAndMakeVisible(randPosSlider = new ParameterSlider (*p.randPosParam));
     randPosSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    randPosSlider->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
+    randPosSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
+
+	addAndMakeVisible(spreadLabel);
+	spreadLabel.setText("spread", dontSendNotification);
     
+	addAndMakeVisible(spreadSlider = new ParameterSlider(*p.spreadParam));
+	spreadSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+	spreadSlider->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
+
     // Duration
     addAndMakeVisible(durationLabel);
     durationLabel.setText("Duration", dontSendNotification);
@@ -120,7 +127,7 @@ GrrnlrrAudioProcessorEditor::GrrnlrrAudioProcessorEditor (GrrnlrrAudioProcessor&
     
     startTimerHz(10);
     
-    setSize (500, 320);
+    setSize (600, 340);
     
     LOG("PluginEditor constructor called");
 }
@@ -136,44 +143,47 @@ void GrrnlrrAudioProcessorEditor::resized()
     const int width = getWidth();
     
     // Waveform
-    waveform->setBounds(10, 5, 480, 100);
+    waveform->setBounds(10, 5, width - 20, 100);
     
     if(processor.filePath.isNotEmpty()){
         const File file (processor.filePath);
         waveform->setFile(file);
     }
     
-    openButton.setBounds(10, 115, 120, 20);
+    openButton.setBounds(10, 150, 120, 20);
     
     // Position:
-    positionSlider->setBounds(10, 140, width - 50, 20);
+    positionSlider->setBounds(10, 115, width - 20, 20);
     
-    randPosLabel.setBounds(width - 30, 120, 25, 20);
-    randPosSlider->setBounds(width - 30, 137, 25, 25);
+    randPosLabel.setBounds(10, 170, 50, 20);
+    randPosSlider->setBounds(10, 190, 50, 65);
+
+	spreadLabel.setBounds(10, 260, 50, 20);
+	spreadSlider->setBounds(15, 280, 40, 40);
     
     // Duration:
-    durationLabel.setBounds(10, 170, 50, 20);
-    durationSlider->setBounds(10, 190, 50, 65);
+    durationLabel.setBounds(70, 170, 70, 20);
+    durationSlider->setBounds(70, 190, 50, 65);
     
-    randDurSlider->setBounds(15, 260, 40, 40);
+    randDurSlider->setBounds(75, 280, 40, 40);
     
     // Density:
-    densityLabel.setBounds(70, 170, 70, 20);
-    densitySlider->setBounds(70, 190, 50, 65);
+    densityLabel.setBounds(130, 170, 70, 20);
+    densitySlider->setBounds(130, 190, 50, 65);
     
-    randDenSlider->setBounds(75, 260, 40, 40);
+    randDenSlider->setBounds(135, 280, 40, 40);
     
     // Transposition
-    transLabel.setBounds(130, 170, 70, 20);
-    transSlider->setBounds(130, 190, 50, 65);
+    transLabel.setBounds(190, 170, 70, 20);
+    transSlider->setBounds(190, 190, 50, 65);
     
-    randTransSlider->setBounds(135, 260, 40, 40);
+    randTransSlider->setBounds(195, 280, 40, 40);
     
     // Volume
-    volLabel.setBounds(190, 170, 70, 20);
-    volSlider->setBounds(190, 190, 50, 65);
+    volLabel.setBounds(250, 170, 70, 20);
+    volSlider->setBounds(250, 190, 50, 65);
     
-    randVolSlider->setBounds(195, 260, 40, 40);
+    randVolSlider->setBounds(255, 280, 40, 40);
     
     // Envelope
     envLabel.setBounds(320, 170, 70, 20);
@@ -214,26 +224,26 @@ void GrrnlrrAudioProcessorEditor::changeListenerCallback (ChangeBroadcaster* sou
     if (source == waveform){
         const File file(waveform->getLastDroppedFile());
         String path (file.getFullPathName());
-        swapVariables(processor.chosenPath, path);
-        waveform->setFile(file);
+		processor.chosenPath.swapWith(path);
+		waveform->setFile(file);
     }
 }
 
 void GrrnlrrAudioProcessorEditor::openButtonClicked()
 {
     FileChooser chooser ("Select a File to open...",
-                         File::nonexistent,
+                         File(),
                          "*.wav", "*.aif", "*.aiff");
     
     if(chooser.browseForFileToOpen()){
         const File file (chooser.getResult());
         String path (file.getFullPathName());
         waveform->setFile(file);
-        swapVariables (processor.chosenPath, path);
+		processor.chosenPath.swapWith(path);
     }
 }
 
 void GrrnlrrAudioProcessorEditor::paint (Graphics& g)
 {
-    g.fillAll (Colours::white);
+    g.fillAll (Colours::black);
 }

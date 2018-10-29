@@ -114,6 +114,7 @@ public:
     // Main Grain Parameters:
     AudioParameterFloat* positionParam;
     AudioParameterFloat* randPosParam;
+	AudioParameterFloat* spreadParam;
     AudioParameterFloat* directionParam;
     AudioParameterFloat* densityParam;
     AudioParameterFloat* randDensityParam;
