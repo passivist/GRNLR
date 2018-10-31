@@ -59,6 +59,8 @@ GrrnlrrAudioProcessorEditor::GrrnlrrAudioProcessorEditor (GrrnlrrAudioProcessor&
     durationSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     durationSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
 
+    addAndMakeVisible(randDurLabel);
+    randDurLabel.setText("randDur", dontSendNotification);
     
     addAndMakeVisible(randDurSlider = new ParameterSlider(*p.randDurParam));
     randDurSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
@@ -72,6 +74,9 @@ GrrnlrrAudioProcessorEditor::GrrnlrrAudioProcessorEditor (GrrnlrrAudioProcessor&
     densitySlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     densitySlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
     
+    addAndMakeVisible(randDenLabel);
+    randDenLabel.setText("randDen", dontSendNotification);
+    
     addAndMakeVisible(randDenSlider = new ParameterSlider (*p.randDensityParam));
     randDenSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     randDenSlider->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
@@ -84,6 +89,9 @@ GrrnlrrAudioProcessorEditor::GrrnlrrAudioProcessorEditor (GrrnlrrAudioProcessor&
     transSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     transSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
     
+    addAndMakeVisible(randTransLabel);
+    randTransLabel.setText("rTrans", dontSendNotification);
+    
     addAndMakeVisible(randTransSlider = new ParameterSlider (*p.randTransParam));
     randTransSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     randTransSlider->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
@@ -95,6 +103,9 @@ GrrnlrrAudioProcessorEditor::GrrnlrrAudioProcessorEditor (GrrnlrrAudioProcessor&
     addAndMakeVisible(volSlider = new ParameterSlider (*p.volumeParam));
     volSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     volSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
+    
+    addAndMakeVisible(randVolLabel);
+    randVolLabel.setText("randVol", dontSendNotification);
     
     addAndMakeVisible(randVolSlider = new ParameterSlider (*p.randVolumeParam));
     randVolSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
@@ -165,24 +176,28 @@ void GrrnlrrAudioProcessorEditor::resized()
     durationLabel.setBounds(70, 170, 70, 20);
     durationSlider->setBounds(70, 190, 50, 65);
     
+    randDurLabel.setBounds(70, 260, 50, 20);
     randDurSlider->setBounds(75, 280, 40, 40);
     
     // Density:
     densityLabel.setBounds(130, 170, 70, 20);
     densitySlider->setBounds(130, 190, 50, 65);
     
+    randDenLabel.setBounds(130, 260, 50, 20);
     randDenSlider->setBounds(135, 280, 40, 40);
     
     // Transposition
     transLabel.setBounds(190, 170, 70, 20);
     transSlider->setBounds(190, 190, 50, 65);
     
+    randTransLabel.setBounds(190, 260, 50, 20);
     randTransSlider->setBounds(195, 280, 40, 40);
     
     // Volume
     volLabel.setBounds(250, 170, 70, 20);
     volSlider->setBounds(250, 190, 50, 65);
     
+    randVolLabel.setBounds(250, 260, 50, 20);
     randVolSlider->setBounds(255, 280, 40, 40);
     
     // Envelope

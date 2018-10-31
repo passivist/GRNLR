@@ -79,22 +79,26 @@ private:
     //  Duration
     Label durationLabel;
     ScopedPointer<ParameterSlider> durationSlider;
+    Label randDurLabel;
     ScopedPointer<ParameterSlider> randDurSlider;
 	
     
     // Density:
     Label densityLabel;
     ScopedPointer<ParameterSlider> densitySlider;
+    Label randDenLabel;
     ScopedPointer<ParameterSlider> randDenSlider;
     
     // Transposition:
     Label transLabel;
     ScopedPointer<ParameterSlider> transSlider;
+    Label randTransLabel;
     ScopedPointer<ParameterSlider> randTransSlider;
     
     // Volume:
     Label volLabel;
     ScopedPointer<ParameterSlider> volSlider;
+    Label randVolLabel;
     ScopedPointer<ParameterSlider> randVolSlider;
     
     // Envelope:
